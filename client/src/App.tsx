@@ -1,10 +1,16 @@
 import React from "react";
 import "./App.css";
+import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import Login from "./components/Login";
 
 function App() {
   return (
     <div className="App">
-      <h1 className="text-purple-500">hello world</h1>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={Login} />
+        </Switch>
+      </BrowserRouter>
     </div>
   );
 }
