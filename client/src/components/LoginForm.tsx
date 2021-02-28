@@ -1,5 +1,7 @@
+import { useMutation, useQuery } from "@apollo/client";
 import React, { ReactElement } from "react";
 import { useForm } from "react-hook-form";
+import { LOGIN } from "../graphql/mutations/Mutation";
 
 interface Props {}
 
@@ -8,9 +10,38 @@ type Inputs = {
   password: String;
 };
 
-export default function Login({}: Props): ReactElement {
-  const { register, handleSubmit, errors } = useForm<Inputs>();
-  const onSubmit = (data: Inputs) => console.log(data);
+export default function LoginForm({}: Props): ReactElement {
+  const { register, handleSubmit, errors, setError } = useForm<Inputs>();
+  const [login] = useMutation(LOGIN);
+
+  const onSubmit = async (data: Inputs) => {
+    const { username, password } = data;
+
+    const response = await login({
+      variables: { username, password },
+    });
+
+    const { username: user_name, password: pwd } = response.data.login;
+
+    if (user_name !== "incorrect_user") {
+      console.log("hello world");
+      window.location.assign("/dashboard");
+    } else {
+      //handle the errors
+      if (user_name === "incorrect_user") {
+        setError("username", {
+          type: "manual",
+          message: "Incorrect username",
+        });
+      }
+      if (pwd === "incorrect_password") {
+        setError("passsword", {
+          type: "manual",
+          message: "Incorrect password",
+        });
+      }
+    }
+  };
 
   return (
     <div>

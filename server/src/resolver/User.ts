@@ -1,5 +1,5 @@
 import { User } from "./../entity/User";
-import { Arg, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import * as argon2 from "argon2";
 @Resolver()
 export class UserResolver {
@@ -7,9 +7,19 @@ export class UserResolver {
   async users() {
     return User.find();
   }
-  @Query(() => String)
-  hello() {
-    return "hello world";
+  @Mutation(() => User)
+  async login(@Arg("username") username: string, @Arg("password") password: string) {
+    const user = await User.findOne({ username });
+    if (user) {
+      const passwordMatches = await argon2.verify(user.password, password);
+      if (passwordMatches) {
+        return user;
+      }
+    }
+    return {
+      username: "incorrect_user",
+      password: "incorrect_password",
+    };
   }
 
   @Mutation(() => User)

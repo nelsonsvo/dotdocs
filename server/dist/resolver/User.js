@@ -36,8 +36,20 @@ let UserResolver = class UserResolver {
             return User_1.User.find();
         });
     }
-    hello() {
-        return "hello world";
+    login(username, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield User_1.User.findOne({ username });
+            if (user) {
+                const passwordMatches = yield argon2.verify(user.password, password);
+                if (passwordMatches) {
+                    return user;
+                }
+            }
+            return {
+                username: "incorrect_user",
+                password: "incorrect_password",
+            };
+        });
     }
     createUser(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -55,11 +67,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "users", null);
 __decorate([
-    type_graphql_1.Query(() => String),
+    type_graphql_1.Mutation(() => User_1.User),
+    __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("password")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserResolver.prototype, "hello", null);
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "login", null);
 __decorate([
     type_graphql_1.Mutation(() => User_1.User),
     __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("password")),
