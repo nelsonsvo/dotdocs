@@ -51,10 +51,10 @@ let UserResolver = class UserResolver {
             };
         });
     }
-    createUser(username, password) {
+    createUser(username, user_type, password) {
         return __awaiter(this, void 0, void 0, function* () {
             const hash = yield argon2.hash(password);
-            const user = User_1.User.create({ username, password: hash });
+            const user = User_1.User.create({ username, user_type, password: hash });
             yield User_1.User.save(user);
             return user;
         });
@@ -75,9 +75,9 @@ __decorate([
 ], UserResolver.prototype, "login", null);
 __decorate([
     type_graphql_1.Mutation(() => User_1.User),
-    __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("password")),
+    __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("user_type")), __param(2, type_graphql_1.Arg("password")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "createUser", null);
 UserResolver = __decorate([

@@ -23,9 +23,9 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  async createUser(@Arg("username") username: string, @Arg("password") password: string) {
+  async createUser(@Arg("username") username: string, @Arg("user_type") user_type: string, @Arg("password") password: string) {
     const hash = await argon2.hash(password);
-    const user = User.create({ username, password: hash });
+    const user = User.create({ username, user_type, password: hash });
     await User.save(user);
 
     return user;

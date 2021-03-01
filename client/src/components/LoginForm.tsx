@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import React, { ReactElement } from "react";
 import { useForm } from "react-hook-form";
+import { Redirect, useHistory } from "react-router-dom";
 import { LOGIN } from "../graphql/mutations/Mutation";
 
 interface Props {}
@@ -11,6 +12,7 @@ type Inputs = {
 };
 
 export default function LoginForm({}: Props): ReactElement {
+  const history = useHistory();
   const { register, handleSubmit, errors, setError } = useForm<Inputs>();
   const [login] = useMutation(LOGIN);
 
@@ -25,7 +27,7 @@ export default function LoginForm({}: Props): ReactElement {
 
     if (user_name !== "incorrect_user") {
       console.log("hello world");
-      window.location.assign("/dashboard");
+      history.push("/dashboard");
     } else {
       //handle the errors
       if (user_name === "incorrect_user") {

@@ -6,6 +6,7 @@ import { ApolloProvider } from "@apollo/client";
 import { client } from "./graphql/ApolloClient";
 import Dashboard from "./pages/Dashboard";
 import Sidebar from "./components/Sidebar";
+import Test from "./pages/Test";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route exact path="/" component={Login} />
             <div className="">
               <Route path="/dashboard" component={Dashboard} />
+              <Route path="/test" component={Test} />
               <Sidebar />
             </div>
           </Switch>
