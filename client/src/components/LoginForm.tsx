@@ -23,10 +23,10 @@ export default function LoginForm({}: Props): ReactElement {
       variables: { username, password },
     });
 
-    const { username: user_name, password: pwd } = response.data.login;
+    const { username: user_name, password: pwd, user_type } = response.data.login;
 
     if (user_name !== "incorrect_user") {
-      console.log("hello world");
+      sessionStorage.setItem("user_type", user_type);
       history.push("/dashboard");
     } else {
       //handle the errors
