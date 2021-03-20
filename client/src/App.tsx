@@ -7,6 +7,7 @@ import { client } from "./graphql/ApolloClient";
 import Dashboard from "./pages/Dashboard";
 import Sidebar from "./components/Sidebar";
 import Settings from "./pages/Settings";
+import Folders from "./pages/Folders";
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
             <Route exact path="/" component={Login} />
             <div className="overflow-y-auto">
               <Route path="/dashboard" component={Dashboard} />
-              <Route path="/settings" component={Settings} />
+              <Route exact path="/settings" component={Settings} />
+              <Route exact path="/settings/folders" component={Folders} />
               <Sidebar />
             </div>
           </Switch>

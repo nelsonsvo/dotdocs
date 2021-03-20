@@ -1,25 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import MainBody from "../components/MainBody";
-import Modal from "../components/ui/Modal";
 import { VertCard } from "../components/ui/VertCard";
 
 interface Props {}
 
-const Settings = ({}: Props) => {
-  const [folderModal, setFoldersModal] = useState(false);
-
-  const setModalState = (state: boolean) => {
-    setFoldersModal(state);
-  };
-
+const Settings = (props: Props) => {
   return (
     <MainBody>
-      <Modal open={folderModal} setModalState={setModalState} title="Folders">
-        <h1>test 123</h1>
-      </Modal>
       <div>
         <div className="grid grid-cols-3 m-auto mt-5 text-gray-800">
-          <div onClick={() => setFoldersModal(true)}>
+          <Link to="/settings/folders">
             <VertCard>
               <div className="flex justify-center ">
                 <svg className="w-6 h-6 mr-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -28,7 +19,7 @@ const Settings = ({}: Props) => {
                 <h3 className="text-xl font-semibold tracking-wide">Folders</h3>
               </div>
             </VertCard>
-          </div>
+          </Link>
           <VertCard>
             <div className="flex justify-center">
               <svg className="w-6 h-6 mr-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
