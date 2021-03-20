@@ -1,12 +1,12 @@
 import React from "react";
 import "./App.css";
-import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./pages/Login";
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./graphql/ApolloClient";
 import Dashboard from "./pages/Dashboard";
 import Sidebar from "./components/Sidebar";
-import Test from "./pages/Test";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
             <Route exact path="/" component={Login} />
             <div className="overflow-y-auto">
               <Route path="/dashboard" component={Dashboard} />
-              <Route path="/test" component={Test} />
+              <Route path="/settings" component={Settings} />
               <Sidebar />
             </div>
           </Switch>
