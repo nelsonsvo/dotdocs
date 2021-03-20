@@ -8,9 +8,15 @@ interface Props {}
 const Settings = ({}: Props) => {
   const [folderModal, setFoldersModal] = useState(false);
 
+  const setModalState = (state: boolean) => {
+    setFoldersModal(state);
+  };
+
   return (
     <MainBody>
-      <Modal open={folderModal} />
+      <Modal open={folderModal} setModalState={setModalState} title="Folders">
+        <h1>test 123</h1>
+      </Modal>
       <div>
         <div className="grid grid-cols-3 m-auto mt-5 text-gray-800">
           <div onClick={() => setFoldersModal(true)}>
