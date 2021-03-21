@@ -1,17 +1,17 @@
 import { useMutation, useQuery } from "@apollo/client";
-import React, { ReactElement } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
-import { Redirect, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { LOGIN } from "../graphql/mutations/Mutation";
-
-interface Props {}
 
 type Inputs = {
   username: String;
   password: String;
 };
 
-export default function LoginForm({}: Props): ReactElement {
+interface LoginFormProps {}
+
+const LoginForm: React.FC<LoginFormProps> = () => {
   const history = useHistory();
   const { register, handleSubmit, errors, setError } = useForm<Inputs>();
   const [login] = useMutation(LOGIN);
@@ -122,4 +122,6 @@ export default function LoginForm({}: Props): ReactElement {
       </div>
     </div>
   );
-}
+};
+
+export default LoginForm;

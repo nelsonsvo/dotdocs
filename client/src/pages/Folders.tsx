@@ -1,9 +1,9 @@
 import React from "react";
 import MainBody from "../components/MainBody";
 
-interface Props {}
+interface FoldersProps {}
 
-const Folders = (props: Props) => {
+const Folders: React.FC<FoldersProps> = () => {
   return (
     <MainBody>
       <h1>hellow world this is folders</h1>

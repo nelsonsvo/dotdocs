@@ -1,9 +1,9 @@
 import React, { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
-interface Props {}
+interface SidebarProps {}
 
-export default function NavBar({}: Props): ReactElement {
+const Sidebar: React.FC<SidebarProps> = () => {
   return (
     <div>
       <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-gray-800 text-white">
@@ -84,4 +84,6 @@ export default function NavBar({}: Props): ReactElement {
       </div>
     </div>
   );
-}
+};
+
+export default Sidebar;

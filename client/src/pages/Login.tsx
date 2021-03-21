@@ -1,10 +1,14 @@
 import React, { ReactElement } from "react";
 import LoginForm from "../components/LoginForm";
 
-export default function Login(): ReactElement {
+interface LoginProps {}
+
+const Login: React.FC<LoginProps> = () => {
   return (
     <div>
       <LoginForm />
     </div>
   );
-}
+};
+
+export default Login;
