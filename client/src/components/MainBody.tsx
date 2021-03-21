@@ -1,4 +1,5 @@
 import React from "react";
+import Sidebar from "./Sidebar";
 
 interface Props {
   src?: string;
@@ -7,15 +8,18 @@ interface Props {
 const MainBody: React.FC<Props> = ({ src, children }) => {
   return (
     <div>
-      <main
+      <div
         className="bg-gray-700 h-screen w-screen absolute bg-cover bg-no-repeat bg-center bg-fixed mx-auto overflow-hidden"
         style={{
           backgroundImage: `url(${src})`,
-          paddingLeft: "255px",
+          // paddingLeft: "255px",
         }}
       >
         {children}
-      </main>
+      </div>
+      <div>
+        <Sidebar />
+      </div>
     </div>
   );
 };

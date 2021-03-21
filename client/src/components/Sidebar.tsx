@@ -1,16 +1,18 @@
 import React, { ReactElement } from "react";
 import { Link } from "react-router-dom";
 
-interface SidebarProps {}
+interface SidebarProps {
+  className?: string;
+}
 
-const Sidebar: React.FC<SidebarProps> = () => {
+const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   return (
-    <div>
+    <div className={className}>
       <div className="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-gray-800 text-white">
-        <div className="fixed flex flex-col top-0 left-0 w-64 bg-gray-800 h-full ">
+        <div className="fixed flex flex-col  bg-gray-800 h-full ">
           <div className="flex items-center justify-center h-14">
             <div>
-              <img className="h-10" src="dotdocs.png" alt="" />
+              <img className="h-10" src="/images/dotdocs.png" alt="" />
             </div>
           </div>
           <div className="overflow-y-auto overflow-x-hidden flex-grow">

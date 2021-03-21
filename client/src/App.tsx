@@ -16,12 +16,9 @@ function App() {
         <BrowserRouter>
           <Switch>
             <Route exact path="/" component={Login} />
-            <div className="overflow-y-auto">
-              <Route path="/dashboard" component={Dashboard} />
-              <Route exact path="/settings" component={Settings} />
-              <Route exact path="/settings/folders" component={Folders} />
-              <Sidebar />
-            </div>
+            <Route path="/dashboard" component={Dashboard} />
+            <Route exact path="/settings" component={Settings} />
+            <Route exact path="/settings/folders" component={Folders} />
           </Switch>
         </BrowserRouter>
       </div>
