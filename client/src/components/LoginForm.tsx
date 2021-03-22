@@ -51,7 +51,7 @@ const LoginForm: React.FC<LoginFormProps> = () => {
         <div className="max-w-md w-full space-y-8">
           <div>
             <div className="flex flex-col items-center">
-              <img className="justify-center h-16" src="dotdocs.png" alt="" />
+              <img className="justify-center h-16" src="/images/dotdocs.png" alt="" />
             </div>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
