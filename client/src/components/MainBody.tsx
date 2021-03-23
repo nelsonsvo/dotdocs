@@ -8,10 +8,10 @@ interface Props {
 const MainBody: React.FC<Props> = ({ src, children }) => {
   return (
     <div className="flex flex-row">
-      <div className="w-1/6">
+      <div className="w-64">
         <Sidebar />
       </div>
-      <div className="w-5/6 bg-gray-700">{children}</div>
+      <div className="flex-auto bg-gray-700">{children}</div>
     </div>
   );
 };
