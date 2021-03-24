@@ -11,7 +11,7 @@ const MainBody: React.FC<Props> = ({ src, children }) => {
       <div className="w-64">
         <Sidebar />
       </div>
-      <div className="flex-auto bg-gray-700">{children}</div>
+      <div className="flex-auto bg-gray-100">{children}</div>
     </div>
   );
 };
