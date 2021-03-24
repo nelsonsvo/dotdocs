@@ -5,23 +5,27 @@ import Login from "./pages/Login";
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./graphql/ApolloClient";
 import Dashboard from "./pages/Dashboard";
-import Sidebar from "./components/Sidebar";
 import Settings from "./pages/Settings";
-import Folders from "./pages/Folders";
+import SettingSectionCard from "./components/ui/SettingSectionCard";
+import Applications from "./components/settings/Applications";
 
 function App() {
   return (
     <ApolloProvider client={client}>
-      <div className="App">
-        <BrowserRouter>
-          <Switch>
+      <BrowserRouter>
+        <Switch>
+          <div className="App">
             <Route exact path="/" component={Login} />
-            <Route path="/dashboard" component={Dashboard} />
+            <Route exact path="/dashboard" component={Dashboard} />
             <Route exact path="/settings" component={Settings} />
-            <Route exact path="/settings/folders" component={Folders} />
-          </Switch>
-        </BrowserRouter>
-      </div>
+            <Route exact path="/settings/application">
+              <Settings>
+                <Applications />
+              </Settings>
+            </Route>
+          </div>
+        </Switch>
+      </BrowserRouter>
     </ApolloProvider>
   );
 }
