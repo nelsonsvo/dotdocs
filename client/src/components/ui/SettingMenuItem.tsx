@@ -1,25 +1,25 @@
 import React, { MouseEventHandler } from "react";
 import { FieldNamesMarkedBoolean } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 interface SettingMenuItemProps {
   name: string;
   mt?: boolean;
   to: string;
-  active?: boolean;
-  onClick?: MouseEventHandler<HTMLElement>;
 }
 
-const SettingMenuItem: React.FC<SettingMenuItemProps> = ({ name, children, onClick, to, mt, active }) => {
+const SettingMenuItem: React.FC<SettingMenuItemProps> = ({ name, children, to, mt }) => {
   return (
-    <Link to={to}>
-      <div onClick={onClick} className={`flex flex-row py-2 rounded-md  hover:bg-white ${active ? "bg-white" : ""} ${!mt ? "mt-2" : ""} `}>
-        <div className={`text-gray-600 ${active ? "text-blue-600" : ""}`}>{children}</div>
-        <div className="flex-auto">
-          <h3 className={`text-mdi text-left antialiased leading-6 text-gray-900 ${active ? "text-blue-600" : ""}`}>{name}</h3>
-        </div>
+    <NavLink
+      to={to}
+      activeClassName={`flex flex-row py-2 rounded-md  border-l-4 border-blue-600 hover:bg-white bg-white  text-blue-600 ${!mt ? "mt-2" : ""}`}
+      className={`flex flex-row py-2 rounded-md text-gray-600 hover:bg-white ${!mt ? "mt-2" : ""} `}
+    >
+      <div>{children}</div>
+      <div className="flex-auto">
+        <h3 className={`text-md text-left antialiased leading-6 `}>{name}</h3>
       </div>
-    </Link>
+    </NavLink>
   );
 };
 
