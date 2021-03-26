@@ -8,23 +8,21 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import SettingSectionCard from "./components/ui/SettingSectionCard";
 import Applications from "./components/settings/Applications";
+import MainBody from "./components/layouts/MainBody";
 
 function App() {
   return (
     <ApolloProvider client={client}>
       <BrowserRouter>
-        <Switch>
-          <div className="App">
+        <div className="App">
+          <Switch>
             <Route exact path="/" component={Login} />
-            <Route exact path="/dashboard" component={Dashboard} />
-            <Route exact path="/settings" component={Settings} />
-            <Route exact path="/settings/application">
-              <Settings>
-                <Applications />
-              </Settings>
-            </Route>
-          </div>
-        </Switch>
+            <MainBody>
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/settings" component={Settings} />
+            </MainBody>
+          </Switch>
+        </div>
       </BrowserRouter>
     </ApolloProvider>
   );
