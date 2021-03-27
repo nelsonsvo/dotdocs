@@ -1,29 +1,26 @@
 {
-  "name": "docmgr",
-  "version": "0.0.1",
-  "description": "Awesome project developed with TypeORM.",
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/server.ts",
+    "prisma:migrate": "npx prisma migrate dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "@types/express": "^4.17.7",
-    "@types/node": "^8.0.29",
+    "@types/node": "^14.14.37",
     "nodemon": "^2.0.7",
-    "ts-node": "3.3.0",
-    "typescript": "3.3.3333"
+    "prisma": "^2.19.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
   },
   "dependencies": {
-    "@types/uuid": "^8.3.0",
-    "apollo-server-express": "^2.21.0",
-    "argon2": "^0.27.1",
-    "express": "^4.17.1",
-    "graphql": "^15.5.0",
-    "pg": "^8.4.0",
-    "reflect-metadata": "^0.1.10",
-    "type-graphql": "^1.1.1",
-    "typeorm": "0.2.30",
-    "uuid": "^8.3.2"
-  },
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "dev": "nodemon dist/index.js"
+    "@prisma/client": "^2.19.0",
+    "apollo-server": "^2.22.1",
+    "nexus": "^1.0.0"
   }
 }
