@@ -7,11 +7,11 @@
   "database": "postgres",
   "synchronize": true,
   "logging": true,
-  "entities": ["dist/entity/**/*.js"],
+  "entities": ["dist/entities/**/*.js"],
   "migrations": ["dist/migration/**/*.js"],
   "subscribers": ["dist/subscriber/**/*.js"],
   "cli": {
-    "entitiesDir": "src/entity",
+    "entitiesDir": "src/entities",
     "migrationsDir": "src/migration",
     "subscribersDir": "src/subscriber"
   }

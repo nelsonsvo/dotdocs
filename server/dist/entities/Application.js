@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
+const AppField_1 = require("./AppField");
 let Application = class Application extends typeorm_1.BaseEntity {
     addId() {
         this.id = uuid_1.v4();
@@ -24,17 +25,11 @@ __decorate([
 ], Application.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column("text"),
+    typeorm_1.Column("text", { unique: true }),
     __metadata("design:type", String)
 ], Application.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
-    typeorm_1.Column("text", { unique: true }),
-    __metadata("design:type", String)
-], Application.prototype, "username", void 0);
-__decorate([
-    type_graphql_1.Field(() => String),
-    typeorm_1.Column("text"),
+    typeorm_1.OneToMany(() => AppField_1.AppField, (appField) => appField.application),
     __metadata("design:type", Array)
 ], Application.prototype, "fields", void 0);
 __decorate([

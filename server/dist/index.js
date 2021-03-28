@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const User_1 = require("./resolver/User");
+const User_1 = require("./resolvers/User");
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const type_graphql_1 = require("type-graphql");
