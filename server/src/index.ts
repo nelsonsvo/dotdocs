@@ -1,12 +1,13 @@
-import { UserResolver } from "./resolvers/User";
 import "reflect-metadata";
-import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
+import { createConnection } from "typeorm";
+import { ApplicationResolver } from "./resolvers/Application";
+import { UserResolver } from "./resolvers/User";
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
 
 const main = async () => {
-  const schema = await buildSchema({ resolvers: [UserResolver] });
+  const schema = await buildSchema({ resolvers: [UserResolver, ApplicationResolver] });
   const apolloServer = new ApolloServer({ schema });
 
   const app = express();
