@@ -8,14 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const User_1 = require("./resolvers/User");
 require("reflect-metadata");
-const typeorm_1 = require("typeorm");
 const type_graphql_1 = require("type-graphql");
+const typeorm_1 = require("typeorm");
+const Application_1 = require("./resolvers/Application");
+const User_1 = require("./resolvers/User");
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
 const main = () => __awaiter(this, void 0, void 0, function* () {
-    const schema = yield type_graphql_1.buildSchema({ resolvers: [User_1.UserResolver] });
+    const schema = yield type_graphql_1.buildSchema({ resolvers: [User_1.UserResolver, Application_1.ApplicationResolver] });
     const apolloServer = new ApolloServer({ schema });
     const app = express();
     apolloServer.applyMiddleware({ app });

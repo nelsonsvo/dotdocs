@@ -82,7 +82,9 @@ __decorate([
 ], UserResolver.prototype, "login", null);
 __decorate([
     type_graphql_1.Mutation(() => User_1.User),
-    __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("user_type")), __param(2, type_graphql_1.Arg("password")),
+    __param(0, type_graphql_1.Arg("username")),
+    __param(1, type_graphql_1.Arg("user_type")),
+    __param(2, type_graphql_1.Arg("password")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)

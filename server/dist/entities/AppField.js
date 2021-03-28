@@ -19,7 +19,6 @@ let AppField = class AppField extends typeorm_1.BaseEntity {
     }
 };
 __decorate([
-    type_graphql_1.Field(() => String),
     typeorm_1.PrimaryColumn("uuid"),
     __metadata("design:type", String)
 ], AppField.prototype, "id", void 0);
@@ -30,11 +29,11 @@ __decorate([
 ], AppField.prototype, "type", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column("text", { unique: true }),
+    typeorm_1.Column("text"),
     __metadata("design:type", String)
-], AppField.prototype, "username", void 0);
+], AppField.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(() => Number),
+    type_graphql_1.Field(() => Number, { nullable: true }),
     typeorm_1.Column("integer"),
     __metadata("design:type", Number)
 ], AppField.prototype, "max_length", void 0);
@@ -50,6 +49,7 @@ __decorate([
 ], AppField.prototype, "addId", null);
 AppField = __decorate([
     type_graphql_1.ObjectType(),
+    type_graphql_1.InputType(),
     typeorm_1.Entity()
 ], AppField);
 exports.AppField = AppField;

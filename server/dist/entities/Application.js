@@ -29,7 +29,9 @@ __decorate([
     __metadata("design:type", String)
 ], Application.prototype, "name", void 0);
 __decorate([
-    typeorm_1.OneToMany(() => AppField_1.AppField, (appField) => appField.application),
+    typeorm_1.OneToMany(() => AppField_1.AppField, (appField) => appField.application, {
+        cascade: true,
+    }),
     __metadata("design:type", Array)
 ], Application.prototype, "fields", void 0);
 __decorate([
