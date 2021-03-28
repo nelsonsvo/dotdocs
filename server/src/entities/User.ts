@@ -1,6 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
 import { BaseEntity, BeforeInsert, Column, Entity, PrimaryColumn } from "typeorm";
-
 import { v4 } from "uuid";
 
 @ObjectType()
