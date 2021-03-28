@@ -1,26 +1,26 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType } from "type-graphql";
 import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
 import { Application } from "./Application";
 
 @ObjectType()
+@InputType()
 @Entity()
 export class AppField extends BaseEntity {
-  @Field(() => String)
   @PrimaryColumn("uuid")
-  id: string;
+  id?: string;
 
   @Field(() => String)
   @Column("text")
   type!: string;
 
   @Field(() => String)
-  @Column("text", { unique: true })
-  username!: string;
+  @Column("text")
+  name!: string;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: true })
   @Column("integer")
-  max_length!: number;
+  max_length?: number;
 
   @ManyToOne(() => Application, (application) => application.fields)
   application: Application;
