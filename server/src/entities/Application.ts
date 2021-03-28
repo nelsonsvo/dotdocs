@@ -1,6 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
 import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-
 import { v4 } from "uuid";
 import { AppField } from "./AppField";
 
@@ -9,13 +8,15 @@ import { AppField } from "./AppField";
 export class Application extends BaseEntity {
   @Field(() => String)
   @PrimaryColumn("uuid")
-  id: string;
+  id?: string;
 
   @Field(() => String)
   @Column("text", { unique: true })
   name!: string;
 
-  @OneToMany(() => AppField, (appField) => appField.application)
+  @OneToMany(() => AppField, (appField) => appField.application, {
+    cascade: true,
+  })
   fields: AppField[];
 
   @BeforeInsert()
