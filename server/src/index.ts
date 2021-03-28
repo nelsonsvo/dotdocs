@@ -1,7 +1,6 @@
-import { UserResolver } from "./resolver/User";
+import { UserResolver } from "./resolvers/User";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { User } from "./entity/User";
 import { buildSchema } from "type-graphql";
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
