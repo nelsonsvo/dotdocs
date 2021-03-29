@@ -3,18 +3,19 @@ import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } fr
 import { v4 } from "uuid";
 import { Application } from "./Application";
 
-@ObjectType()
-@InputType()
+@ObjectType("AppField")
+@InputType("appField")
 @Entity()
 export class AppField extends BaseEntity {
+  @Field(() => String, { nullable: true })
   @PrimaryColumn("uuid")
   id?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column()
   type!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column()
   name!: string;
 
@@ -22,7 +23,9 @@ export class AppField extends BaseEntity {
   @Column()
   max_length?: number;
 
-  @ManyToOne(() => Application, (application) => application.fields)
+  @ManyToOne(() => Application, (application) => application.fields, {
+    onDelete: "CASCADE",
+  })
   application: Application;
 
   @BeforeInsert()
