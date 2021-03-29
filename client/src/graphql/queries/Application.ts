@@ -18,6 +18,8 @@ export const GET_RETRIEVAL_TEMPLATES = gql`
       fields {
         id
         name
+        type
+        max_length
       }
     }
   }
