@@ -14,7 +14,6 @@ interface LoginFormProps {}
 const LoginForm: React.FC<LoginFormProps> = () => {
   const history = useHistory();
   const { register, handleSubmit, errors, setError } = useForm<Inputs>();
-
   const [login, { loading, data, error }] = useLazyQuery(LOGIN);
 
   const onSubmit = (input: Inputs) => {
