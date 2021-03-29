@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CREATE_APPLICATION } from "../../graphql/mutations/Application";
+import { CREATE_APPLICATION, DELETE_APPLICATION } from "../../graphql/mutations/Application";
 import { GET_APPLICATIONS } from "../../graphql/queries/Application";
 import ApplicationCard from "../cards/ApplicationCard";
 import SettingSectionCard from "../ui/SettingSectionCard";
@@ -25,6 +25,13 @@ const Applications: React.FC<ApplicationsProps> = () => {
     refetchQueries: [{ query: GET_APPLICATIONS }],
     errorPolicy: "all",
   });
+
+  const [deleteApplication, { error: deleteError }] = useMutation(DELETE_APPLICATION, {
+    // refetchQueries: [{ query: GET_APPLICATIONS }]
+
+    errorPolicy: "all",
+  });
+
   const { loading, error: _error, data } = useQuery(GET_APPLICATIONS);
 
   const { register, handleSubmit, errors } = useForm<FormInputs>();
@@ -67,6 +74,22 @@ const Applications: React.FC<ApplicationsProps> = () => {
     //show modal
   };
 
+  const onDelete = (id: string): void => {
+    try {
+      deleteApplication({
+        variables: {
+          id,
+        },
+        //remove from the cache manually
+        update(cache) {
+          const normalizedId = cache.identify({ id, __typename: "Application" });
+          cache.evict({ id: normalizedId });
+          cache.gc();
+        },
+      });
+    } catch {}
+  };
+
   return (
     <>
       <SettingSectionCard>
@@ -87,13 +110,12 @@ const Applications: React.FC<ApplicationsProps> = () => {
                         data &&
                         data.applications.map((app: any) => {
                           return (
-                            <div key={app.id}>
-                              <ApplicationCard
-                                name={app.name}
-                                onEdit={() => console.log("editing")}
-                                onDelete={() => console.log("deleting")}
-                              />
-                            </div>
+                            <ApplicationCard
+                              key={app.id}
+                              name={app.name}
+                              onDelete={() => onDelete(app.id)}
+                              onEdit={() => console.log("editing")}
+                            />
                           );
                         })}
                     </div>
@@ -134,26 +156,57 @@ const Applications: React.FC<ApplicationsProps> = () => {
                         />
                       </div>
                       <h1 className="col-span-6 text-lg text-gray-700 font-bold">Fields:</h1>
-                      {currentFields.map((field) => {
-                        return (
-                          <div className="col-span-6 py-5 px-5 shadow-md rounded-md bg-gray-100">
-                            <div className="grid grid-cols-6 gap-3">
-                              <div className="col-span-2 text-md text-gray-800">
-                                <b>Name: </b>
-                                {field.name}
-                              </div>
-                              <div className="col-span-2 text-md text-gray-800">
-                                <b>Type: </b>
-                                {field.type}
-                              </div>
-                              <div className="col-span-2 text-md text-gray-800">
-                                <b>Max Length: </b>
-                                {field.max_length}
+                      {currentFields && (
+                        <div className="flex flex-col col-span-6">
+                          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                              <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                  <thead className="bg-gray-50">
+                                    <tr>
+                                      <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                      >
+                                        Name
+                                      </th>
+                                      <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                      >
+                                        Type
+                                      </th>
+                                      <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                      >
+                                        Max Length
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="bg-white divide-y divide-gray-200 py-5 px-5">
+                                    {currentFields.map((field) => {
+                                      return (
+                                        <tr className="">
+                                          <td className=" text-md text-gray-800 px-6 py-4 ">
+                                            {field.name}
+                                          </td>
+                                          <td className=" text-md text-gray-800 px-6 py-4 ">
+                                            {field.type}
+                                          </td>
+                                          <td className="text-md text-gray-800 px-6 py-4 ">
+                                            {field.max_length}
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
                               </div>
                             </div>
                           </div>
-                        );
-                      })}
+                        </div>
+                      )}
 
                       <div className="col-span-6">
                         <h1 className="text-lg text-gray-700">Add Fields</h1>
