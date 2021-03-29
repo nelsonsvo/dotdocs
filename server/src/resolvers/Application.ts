@@ -7,21 +7,33 @@ import { Application } from "./../entities/Application";
 export class ApplicationResolver {
   @Query(() => [Application])
   async applications() {
-    return Application.find();
+    const apps = await Application.find({ relations: ["fields"] });
+    return apps;
   }
 
   @Mutation(() => Application)
   async createApplication(
     @Arg("name") name: string,
-    @Arg("fields", (type) => [AppField]) fields: AppField[]
+    @Arg("fields", () => [AppField]) fields: AppField[]
   ) {
     try {
-      const app = Application.create({ name, fields: fields });
-      return await Application.save(app);
+      let app = Application.create({ name, fields: fields });
+      app = await Application.save(app);
+      return app;
     } catch (e) {
       throw new ApolloError({
         errorMessage: e,
       });
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async deleteApplication(@Arg("id") id: string) {
+    try {
+      await Application.delete({ id });
+      return true;
+    } catch {
+      return false;
     }
   }
 }
