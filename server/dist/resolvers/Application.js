@@ -27,19 +27,32 @@ const Application_1 = require("./../entities/Application");
 let ApplicationResolver = class ApplicationResolver {
     applications() {
         return __awaiter(this, void 0, void 0, function* () {
-            return Application_1.Application.find();
+            const apps = yield Application_1.Application.find({ relations: ["fields"] });
+            return apps;
         });
     }
     createApplication(name, fields) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const app = Application_1.Application.create({ name, fields: fields });
-                return yield Application_1.Application.save(app);
+                let app = Application_1.Application.create({ name, fields: fields });
+                app = yield Application_1.Application.save(app);
+                return app;
             }
             catch (e) {
                 throw new apollo_client_1.ApolloError({
                     errorMessage: e,
                 });
+            }
+        });
+    }
+    deleteApplication(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield Application_1.Application.delete({ id });
+                return true;
+            }
+            catch (_a) {
+                return false;
             }
         });
     }
@@ -53,11 +66,18 @@ __decorate([
 __decorate([
     type_graphql_1.Mutation(() => Application_1.Application),
     __param(0, type_graphql_1.Arg("name")),
-    __param(1, type_graphql_1.Arg("fields", (type) => [AppField_1.AppField])),
+    __param(1, type_graphql_1.Arg("fields", () => [AppField_1.AppField])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Array]),
     __metadata("design:returntype", Promise)
 ], ApplicationResolver.prototype, "createApplication", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ApplicationResolver.prototype, "deleteApplication", null);
 ApplicationResolver = __decorate([
     type_graphql_1.Resolver()
 ], ApplicationResolver);

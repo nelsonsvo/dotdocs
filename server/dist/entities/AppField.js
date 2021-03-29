@@ -19,16 +19,17 @@ let AppField = class AppField extends typeorm_1.BaseEntity {
     }
 };
 __decorate([
+    type_graphql_1.Field(() => String, { nullable: true }),
     typeorm_1.PrimaryColumn("uuid"),
     __metadata("design:type", String)
 ], AppField.prototype, "id", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => String, { nullable: true }),
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], AppField.prototype, "type", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => String, { nullable: true }),
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], AppField.prototype, "name", void 0);
@@ -38,7 +39,9 @@ __decorate([
     __metadata("design:type", Number)
 ], AppField.prototype, "max_length", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => Application_1.Application, (application) => application.fields),
+    typeorm_1.ManyToOne(() => Application_1.Application, (application) => application.fields, {
+        onDelete: "CASCADE",
+    }),
     __metadata("design:type", Application_1.Application)
 ], AppField.prototype, "application", void 0);
 __decorate([
@@ -48,8 +51,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AppField.prototype, "addId", null);
 AppField = __decorate([
-    type_graphql_1.ObjectType(),
-    type_graphql_1.InputType(),
+    type_graphql_1.ObjectType("AppField"),
+    type_graphql_1.InputType("appField"),
     typeorm_1.Entity()
 ], AppField);
 exports.AppField = AppField;

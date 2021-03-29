@@ -29,11 +29,23 @@ __decorate([
     __metadata("design:type", String)
 ], Application.prototype, "name", void 0);
 __decorate([
+    type_graphql_1.Field((type) => [AppField_1.AppField]),
     typeorm_1.OneToMany(() => AppField_1.AppField, (appField) => appField.application, {
         cascade: true,
+        onDelete: "CASCADE",
     }),
     __metadata("design:type", Array)
 ], Application.prototype, "fields", void 0);
+__decorate([
+    type_graphql_1.Field(() => Date),
+    typeorm_1.CreateDateColumn(),
+    __metadata("design:type", Date)
+], Application.prototype, "createdAt", void 0);
+__decorate([
+    type_graphql_1.Field(() => Date),
+    typeorm_1.UpdateDateColumn(),
+    __metadata("design:type", Date)
+], Application.prototype, "updatedAt", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
@@ -41,7 +53,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], Application.prototype, "addId", null);
 Application = __decorate([
-    type_graphql_1.ObjectType(),
+    type_graphql_1.ObjectType("Application"),
     typeorm_1.Entity()
 ], Application);
 exports.Application = Application;
