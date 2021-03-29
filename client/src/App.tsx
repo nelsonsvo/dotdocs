@@ -1,14 +1,12 @@
-import React from "react";
-import "./App.css";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Login from "./pages/Login";
 import { ApolloProvider } from "@apollo/client";
+import React from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import "./App.css";
+import { Test } from "./components/Test";
 import { client } from "./graphql/ApolloClient";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 import Settings from "./pages/Settings";
-import SettingSectionCard from "./components/ui/SettingSectionCard";
-import Applications from "./components/settings/Applications";
-import MainBody from "./components/layouts/MainBody";
 
 function App() {
   return (
@@ -17,10 +15,9 @@ function App() {
         <div className="App">
           <Switch>
             <Route exact path="/" component={Login} />
-            <MainBody>
-              <Route path="/dashboard" component={Dashboard} />
-              <Route path="/settings" component={Settings} />
-            </MainBody>
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/retrieval" component={Test} />
           </Switch>
         </div>
       </BrowserRouter>
