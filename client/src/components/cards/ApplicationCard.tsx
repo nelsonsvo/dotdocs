@@ -1,4 +1,4 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 
 interface ApplicationCardProps {
   name: string;
@@ -9,7 +9,11 @@ interface ApplicationCardProps {
 
 const ApplicationCard: React.FC<ApplicationCardProps> = ({ name, onDelete, onEdit, mt }) => {
   return (
-    <div className={`bg-gray-100 py-5 px-5 rounded-md shadow ${mt ? `mt-${mt}` : ""}`}>
+    <div
+      className={`bg-gray-100 shadow-lg border-l-2 border-blue-500 py-5 px-5 rounded-md ${
+        mt ? `mt-${mt}` : ""
+      }`}
+    >
       <div className="flex flex-row justify-between text-gray-800">
         <div>
           <h1 className="text-sm md:text-lg">{name}</h1>
@@ -17,7 +21,13 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({ name, onDelete, onEdi
         <div>
           <div className="grid grid-cols-2 gap-5">
             <div onClick={onDelete} className="cursor-pointer">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                className="w-6 h-6 text-gray-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -27,7 +37,13 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({ name, onDelete, onEdi
               </svg>
             </div>
             <div onClick={onEdit} className="cursor-pointer">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                className="w-6 h-6 text-gray-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
