@@ -11,7 +11,7 @@ export class Application extends BaseEntity {
   id?: string;
 
   @Field(() => String)
-  @Column("text", { unique: true })
+  @Column({ unique: true })
   name!: string;
 
   @OneToMany(() => AppField, (appField) => appField.application, {

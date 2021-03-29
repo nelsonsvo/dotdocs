@@ -25,7 +25,7 @@ __decorate([
 ], Application.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column("text", { unique: true }),
+    typeorm_1.Column({ unique: true }),
     __metadata("design:type", String)
 ], Application.prototype, "name", void 0);
 __decorate([

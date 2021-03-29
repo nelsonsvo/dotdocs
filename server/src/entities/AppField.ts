@@ -11,15 +11,15 @@ export class AppField extends BaseEntity {
   id?: string;
 
   @Field(() => String)
-  @Column("text")
+  @Column()
   type!: string;
 
   @Field(() => String)
-  @Column("text")
+  @Column()
   name!: string;
 
   @Field(() => Number, { nullable: true })
-  @Column("integer")
+  @Column()
   max_length?: number;
 
   @ManyToOne(() => Application, (application) => application.fields)

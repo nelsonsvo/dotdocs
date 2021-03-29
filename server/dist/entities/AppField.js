@@ -24,17 +24,17 @@ __decorate([
 ], AppField.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column("text"),
+    typeorm_1.Column(),
     __metadata("design:type", String)
 ], AppField.prototype, "type", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column("text"),
+    typeorm_1.Column(),
     __metadata("design:type", String)
 ], AppField.prototype, "name", void 0);
 __decorate([
     type_graphql_1.Field(() => Number, { nullable: true }),
-    typeorm_1.Column("integer"),
+    typeorm_1.Column(),
     __metadata("design:type", Number)
 ], AppField.prototype, "max_length", void 0);
 __decorate([
