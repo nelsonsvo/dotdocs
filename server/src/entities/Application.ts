@@ -1,9 +1,18 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import {
+  BaseEntity,
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { v4 } from "uuid";
 import { AppField } from "./AppField";
 
-@ObjectType()
+@ObjectType("Application")
 @Entity()
 export class Application extends BaseEntity {
   @Field(() => String)
@@ -14,10 +23,20 @@ export class Application extends BaseEntity {
   @Column({ unique: true })
   name!: string;
 
+  @Field((type) => [AppField])
   @OneToMany(() => AppField, (appField) => appField.application, {
     cascade: true,
+    onDelete: "CASCADE",
   })
   fields: AppField[];
+
+  @Field(() => Date)
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field(() => Date)
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @BeforeInsert()
   addId() {
