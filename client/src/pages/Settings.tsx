@@ -1,6 +1,7 @@
 import React from "react";
 import { useRouteMatch } from "react-router";
 import { Route } from "react-router-dom";
+import MainBody from "../components/layouts/MainBody";
 import Applications from "../components/settings/Applications";
 import SettingMenuItem from "../components/ui/SettingMenuItem";
 interface SettingsProps {}
@@ -8,7 +9,7 @@ interface SettingsProps {}
 const Settings: React.FC<SettingsProps> = () => {
   const { url } = useRouteMatch();
   return (
-    <>
+    <MainBody>
       <div className="md:grid md:grid-cols-4 md:gap-6 mx-10 my-10">
         <div className="md:col-span-1">
           <div className="flex flex-col">
@@ -54,7 +55,7 @@ const Settings: React.FC<SettingsProps> = () => {
           <Applications />
         </Route>
       </div>
-    </>
+    </MainBody>
   );
 };
 
