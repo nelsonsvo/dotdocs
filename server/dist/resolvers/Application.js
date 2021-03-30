@@ -21,6 +21,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const apollo_client_1 = require("apollo-client");
+const fs_1 = require("fs");
+const graphql_upload_1 = require("graphql-upload");
 const type_graphql_1 = require("type-graphql");
 const AppField_1 = require("../entities/AppField");
 const Application_1 = require("./../entities/Application");
@@ -56,6 +58,21 @@ let ApplicationResolver = class ApplicationResolver {
             }
         });
     }
+    singleUpload({ createReadStream, filename }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            {
+                return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                    return createReadStream()
+                        .pipe(fs_1.createWriteStream(__dirname + `/../../images/${filename}`))
+                        .on("finish", () => resolve(true))
+                        .on("error", (e) => {
+                        console.log(e);
+                        reject(false);
+                    });
+                }));
+            }
+        });
+    }
 };
 __decorate([
     type_graphql_1.Query(() => [Application_1.Application]),
@@ -78,6 +95,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ApplicationResolver.prototype, "deleteApplication", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("file", () => graphql_upload_1.GraphQLUpload)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ApplicationResolver.prototype, "singleUpload", null);
 ApplicationResolver = __decorate([
     type_graphql_1.Resolver()
 ], ApplicationResolver);
