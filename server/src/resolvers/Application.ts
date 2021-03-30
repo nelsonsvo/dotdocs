@@ -1,4 +1,6 @@
 import { ApolloError } from "apollo-client";
+import { createWriteStream } from "fs";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { AppField } from "../entities/AppField";
 import { Application } from "./../entities/Application";
@@ -34,6 +36,24 @@ export class ApplicationResolver {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async singleUpload(
+    @Arg("file", () => GraphQLUpload)
+    { createReadStream, filename }: FileUpload
+  ): Promise<boolean> {
+    {
+      return new Promise(async (resolve, reject) =>
+        createReadStream()
+          .pipe(createWriteStream(__dirname + `/../../images/${filename}`))
+          .on("finish", () => resolve(true))
+          .on("error", (e) => {
+            console.log(e);
+            reject(false);
+          })
+      );
     }
   }
 }
