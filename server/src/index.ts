@@ -1,3 +1,4 @@
+import { graphqlUploadExpress } from "graphql-upload";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
@@ -8,9 +9,11 @@ const { ApolloServer } = require("apollo-server-express");
 
 const main = async () => {
   const schema = await buildSchema({ resolvers: [UserResolver, ApplicationResolver] });
-  const apolloServer = new ApolloServer({ schema });
+  const apolloServer = new ApolloServer({ schema, uploads: false });
 
   const app = express();
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+
   apolloServer.applyMiddleware({ app });
 
   await createConnection().then(() => {
