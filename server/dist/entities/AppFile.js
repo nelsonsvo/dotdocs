@@ -12,9 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
-const AppField_1 = require("./AppField");
-const AppFile_1 = require("./AppFile");
-let Application = class Application extends typeorm_1.BaseEntity {
+const Application_1 = require("./Application");
+let AppFile = class AppFile extends typeorm_1.BaseEntity {
     addId() {
         this.id = uuid_1.v4();
     }
@@ -23,44 +22,46 @@ __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.PrimaryColumn("uuid"),
     __metadata("design:type", String)
-], Application.prototype, "id", void 0);
+], AppFile.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column({ unique: true }),
+    typeorm_1.Column(),
     __metadata("design:type", String)
-], Application.prototype, "name", void 0);
+], AppFile.prototype, "filename", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [AppField_1.AppField]),
-    typeorm_1.OneToMany(() => AppField_1.AppField, (appField) => appField.application, {
-        cascade: true,
-        onDelete: "CASCADE",
-    }),
-    __metadata("design:type", Array)
-], Application.prototype, "fields", void 0);
+    type_graphql_1.Field(() => String),
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], AppFile.prototype, "mimetype", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [AppFile_1.AppFile]),
-    typeorm_1.OneToMany(() => AppFile_1.AppFile, (file) => file.application),
-    __metadata("design:type", Array)
-], Application.prototype, "files", void 0);
+    type_graphql_1.Field(() => String),
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], AppFile.prototype, "location", void 0);
+__decorate([
+    type_graphql_1.Field((type) => Application_1.Application),
+    typeorm_1.ManyToOne(() => Application_1.Application, (application) => application.files),
+    __metadata("design:type", Application_1.Application)
+], AppFile.prototype, "application", void 0);
 __decorate([
     type_graphql_1.Field(() => Date),
     typeorm_1.CreateDateColumn(),
     __metadata("design:type", Date)
-], Application.prototype, "createdAt", void 0);
+], AppFile.prototype, "createdAt", void 0);
 __decorate([
     type_graphql_1.Field(() => Date),
     typeorm_1.UpdateDateColumn(),
     __metadata("design:type", Date)
-], Application.prototype, "updatedAt", void 0);
+], AppFile.prototype, "updatedAt", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], Application.prototype, "addId", null);
-Application = __decorate([
-    type_graphql_1.ObjectType("Application"),
+], AppFile.prototype, "addId", null);
+AppFile = __decorate([
+    type_graphql_1.ObjectType("AppFile"),
     typeorm_1.Entity()
-], Application);
-exports.Application = Application;
-//# sourceMappingURL=Application.js.map
+], AppFile);
+exports.AppFile = AppFile;
+//# sourceMappingURL=AppFile.js.map
