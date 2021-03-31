@@ -1,15 +1,26 @@
-import { useMutation, useQuery } from "@apollo/client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useMutation } from "@apollo/client";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { NavLink } from "react-router-dom";
+import { IndexContext } from "../context/IndexContext";
 import { SINGLE_FILE_UPLOAD } from "../graphql/mutations/Application";
-import { GET_RETRIEVAL_TEMPLATES } from "../graphql/queries/Application";
 
 interface IndexBarProps {}
 
+type Template = {
+  name: string;
+  id: string;
+};
+
+type Field = {
+  name: string;
+  type: string;
+};
+
 const IndexBar: React.FC<IndexBarProps> = () => {
+  const data = useContext(IndexContext);
   const [currentTemplate, setTemplate] = useState("");
-  const { loading, error, data } = useQuery(GET_RETRIEVAL_TEMPLATES);
+  const [currentTempId, setCurrentTempId] = useState(null);
   const [uploadFile] = useMutation(SINGLE_FILE_UPLOAD, {
     onCompleted: (data) => console.log(data),
   });
@@ -22,21 +33,29 @@ const IndexBar: React.FC<IndexBarProps> = () => {
       const file = acceptedFiles[0];
 
       uploadFile({
-        variables: { file },
+        variables: { file, id: currentTempId },
       });
     },
-    [uploadFile]
+    [uploadFile, currentTempId]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   useEffect(() => {
     if (data) {
+      console.log(data);
       setTemplate(data.applications[0].name);
+      setCurrentTempId(data.applications[0].id);
     }
   }, [data]);
 
   const openFileUpload = () => {
     inputRef.current.click();
+  };
+
+  const setTemplateState = (e: ChangeEvent<HTMLSelectElement>) => {
+    setTemplate(e.target.value);
+    const templateId = data.applications.filter((t: Template) => t.name === currentTemplate)[0].id;
+    setCurrentTempId(templateId);
   };
 
   return (
@@ -50,35 +69,35 @@ const IndexBar: React.FC<IndexBarProps> = () => {
           </div>
           <div>
             <div className="text-gray-800 text-left mt-3 border-t border-b py-1 bg-gray-200 border-gray-200 text-ml">
-              <h3 className="px-3 text-left text-xl tracking-widest">INDEX</h3>
+              <h3 className="px-3 tracking-widest text-center">ADD A DOCUMENT</h3>
             </div>
-            <div className="py-5 bg-gray-100" {...getRootProps()}>
+            <div className="py-5 bg-gray-100 mb-5" {...getRootProps()}>
               <input {...getInputProps()} />
               {isDragActive ? <p>Drop the files here ...</p> : <p>Drop files here</p>}
             </div>
             <div>
-              <div className="">
+              <div className="px-4">
                 <select
                   id="type"
-                  onChange={(e) => setTemplate(e.target.value)}
+                  onChange={(e) => setTemplateState(e)}
                   name="type"
-                  className=" block w-full py-2 px-3 border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
+                  className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                 >
-                  {!loading &&
-                    data.applications.map((template: any) => {
+                  {data &&
+                    data.applications.map((template: Template) => {
                       return <option>{template.name}</option>;
                     })}
                 </select>
               </div>
             </div>
           </div>
-          <div className="overflow-y-auto overflow-x-hidden py-5 flex-grow text-left">
-            {!loading && data && (
+          <div className="overflow-y-auto overflow-x-hidden py-5 px-3 flex-grow text-left">
+            {data && data && (
               <div className="flex flex-col gap-5 mt-3">
                 {data.applications
-                  .filter((template: any) => template.name === currentTemplate)
+                  .filter((template: Template) => template.name === currentTemplate)
                   .map((template: any) => {
-                    return template.fields.map((f: any) => {
+                    return template.fields.map((f: Field) => {
                       console.log(f);
                       return (
                         <div className="px-2">
