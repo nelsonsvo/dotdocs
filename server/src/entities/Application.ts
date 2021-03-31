@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { v4 } from "uuid";
 import { AppField } from "./AppField";
+import { AppFile } from "./AppFile";
 
 @ObjectType("Application")
 @Entity()
@@ -29,6 +30,10 @@ export class Application extends BaseEntity {
     onDelete: "CASCADE",
   })
   fields: AppField[];
+
+  @Field((type) => [AppFile])
+  @OneToMany(() => AppFile, (file) => file.application)
+  files: AppFile[];
 
   @Field(() => Date)
   @CreateDateColumn()
