@@ -16,7 +16,7 @@ export const DELETE_APPLICATION = gql`
 `;
 
 export const SINGLE_FILE_UPLOAD = gql`
-  mutation SingleUpload($file: Upload!) {
-    singleUpload(file: $file)
+  mutation SingleUpload($file: Upload!, $id: String!) {
+    singleUpload(file: $file, id: $id)
   }
 `;
