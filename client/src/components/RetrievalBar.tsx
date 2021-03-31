@@ -1,7 +1,6 @@
-import { useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { GET_RETRIEVAL_TEMPLATES } from "../graphql/queries/Application";
+import { RetrievalContext } from "../context/RetrievalContext";
 
 interface RetrievalBarProps {
   className?: string;
@@ -9,7 +8,8 @@ interface RetrievalBarProps {
 
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
   const [currentTemplate, setTemplate] = useState("");
-  const { loading, error, data } = useQuery(GET_RETRIEVAL_TEMPLATES);
+  // const { loading, error, data } = useQuery(GET_RETRIEVAL_TEMPLATES);
+  const data = useContext(RetrievalContext);
 
   useEffect(() => {
     if (data) {
@@ -27,10 +27,10 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
             </NavLink>
           </div>
           <div>
-            <div className="text-gray-800 text-left mt-3 border-t border-b py-1 bg-gray-200 border-gray-200 text-ml">
-              <h3 className="px-3">Retrieval</h3>
+            <div className="text-gray-800 text-left mt-3 border-t border-b py-1 bg-gray-200 border-gray-200 text-ml mb-5">
+              <h3 className="px-3 tracking-widest text-center">FIND A DOCUMENT</h3>
             </div>
-            <div>
+            <div className="px-4">
               <div className="">
                 <select
                   id="type"
@@ -38,7 +38,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                   name="type"
                   className=" block w-full py-2 px-3 border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                 >
-                  {!loading &&
+                  {data &&
                     data.applications.map((template: any) => {
                       return <option>{template.name}</option>;
                     })}
@@ -46,8 +46,8 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
               </div>
             </div>
           </div>
-          <div className="overflow-y-auto overflow-x-hidden py-5 flex-grow text-left">
-            {!loading && data && (
+          <div className="overflow-y-auto overflow-x-hidden py-5 px-3 flex-grow text-left">
+            {data && (
               <div className="flex flex-col gap-5 mt-3">
                 {data.applications
                   .filter((template: any) => template.name === currentTemplate)
