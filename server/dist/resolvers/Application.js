@@ -25,6 +25,7 @@ const fs_1 = require("fs");
 const graphql_upload_1 = require("graphql-upload");
 const type_graphql_1 = require("type-graphql");
 const AppField_1 = require("../entities/AppField");
+const AppFile_1 = require("../entities/AppFile");
 const Application_1 = require("./../entities/Application");
 let ApplicationResolver = class ApplicationResolver {
     applications() {
@@ -58,19 +59,34 @@ let ApplicationResolver = class ApplicationResolver {
             }
         });
     }
-    singleUpload({ createReadStream, filename }) {
+    singleUpload({ createReadStream, filename, mimetype }, id) {
         return __awaiter(this, void 0, void 0, function* () {
             {
                 return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                     return createReadStream()
-                        .pipe(fs_1.createWriteStream(__dirname + `/../../images/${filename}`))
-                        .on("finish", () => resolve(true))
-                        .on("error", (e) => {
-                        console.log(e);
-                        reject(false);
-                    });
+                        .pipe(fs_1.createWriteStream(__dirname + `/../../files/${filename}`))
+                        .on("finish", () => __awaiter(this, void 0, void 0, function* () {
+                        const app = yield Application_1.Application.findOne({ id });
+                        if (app) {
+                            const file = new AppFile_1.AppFile();
+                            file.application = app;
+                            file.filename = filename;
+                            file.mimetype = mimetype;
+                            file.location = `/../../files/${filename}`;
+                            AppFile_1.AppFile.save(file);
+                        }
+                        resolve(true);
+                    }))
+                        .on("error", () => reject(false));
                 }));
             }
+        });
+    }
+    getFiles(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let app = yield Application_1.Application.find({ relations: ["files"] });
+            app = app.filter((a) => a.id === id);
+            return app[0].files;
         });
     }
 };
@@ -98,10 +114,18 @@ __decorate([
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
     __param(0, type_graphql_1.Arg("file", () => graphql_upload_1.GraphQLUpload)),
+    __param(1, type_graphql_1.Arg("id", () => String)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], ApplicationResolver.prototype, "singleUpload", null);
+__decorate([
+    type_graphql_1.Query(() => [AppFile_1.AppFile]),
+    __param(0, type_graphql_1.Arg("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ApplicationResolver.prototype, "getFiles", null);
 ApplicationResolver = __decorate([
     type_graphql_1.Resolver()
 ], ApplicationResolver);
