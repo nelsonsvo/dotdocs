@@ -6,7 +6,7 @@ import { client } from "./graphql/ApolloClient";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
-import { Retrieval } from "./pages/Retrieval";
+import Retrieval from "./pages/Retrieval";
 import Settings from "./pages/Settings";
 
 function App() {
