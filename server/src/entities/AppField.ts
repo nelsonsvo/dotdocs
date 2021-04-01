@@ -3,6 +3,10 @@ import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } fr
 import { v4 } from "uuid";
 import { Application } from "./Application";
 
+/*
+this entity contains the fields for the Applications
+*/
+
 @ObjectType("AppField")
 @InputType("appField")
 @Entity()
