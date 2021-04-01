@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class migration1617129094612 {
+class migration1617314158573 {
     up(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
         });
@@ -18,5 +18,5 @@ class migration1617129094612 {
         });
     }
 }
-exports.migration1617129094612 = migration1617129094612;
-//# sourceMappingURL=1617129094612-migration.js.map
+exports.migration1617314158573 = migration1617314158573;
+//# sourceMappingURL=1617314158573-migration.js.map
