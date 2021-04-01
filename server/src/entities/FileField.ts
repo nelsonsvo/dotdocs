@@ -1,6 +1,7 @@
 import { Field, InputType, ObjectType } from "type-graphql";
 import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
+import { AppField } from "./AppField";
 import { AppFile } from "./AppFile";
 
 /*
@@ -19,13 +20,17 @@ export class FileField extends BaseEntity {
   @Column()
   name!: string;
 
-  @Field(() => Number, { nullable: true })
+  @Field(() => String, { nullable: true })
   @Column()
-  value: number;
+  value: string;
 
   @Field((type) => AppFile)
   @ManyToOne(() => AppFile, (file) => file.fields)
   file: AppFile;
+
+  @Field((type) => AppField)
+  @ManyToOne(() => AppField, (field) => field.filefields)
+  field: AppField;
 
   @BeforeInsert()
   addId() {
