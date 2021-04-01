@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   BeforeInsert,
@@ -14,6 +14,7 @@ import { AppField } from "./AppField";
 import { AppFile } from "./AppFile";
 
 @ObjectType("Application")
+@InputType("application")
 @Entity()
 export class Application extends BaseEntity {
   @Field(() => String)
