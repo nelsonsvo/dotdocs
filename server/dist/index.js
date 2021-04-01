@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_upload_1 = require("graphql-upload");
+const path_1 = require("path");
 require("reflect-metadata");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
@@ -21,6 +22,7 @@ const main = () => __awaiter(this, void 0, void 0, function* () {
     const apolloServer = new ApolloServer({ schema, uploads: false });
     const app = express();
     app.use(graphql_upload_1.graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+    app.use("/files", express.static(path_1.join(__dirname, "../files")));
     apolloServer.applyMiddleware({ app });
     yield typeorm_1.createConnection().then(() => {
         console.log("typeorm connected");

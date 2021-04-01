@@ -13,6 +13,7 @@ const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
 const Application_1 = require("./Application");
+const FileField_1 = require("./FileField");
 let AppFile = class AppFile extends typeorm_1.BaseEntity {
     addId() {
         this.id = uuid_1.v4();
@@ -43,6 +44,11 @@ __decorate([
     typeorm_1.ManyToOne(() => Application_1.Application, (application) => application.files),
     __metadata("design:type", Application_1.Application)
 ], AppFile.prototype, "application", void 0);
+__decorate([
+    type_graphql_1.Field((type) => [FileField_1.FileField]),
+    typeorm_1.OneToMany(() => FileField_1.FileField, (field) => field.file),
+    __metadata("design:type", Array)
+], AppFile.prototype, "fields", void 0);
 __decorate([
     type_graphql_1.Field(() => Date),
     typeorm_1.CreateDateColumn(),
