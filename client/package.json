@@ -20,6 +20,8 @@
     "react-dom": "^17.0.1",
     "react-dropzone": "^11.3.2",
     "react-hook-form": "^6.15.4",
+    "react-iframe": "^1.8.0",
+    "react-pdf": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "reactjs-popup": "^2.0.4",
@@ -58,6 +60,7 @@
     "@tailwindcss/postcss7-compat": "^2.0.3",
     "@types/apollo-upload-client": "^14.1.0",
     "@types/react-dropzone": "^5.1.0",
+    "@types/react-pdf": "^5.0.2",
     "autoprefixer": "^9.8.6",
     "postcss": "^7.0.35",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3"
