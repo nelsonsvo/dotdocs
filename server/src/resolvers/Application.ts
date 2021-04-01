@@ -69,6 +69,7 @@ export class ApplicationResolver {
       );
     }
   }
+
   //get the associate files for application
   @Query(() => [AppFile])
   async getFiles(@Arg("id") id: string) {
