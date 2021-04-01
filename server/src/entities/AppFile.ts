@@ -1,4 +1,4 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   BeforeInsert,
@@ -19,6 +19,7 @@ This entity stores the Files in the application
 */
 
 @ObjectType("AppFile")
+@InputType("appFile")
 @Entity()
 export class AppFile extends BaseEntity {
   @Field(() => String)
