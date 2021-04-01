@@ -1,4 +1,5 @@
 import { graphqlUploadExpress } from "graphql-upload";
+import { join } from "path";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
@@ -13,7 +14,7 @@ const main = async () => {
 
   const app = express();
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
-
+  app.use("/files", express.static(join(__dirname, "../files")));
   apolloServer.applyMiddleware({ app });
 
   await createConnection().then(() => {
