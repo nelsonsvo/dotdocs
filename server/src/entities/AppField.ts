@@ -1,7 +1,16 @@
 import { Field, InputType, ObjectType } from "type-graphql";
-import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  BaseEntity,
+  BeforeInsert,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from "typeorm";
 import { v4 } from "uuid";
 import { Application } from "./Application";
+import { FileField } from "./FileField";
 
 /*
 this entity contains the fields for the Applications
@@ -13,7 +22,7 @@ this entity contains the fields for the Applications
 export class AppField extends BaseEntity {
   @Field(() => String, { nullable: true })
   @PrimaryColumn("uuid")
-  id?: string;
+  id: string;
 
   @Field(() => String, { nullable: true })
   @Column()
@@ -32,8 +41,20 @@ export class AppField extends BaseEntity {
   })
   application: Application;
 
+  @Field(() => [FileField])
+  @OneToMany(() => FileField, (field) => field.field)
+  filefields: FileField[];
+
   @BeforeInsert()
   addId() {
     this.id = v4();
   }
+}
+@InputType("AppFieldInput")
+export class AppFieldInput {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  value: string;
 }
