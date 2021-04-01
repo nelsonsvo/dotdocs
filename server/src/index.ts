@@ -1,3 +1,4 @@
+import cors from "cors";
 import { graphqlUploadExpress } from "graphql-upload";
 import { join } from "path";
 import "reflect-metadata";
@@ -13,9 +14,15 @@ const main = async () => {
   const apolloServer = new ApolloServer({ schema, uploads: false });
 
   const app = express();
+  app.use(
+    cors({
+      origin: "*",
+      credentials: true,
+    })
+  );
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use("/files", express.static(join(__dirname, "../files")));
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   await createConnection().then(() => {
     console.log("typeorm connected");
