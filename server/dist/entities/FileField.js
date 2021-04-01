@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
+const AppField_1 = require("./AppField");
 const AppFile_1 = require("./AppFile");
 let FileField = class FileField extends typeorm_1.BaseEntity {
     addId() {
@@ -29,15 +30,20 @@ __decorate([
     __metadata("design:type", String)
 ], FileField.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(() => Number, { nullable: true }),
+    type_graphql_1.Field(() => String, { nullable: true }),
     typeorm_1.Column(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], FileField.prototype, "value", void 0);
 __decorate([
     type_graphql_1.Field((type) => AppFile_1.AppFile),
     typeorm_1.ManyToOne(() => AppFile_1.AppFile, (file) => file.fields),
     __metadata("design:type", AppFile_1.AppFile)
 ], FileField.prototype, "file", void 0);
+__decorate([
+    type_graphql_1.Field((type) => AppField_1.AppField),
+    typeorm_1.ManyToOne(() => AppField_1.AppField, (field) => field.filefields),
+    __metadata("design:type", AppField_1.AppField)
+], FileField.prototype, "field", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),

@@ -7,7 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const cors_1 = __importDefault(require("cors"));
 const graphql_upload_1 = require("graphql-upload");
 const path_1 = require("path");
 require("reflect-metadata");
@@ -21,9 +25,13 @@ const main = () => __awaiter(this, void 0, void 0, function* () {
     const schema = yield type_graphql_1.buildSchema({ resolvers: [User_1.UserResolver, Application_1.ApplicationResolver] });
     const apolloServer = new ApolloServer({ schema, uploads: false });
     const app = express();
+    app.use(cors_1.default({
+        origin: "*",
+        credentials: true,
+    }));
     app.use(graphql_upload_1.graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
     app.use("/files", express.static(path_1.join(__dirname, "../files")));
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
     yield typeorm_1.createConnection().then(() => {
         console.log("typeorm connected");
     });

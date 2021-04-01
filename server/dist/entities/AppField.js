@@ -13,6 +13,7 @@ const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
 const Application_1 = require("./Application");
+const FileField_1 = require("./FileField");
 let AppField = class AppField extends typeorm_1.BaseEntity {
     addId() {
         this.id = uuid_1.v4();
@@ -45,6 +46,11 @@ __decorate([
     __metadata("design:type", Application_1.Application)
 ], AppField.prototype, "application", void 0);
 __decorate([
+    type_graphql_1.Field(() => [FileField_1.FileField]),
+    typeorm_1.OneToMany(() => FileField_1.FileField, (field) => field.field),
+    __metadata("design:type", Array)
+], AppField.prototype, "filefields", void 0);
+__decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -56,4 +62,18 @@ AppField = __decorate([
     typeorm_1.Entity()
 ], AppField);
 exports.AppField = AppField;
+let AppFieldInput = class AppFieldInput {
+};
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldInput.prototype, "id", void 0);
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldInput.prototype, "value", void 0);
+AppFieldInput = __decorate([
+    type_graphql_1.InputType("AppFieldInput")
+], AppFieldInput);
+exports.AppFieldInput = AppFieldInput;
 //# sourceMappingURL=AppField.js.map

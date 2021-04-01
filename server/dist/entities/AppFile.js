@@ -67,6 +67,7 @@ __decorate([
 ], AppFile.prototype, "addId", null);
 AppFile = __decorate([
     type_graphql_1.ObjectType("AppFile"),
+    type_graphql_1.InputType("appFile"),
     typeorm_1.Entity()
 ], AppFile);
 exports.AppFile = AppFile;
