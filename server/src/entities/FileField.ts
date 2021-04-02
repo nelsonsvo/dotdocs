@@ -24,11 +24,11 @@ export class FileField extends BaseEntity {
   @Column()
   value: string;
 
-  @Field((type) => AppFile)
+  @Field(() => AppFile)
   @ManyToOne(() => AppFile, (file) => file.fields)
   file: AppFile;
 
-  @Field((type) => AppField)
+  @Field(() => AppField)
   @ManyToOne(() => AppField, (field) => field.filefields)
   field: AppField;
 
