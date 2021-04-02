@@ -5,12 +5,15 @@ import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { ApplicationResolver } from "./resolvers/Application";
+import { FileResolver } from "./resolvers/File";
 import { UserResolver } from "./resolvers/User";
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
 
 const main = async () => {
-  const schema = await buildSchema({ resolvers: [UserResolver, ApplicationResolver] });
+  const schema = await buildSchema({
+    resolvers: [UserResolver, ApplicationResolver, FileResolver],
+  });
   const apolloServer = new ApolloServer({ schema, uploads: false });
 
   const app = express();
