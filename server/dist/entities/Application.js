@@ -60,7 +60,7 @@ __decorate([
 ], Application.prototype, "addId", null);
 Application = __decorate([
     type_graphql_1.ObjectType("Application"),
-    type_graphql_1.InputType("application"),
+    type_graphql_1.InputType("ApplicationInput"),
     typeorm_1.Entity()
 ], Application);
 exports.Application = Application;

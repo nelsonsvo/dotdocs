@@ -52,7 +52,7 @@ __decorate([
 ], FileField.prototype, "addId", null);
 FileField = __decorate([
     type_graphql_1.ObjectType("FileField"),
-    type_graphql_1.InputType("fileField"),
+    type_graphql_1.InputType("FileFieldInput"),
     typeorm_1.Entity()
 ], FileField);
 exports.FileField = FileField;

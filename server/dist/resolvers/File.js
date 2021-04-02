@@ -40,21 +40,27 @@ let FileResolver = class FileResolver {
                     if (app) {
                         const guid = uuid_1.v4();
                         const extension = mimetype.split("/")[1];
+                        const fileDir = path_1.join(__dirname, `/../../files`);
+                        if (!fs.existsSync(fileDir)) {
+                            fs.mkdirSync(fileDir);
+                        }
+                        let dir = path_1.join(__dirname, `/../../files/${app.name}`);
+                        if (!fs.existsSync(dir)) {
+                            fs.mkdirSync(dir);
+                        }
+                        const fileExtension = filename.split(/\.(?=[^\.]+$)/)[1];
+                        const newFileName = guid + "." + fileExtension;
                         createReadStream()
-                            .pipe(fs_1.createWriteStream(__dirname + `/../../files/${app.name}/${guid}.${extension}`))
+                            .pipe(fs_1.createWriteStream(dir + `/${newFileName}`))
                             .on("finish", () => __awaiter(this, void 0, void 0, function* () {
                             let file = new AppFile_1.AppFile();
                             if (app) {
                                 file.application = app;
-                                file.filename = guid + "." + extension;
+                                file.filename = newFileName;
                                 file.mimetype = mimetype;
                                 file.old_filename = filename;
-                                let dir = path_1.join(__dirname, `/../../files/${app.name}/`);
-                                if (!fs.existsSync(dir)) {
-                                    fs.mkdirSync(dir);
-                                }
                                 console.log(dir + filename);
-                                file.location = `/files/${app.name}/${guid}.${extension}`;
+                                file.location = `/files/${app.name}/${file.filename}`;
                                 file = yield AppFile_1.AppFile.save(file);
                             }
                             console.log(file);

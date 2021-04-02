@@ -24,7 +24,6 @@ const apollo_client_1 = require("apollo-client");
 const type_graphql_1 = require("type-graphql");
 const AppField_1 = require("../entities/AppField");
 const Application_1 = require("./../entities/Application");
-var fs = require("fs");
 let ApplicationResolver = class ApplicationResolver {
     applications() {
         return __awaiter(this, void 0, void 0, function* () {

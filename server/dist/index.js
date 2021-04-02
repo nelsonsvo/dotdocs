@@ -28,11 +28,11 @@ const main = () => __awaiter(this, void 0, void 0, function* () {
     });
     const apolloServer = new ApolloServer({ schema, uploads: false });
     const app = express();
+    app.use(graphql_upload_1.graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
     app.use(cors_1.default({
         origin: "*",
         credentials: true,
     }));
-    app.use(graphql_upload_1.graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
     app.use("/files", express.static(path_1.join(__dirname, "../files")));
     apolloServer.applyMiddleware({ app, cors: false });
     yield typeorm_1.createConnection().then(() => {
