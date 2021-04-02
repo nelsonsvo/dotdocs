@@ -42,11 +42,11 @@ export class AppFile extends BaseEntity {
   @Column()
   location!: string;
 
-  @Field((type) => Application)
+  @Field(() => Application)
   @ManyToOne(() => Application, (application) => application.files)
   application: Application;
 
-  @Field((type) => [FileField])
+  @Field(() => [FileField])
   @OneToMany(() => FileField, (field) => field.file)
   fields: FileField[];
 
