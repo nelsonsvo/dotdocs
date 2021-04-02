@@ -35,12 +35,12 @@ __decorate([
     __metadata("design:type", String)
 ], FileField.prototype, "value", void 0);
 __decorate([
-    type_graphql_1.Field((type) => AppFile_1.AppFile),
+    type_graphql_1.Field(() => AppFile_1.AppFile),
     typeorm_1.ManyToOne(() => AppFile_1.AppFile, (file) => file.fields),
     __metadata("design:type", AppFile_1.AppFile)
 ], FileField.prototype, "file", void 0);
 __decorate([
-    type_graphql_1.Field((type) => AppField_1.AppField),
+    type_graphql_1.Field(() => AppField_1.AppField),
     typeorm_1.ManyToOne(() => AppField_1.AppField, (field) => field.filefields),
     __metadata("design:type", AppField_1.AppField)
 ], FileField.prototype, "field", void 0);

@@ -33,6 +33,11 @@ __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.Column(),
     __metadata("design:type", String)
+], AppFile.prototype, "old_filename", void 0);
+__decorate([
+    type_graphql_1.Field(() => String),
+    typeorm_1.Column(),
+    __metadata("design:type", String)
 ], AppFile.prototype, "mimetype", void 0);
 __decorate([
     type_graphql_1.Field(() => String),

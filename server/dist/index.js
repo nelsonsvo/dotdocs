@@ -18,11 +18,14 @@ require("reflect-metadata");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const Application_1 = require("./resolvers/Application");
+const File_1 = require("./resolvers/File");
 const User_1 = require("./resolvers/User");
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
 const main = () => __awaiter(this, void 0, void 0, function* () {
-    const schema = yield type_graphql_1.buildSchema({ resolvers: [User_1.UserResolver, Application_1.ApplicationResolver] });
+    const schema = yield type_graphql_1.buildSchema({
+        resolvers: [User_1.UserResolver, Application_1.ApplicationResolver, File_1.FileResolver],
+    });
     const apolloServer = new ApolloServer({ schema, uploads: false });
     const app = express();
     app.use(cors_1.default({
