@@ -7,9 +7,8 @@ interface RetrievalBarProps {
 }
 
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
-  const [currentTemplate, setTemplate] = useState("");
-  // const { loading, error, data } = useQuery(GET_RETRIEVAL_TEMPLATES);
-  const data = useContext(RetrievalContext);
+  const { data, error } = useContext(RetrievalContext);
+  const [currentTemplate, setTemplate] = useState({});
 
   useEffect(() => {
     if (data) {
@@ -19,7 +18,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
 
   return (
     <div className={className}>
-      <div className="min-h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700">
+      <div className="min-h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700 border-r">
         <div className="flex flex-col bg-white h-full ">
           <div className="flex items-center justify-center">
             <NavLink to="/dashboard">
