@@ -17,13 +17,13 @@ const main = async () => {
   const apolloServer = new ApolloServer({ schema, uploads: false });
 
   const app = express();
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use(
     cors({
       origin: "*",
       credentials: true,
     })
   );
-  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use("/files", express.static(join(__dirname, "../files")));
   apolloServer.applyMiddleware({ app, cors: false });
 
