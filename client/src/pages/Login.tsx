@@ -1,7 +1,7 @@
 import { useLazyQuery } from "@apollo/client";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Redirect, useHistory } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { LOGIN } from "../graphql/queries/Login";
 
 type Inputs = {
@@ -12,8 +12,7 @@ type Inputs = {
 interface LoginFormProps {}
 
 const Login: React.FC<LoginFormProps> = () => {
-  const history = useHistory();
-  const { register, handleSubmit, errors, setError } = useForm<Inputs>();
+  const { register, handleSubmit, errors } = useForm<Inputs>();
   const [login, { loading, data, error }] = useLazyQuery(LOGIN);
 
   const onSubmit = (input: Inputs) => {
@@ -100,9 +99,12 @@ const Login: React.FC<LoginFormProps> = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-gray-800 hover:text-blue-500">
+                <Link
+                  to="/forgot-password"
+                  className="font-medium text-gray-800 hover:text-blue-500"
+                >
                   Forgot your password?
-                </a>
+                </Link>
               </div>
             </div>
 
