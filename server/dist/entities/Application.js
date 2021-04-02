@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", String)
 ], Application.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [AppField_1.AppField]),
+    type_graphql_1.Field(() => [AppField_1.AppField]),
     typeorm_1.OneToMany(() => AppField_1.AppField, (appField) => appField.application, {
         cascade: true,
         onDelete: "CASCADE",
@@ -38,7 +38,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Application.prototype, "fields", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [AppFile_1.AppFile]),
+    type_graphql_1.Field(() => [AppFile_1.AppFile]),
     typeorm_1.OneToMany(() => AppFile_1.AppFile, (file) => file.application),
     __metadata("design:type", Array)
 ], Application.prototype, "files", void 0);
