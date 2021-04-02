@@ -20,34 +20,31 @@ type Field = {
   type: string;
 };
 
-interface UploadedFile {
-  id: string;
-  filename: string;
-  mimetype: string;
-  location: string;
-}
-
-const IndexBar: React.FC<IndexBarProps> = () => {
-  const data = useContext(IndexContext);
+const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
+  const { data, error } = useContext(IndexContext);
   const { uploadedFiles, setUploadedFiles } = useContext(IndexFileContext);
 
-  const { register, handleSubmit, errors, setError, reset } = useForm<any>();
+  const { register, handleSubmit, reset } = useForm<any>();
 
   const [currentTemplate, setTemplate] = useState("");
   const [currentTempId, setCurrentTempId] = useState(null);
 
-  const [uploadFile] = useMutation(SINGLE_FILE_UPLOAD, {
+  const [count, setCount] = useState(0);
+  const [numberOfUploaded, setNumberUploaded] = useState(0);
+
+  const [uploadFile, { loading, error: uploadError }] = useMutation(SINGLE_FILE_UPLOAD, {
     onCompleted: (data) => setUploadedFiles([...uploadedFiles, data.singleUpload]),
   });
 
   const [indexFile] = useMutation(INDEX_FILE, {
-    onCompleted: (data) => console.log(data),
+    onCompleted: () => setCount(count + 1),
   });
 
   const inputRef = useRef<any>();
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
+      setNumberUploaded(acceptedFiles.length);
       //uploaded each file one by one
       //TODO: BATCH UPLOAD FOR THE FILES
       acceptedFiles.forEach(async (f: any) => {
@@ -58,7 +55,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
         });
       });
     },
-    [uploadFile, currentTempId, uploadedFiles]
+    [uploadFile, currentTempId]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -69,10 +66,6 @@ const IndexBar: React.FC<IndexBarProps> = () => {
       setCurrentTempId(data.applications[0].id);
     }
   }, [data]);
-
-  const openFileUpload = () => {
-    inputRef.current.click();
-  };
 
   const setTemplateState = (e: ChangeEvent<HTMLSelectElement>) => {
     setTemplate(e.target.value);
@@ -89,11 +82,10 @@ const IndexBar: React.FC<IndexBarProps> = () => {
           value,
         });
       }
-
       //using a queue system FIFO so get the first file that went in
       const fileToUpload = uploadedFiles.shift();
 
-      const res = await indexFile({
+      await indexFile({
         variables: {
           id: fileToUpload.id,
           fields: fieldArr,
@@ -134,39 +126,72 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                   >
                     {data &&
                       data.applications.map((template: Template) => {
-                        return <option>{template.name}</option>;
+                        return <option key={template.id}>{template.name}</option>;
                       })}
                   </select>
                 </div>
               </div>
             </div>
             <div className="overflow-y-auto overflow-x-hidden py-5 px-3 flex-grow text-left">
-              {data && data && (
-                <div className="flex flex-col gap-5 mt-3">
-                  {data.applications
-                    .filter((template: Template) => template.name === currentTemplate)
-                    .map((template: any) => {
-                      return template.fields.map((f: Field) => {
-                        console.log(f);
-                        return (
-                          <div className="px-2" key={f.id}>
-                            <label
-                              htmlFor={f.name}
-                              className="block  text-sm font-medium text-gray-700"
-                            >
-                              {f.name}
-                            </label>
-                            <input
-                              type={f.type.toLowerCase()}
-                              name={f.id}
-                              ref={register}
-                              className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
-                            />
-                          </div>
-                        );
-                      });
-                    })}
-                </div>
+              <ul>
+                {data && data && (
+                  <div className="flex flex-col gap-5 mt-3">
+                    {data.applications
+                      .filter((template: Template) => template.name === currentTemplate)
+                      .map((template: any) => {
+                        return template.fields.map((f: Field) => {
+                          console.log(f);
+                          return (
+                            <li className="px-2" key={f.id}>
+                              <label
+                                htmlFor={f.name}
+                                className="block  text-sm font-medium text-gray-700"
+                              >
+                                {f.name}
+                              </label>
+                              <input
+                                type={f.type.toLowerCase()}
+                                name={f.id}
+                                defaultValue={""}
+                                ref={register}
+                                className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                              />
+                            </li>
+                          );
+                        });
+                      })}
+                  </div>
+                )}
+              </ul>
+            </div>
+            {loading && (
+              <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+                <span
+                  className="text-blue-500  opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0"
+                  style={{ top: "50%" }}
+                >
+                  <svg
+                    className="w-24 h-24 animate-bounce"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                </span>
+              </div>
+            )}
+            <div>
+              {uploadedFiles.length > 0 && (
+                <p>
+                  {count} of {numberOfUploaded} indexed
+                </p>
               )}
             </div>
             <div className="grid grid-cols-2 px-5 gap-3 mt-5">
@@ -191,6 +216,6 @@ const IndexBar: React.FC<IndexBarProps> = () => {
       </form>
     </div>
   );
-};
+});
 
 export default IndexBar;
