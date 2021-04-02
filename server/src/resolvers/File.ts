@@ -25,23 +25,33 @@ export class FileResolver {
           const guid = v4();
           const extension = mimetype.split("/")[1];
 
+          const fileDir = join(__dirname, `/../../files`);
+
+          if (!fs.existsSync(fileDir)) {
+            fs.mkdirSync(fileDir);
+          }
+
+          let dir = join(__dirname, `/../../files/${app.name}`);
+
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+          }
+          const fileExtension = filename.split(/\.(?=[^\.]+$)/)[1];
+          const newFileName = guid + "." + fileExtension;
+
           createReadStream()
-            .pipe(createWriteStream(__dirname + `/../../files/${app.name}/${guid}.${extension}`))
+            .pipe(createWriteStream(dir + `/${newFileName}`))
             .on("finish", async () => {
               let file = new AppFile();
               if (app) {
                 file.application = app;
-                file.filename = guid + "." + extension;
+                file.filename = newFileName;
                 file.mimetype = mimetype;
                 file.old_filename = filename;
-                let dir = join(__dirname, `/../../files/${app.name}/`);
 
-                if (!fs.existsSync(dir)) {
-                  fs.mkdirSync(dir);
-                }
                 console.log(dir + filename);
 
-                file.location = `/files/${app.name}/${guid}.${extension}`;
+                file.location = `/files/${app.name}/${file.filename}`;
 
                 file = await AppFile.save(file);
               }
