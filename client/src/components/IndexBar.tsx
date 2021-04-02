@@ -20,7 +20,7 @@ type Field = {
   type: string;
 };
 
-const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
+const IndexBar: React.FC<IndexBarProps> = () => {
   const { data, error } = useContext(IndexContext);
   const { uploadedFiles, setUploadedFiles } = useContext(IndexFileContext);
 
@@ -216,6 +216,6 @@ const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
       </form>
     </div>
   );
-});
+};
 
 export default IndexBar;
