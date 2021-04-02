@@ -25,14 +25,14 @@ export class Application extends BaseEntity {
   @Column({ unique: true })
   name!: string;
 
-  @Field((type) => [AppField])
+  @Field(() => [AppField])
   @OneToMany(() => AppField, (appField) => appField.application, {
     cascade: true,
     onDelete: "CASCADE",
   })
   fields: AppField[];
 
-  @Field((type) => [AppFile])
+  @Field(() => [AppFile])
   @OneToMany(() => AppFile, (file) => file.application)
   files: AppFile[];
 
