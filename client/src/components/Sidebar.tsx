@@ -10,8 +10,8 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
 
   return (
     <div className={className}>
-      <div className="min-h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700">
-        <div className="flex flex-col bg-white h-full ">
+      <div className="min-h-screen w-100 h-screen flex-shrink-0 antialiased bg-white text-gray-700 border-r">
+        <div className="flex flex-col bg-white h-screen ">
           <div className="flex items-center justify-center">
             <div>
               <img className="h-12" src="/images/dotdocs.png" alt="" />
@@ -136,32 +136,32 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                     <span className="ml-2 text-sm tracking-wide truncate">Settings</span>
                   </NavLink>
                 </li>
-                <li>
-                  <Link
-                    to="/"
-                    className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6"
-                  >
-                    <span className="inline-flex justify-center items-center ml-4">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                        ></path>
-                      </svg>
-                    </span>
-                    <span className="ml-2 text-sm tracking-wide truncate">Logout</span>
-                  </Link>
-                </li>
               </div>
             </ul>
+          </div>
+          <div className="object-bottom cursor-pointer">
+            <Link
+              to="/"
+              className=" flex flex-row items-center h-11 focus:outline-none bg-gray-100 hover:bg-gray-200 text-gray-800 border-l-4 border-transparent  pr-6"
+            >
+              <span className="inline-flex justify-center items-center ml-4">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  ></path>
+                </svg>
+              </span>
+              <span className="ml-2 text-sm tracking-wide truncate">Logout</span>
+            </Link>
           </div>
         </div>
       </div>
