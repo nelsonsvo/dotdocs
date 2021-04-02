@@ -1,11 +1,10 @@
 import React from "react";
 import IndexBar from "../IndexBar";
 
-interface Props {
-  src?: string;
-}
+interface Props {}
 
-const IndexBody: React.FC<Props> = React.memo(({ src, children }) => {
+const IndexBody: React.FC<Props> = React.memo(({ children }) => {
+  console.log("rendering");
   return (
     <div className="flex flex-row">
       <div className="w-80">
