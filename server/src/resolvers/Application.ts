@@ -2,7 +2,6 @@ import { ApolloError } from "apollo-client";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { AppField } from "../entities/AppField";
 import { Application } from "./../entities/Application";
-var fs = require("fs");
 
 @Resolver()
 export class ApplicationResolver {
