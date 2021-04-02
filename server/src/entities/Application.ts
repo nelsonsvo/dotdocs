@@ -14,7 +14,7 @@ import { AppField } from "./AppField";
 import { AppFile } from "./AppFile";
 
 @ObjectType("Application")
-@InputType("application")
+@InputType("ApplicationInput")
 @Entity()
 export class Application extends BaseEntity {
   @Field(() => String)
