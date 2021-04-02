@@ -14,7 +14,7 @@ const Index: React.FC<IndexProps> = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   return (
-    <IndexContext.Provider value={data}>
+    <IndexContext.Provider value={{ data, error }}>
       <IndexFileContext.Provider value={{ uploadedFiles, setUploadedFiles }}>
         <IndexBody>
           {uploadedFiles.length > 0 ? (
