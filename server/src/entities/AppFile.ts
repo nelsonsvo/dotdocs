@@ -19,7 +19,7 @@ This entity stores the Files in the application
 */
 
 @ObjectType("AppFile")
-@InputType("appFile")
+@InputType("AppFileInput")
 @Entity()
 export class AppFile extends BaseEntity {
   @Field(() => String)
