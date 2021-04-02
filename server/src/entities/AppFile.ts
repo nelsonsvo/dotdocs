@@ -32,6 +32,10 @@ export class AppFile extends BaseEntity {
 
   @Field(() => String)
   @Column()
+  old_filename!: string;
+
+  @Field(() => String)
+  @Column()
   mimetype!: string;
 
   @Field(() => String)
