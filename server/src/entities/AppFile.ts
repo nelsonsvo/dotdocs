@@ -47,7 +47,10 @@ export class AppFile extends BaseEntity {
   application: Application;
 
   @Field(() => [FileField])
-  @OneToMany(() => FileField, (field) => field.file)
+  @OneToMany(() => FileField, (field) => field.file, {
+    onDelete: "CASCADE",
+    cascade: true,
+  })
   fields: FileField[];
 
   @Field(() => Date)
