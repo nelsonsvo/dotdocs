@@ -3,7 +3,7 @@ import IndexBar from "../IndexBar";
 
 interface Props {}
 
-const IndexBody: React.FC<Props> = React.memo(({ children }) => {
+const IndexBody: React.FC<Props> = React.memo({ children }) => {
   return (
     <div className="flex flex-row">
       <div className="w-80">
@@ -12,6 +12,6 @@ const IndexBody: React.FC<Props> = React.memo(({ children }) => {
       <div className="flex-auto bg-gray-100">{children}</div>
     </div>
   );
-});
+};
 
 export default IndexBody;
