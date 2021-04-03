@@ -1,14 +1,33 @@
+import { AuthenticationError } from "apollo-server-errors";
 import { createWriteStream } from "fs";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { join } from "path";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { v4 } from "uuid";
 import { AppField } from "../entities/AppField";
 import { AppFile } from "../entities/AppFile";
 import { FileField } from "../entities/FileField";
-import { AppFieldInput } from "./../entities/AppField";
 import { Application } from "./../entities/Application";
-var fs = require("fs");
+import { MyContext } from "./../types/ContextType";
+let fs = require("fs");
+
+@InputType("AppFieldInput")
+export class AppFieldInput {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  value: string;
+}
+
+@ObjectType()
+export class ApplicationFile {
+  @Field(() => AppFile)
+  file: AppFile;
+
+  @Field(() => [FileField])
+  fields: FileField[];
+}
 
 @Resolver()
 export class FileResolver {
@@ -16,25 +35,29 @@ export class FileResolver {
   async singleUpload(
     @Arg("file", () => GraphQLUpload)
     { createReadStream, filename, mimetype }: FileUpload,
-    @Arg("id", () => String) id: string
+    @Arg("id", () => String) id: string,
+    @Ctx() { req, res }: MyContext
   ): Promise<AppFile> {
     {
       return new Promise(async (resolve, reject) => {
+        if (!req.session.userId) {
+          res.statusCode = 400;
+          throw new AuthenticationError("USER NOT AUTHENTICATED");
+        }
+
         const app = await Application.findOne({ id });
+        console.log(app);
         if (app) {
           const guid = v4();
-          const extension = mimetype.split("/")[1];
-
-          const fileDir = join(__dirname, `/../../files`);
-
-          if (!fs.existsSync(fileDir)) {
-            fs.mkdirSync(fileDir);
-          }
 
           let dir = join(__dirname, `/../../files/${app.name}`);
 
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
+          try {
+            if (!fs.existsSync(dir)) {
+              fs.mkdirSync(dir, { recursive: true });
+            }
+          } catch (err) {
+            console.log("error creating directories", err);
           }
           const fileExtension = filename.split(/\.(?=[^\.]+$)/)[1];
           const newFileName = guid + "." + fileExtension;
@@ -52,8 +75,12 @@ export class FileResolver {
                 console.log(dir + filename);
 
                 file.location = `/files/${app.name}/${file.filename}`;
-
-                file = await AppFile.save(file);
+                try {
+                  file = await AppFile.save(file);
+                } catch (err) {
+                  console.log(err);
+                  reject();
+                }
               }
               console.log(file);
               resolve(file);
@@ -69,8 +96,14 @@ export class FileResolver {
   @Mutation(() => Boolean)
   async indexFile(
     @Arg("fields", () => [AppFieldInput]) fields: [AppFieldInput],
-    @Arg("id") id: string
+    @Arg("id") id: string,
+    @Ctx() { req, res }: MyContext
   ) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+    console.log(id);
     fields.forEach(async (field) => {
       const newField = new FileField();
 
@@ -90,9 +123,13 @@ export class FileResolver {
   //get the associate files for application
   @Query(() => [AppFile])
   async getFiles(@Arg("id") id: string) {
-    let app = await Application.find({ relations: ["files"] });
-    app = app.filter((a: Application) => a.id === id);
+    const appFile = await AppFile.find({
+      where: {
+        application: id,
+      },
+      relations: ["fields"],
+    });
 
-    return app[0].files;
+    return appFile;
   }
 }
