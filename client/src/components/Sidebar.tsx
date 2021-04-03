@@ -14,7 +14,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
         <div className="flex flex-col bg-white h-screen ">
           <div className="flex items-center justify-center">
             <div>
-              <img className="h-12" src="/images/dotdocs.png" alt="" />
+              <img className="h-10 md:h-12" src="/images/dotdocs.png" alt="" />
             </div>
           </div>
           <div className="overflow-y-auto overflow-x-hidden flex-grow">
