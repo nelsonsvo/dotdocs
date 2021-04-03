@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const apollo_server_errors_1 = require("apollo-server-errors");
 const fs_1 = require("fs");
 const graphql_upload_1 = require("graphql-upload");
 const path_1 = require("path");
@@ -28,25 +29,57 @@ const uuid_1 = require("uuid");
 const AppField_1 = require("../entities/AppField");
 const AppFile_1 = require("../entities/AppFile");
 const FileField_1 = require("../entities/FileField");
-const AppField_2 = require("./../entities/AppField");
 const Application_1 = require("./../entities/Application");
-var fs = require("fs");
+let fs = require("fs");
+let AppFieldInput = class AppFieldInput {
+};
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldInput.prototype, "id", void 0);
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldInput.prototype, "value", void 0);
+AppFieldInput = __decorate([
+    type_graphql_1.InputType("AppFieldInput")
+], AppFieldInput);
+exports.AppFieldInput = AppFieldInput;
+let ApplicationFile = class ApplicationFile {
+};
+__decorate([
+    type_graphql_1.Field(() => AppFile_1.AppFile),
+    __metadata("design:type", AppFile_1.AppFile)
+], ApplicationFile.prototype, "file", void 0);
+__decorate([
+    type_graphql_1.Field(() => [FileField_1.FileField]),
+    __metadata("design:type", Array)
+], ApplicationFile.prototype, "fields", void 0);
+ApplicationFile = __decorate([
+    type_graphql_1.ObjectType()
+], ApplicationFile);
+exports.ApplicationFile = ApplicationFile;
 let FileResolver = class FileResolver {
-    singleUpload({ createReadStream, filename, mimetype }, id) {
+    singleUpload({ createReadStream, filename, mimetype }, id, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             {
                 return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                    if (!req.session.userId) {
+                        res.statusCode = 400;
+                        throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+                    }
                     const app = yield Application_1.Application.findOne({ id });
+                    console.log(app);
                     if (app) {
                         const guid = uuid_1.v4();
-                        const extension = mimetype.split("/")[1];
-                        const fileDir = path_1.join(__dirname, `/../../files`);
-                        if (!fs.existsSync(fileDir)) {
-                            fs.mkdirSync(fileDir);
-                        }
                         let dir = path_1.join(__dirname, `/../../files/${app.name}`);
-                        if (!fs.existsSync(dir)) {
-                            fs.mkdirSync(dir);
+                        try {
+                            if (!fs.existsSync(dir)) {
+                                fs.mkdirSync(dir, { recursive: true });
+                            }
+                        }
+                        catch (err) {
+                            console.log("error creating directories", err);
                         }
                         const fileExtension = filename.split(/\.(?=[^\.]+$)/)[1];
                         const newFileName = guid + "." + fileExtension;
@@ -61,7 +94,13 @@ let FileResolver = class FileResolver {
                                 file.old_filename = filename;
                                 console.log(dir + filename);
                                 file.location = `/files/${app.name}/${file.filename}`;
-                                file = yield AppFile_1.AppFile.save(file);
+                                try {
+                                    file = yield AppFile_1.AppFile.save(file);
+                                }
+                                catch (err) {
+                                    console.log(err);
+                                    reject();
+                                }
                             }
                             console.log(file);
                             resolve(file);
@@ -75,8 +114,13 @@ let FileResolver = class FileResolver {
             }
         });
     }
-    indexFile(fields, id) {
+    indexFile(fields, id, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            console.log(id);
             fields.forEach((field) => __awaiter(this, void 0, void 0, function* () {
                 const newField = new FileField_1.FileField();
                 const appField = yield AppField_1.AppField.findOne({ id: field.id });
@@ -94,9 +138,13 @@ let FileResolver = class FileResolver {
     }
     getFiles(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let app = yield Application_1.Application.find({ relations: ["files"] });
-            app = app.filter((a) => a.id === id);
-            return app[0].files;
+            const appFile = yield AppFile_1.AppFile.find({
+                where: {
+                    application: id,
+                },
+                relations: ["fields"],
+            });
+            return appFile;
         });
     }
 };
@@ -104,16 +152,18 @@ __decorate([
     type_graphql_1.Mutation(() => AppFile_1.AppFile),
     __param(0, type_graphql_1.Arg("file", () => graphql_upload_1.GraphQLUpload)),
     __param(1, type_graphql_1.Arg("id", () => String)),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "singleUpload", null);
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
-    __param(0, type_graphql_1.Arg("fields", () => [AppField_2.AppFieldInput])),
+    __param(0, type_graphql_1.Arg("fields", () => [AppFieldInput])),
     __param(1, type_graphql_1.Arg("id")),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array, String]),
+    __metadata("design:paramtypes", [Array, String, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "indexFile", null);
 __decorate([

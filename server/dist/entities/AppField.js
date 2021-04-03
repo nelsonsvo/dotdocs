@@ -20,22 +20,22 @@ let AppField = class AppField extends typeorm_1.BaseEntity {
     }
 };
 __decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
+    type_graphql_1.Field(() => String),
     typeorm_1.PrimaryColumn("uuid"),
     __metadata("design:type", String)
 ], AppField.prototype, "id", void 0);
 __decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
+    type_graphql_1.Field(() => String),
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], AppField.prototype, "type", void 0);
 __decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
+    type_graphql_1.Field(() => String),
     typeorm_1.Column(),
     __metadata("design:type", String)
 ], AppField.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(() => Number, { nullable: true }),
+    type_graphql_1.Field(() => Number),
     typeorm_1.Column(),
     __metadata("design:type", Number)
 ], AppField.prototype, "max_length", void 0);
@@ -46,7 +46,7 @@ __decorate([
     __metadata("design:type", Application_1.Application)
 ], AppField.prototype, "application", void 0);
 __decorate([
-    type_graphql_1.Field(() => [FileField_1.FileField]),
+    type_graphql_1.Field(() => [FileField_1.FileField], { nullable: true }),
     typeorm_1.OneToMany(() => FileField_1.FileField, (field) => field.field),
     __metadata("design:type", Array)
 ], AppField.prototype, "filefields", void 0);
@@ -58,22 +58,7 @@ __decorate([
 ], AppField.prototype, "addId", null);
 AppField = __decorate([
     type_graphql_1.ObjectType("AppField"),
-    type_graphql_1.InputType("appField"),
     typeorm_1.Entity()
 ], AppField);
 exports.AppField = AppField;
-let AppFieldInput = class AppFieldInput {
-};
-__decorate([
-    type_graphql_1.Field(() => String),
-    __metadata("design:type", String)
-], AppFieldInput.prototype, "id", void 0);
-__decorate([
-    type_graphql_1.Field(() => String),
-    __metadata("design:type", String)
-], AppFieldInput.prototype, "value", void 0);
-AppFieldInput = __decorate([
-    type_graphql_1.InputType("AppFieldInput")
-], AppFieldInput);
-exports.AppFieldInput = AppFieldInput;
 //# sourceMappingURL=AppField.js.map
