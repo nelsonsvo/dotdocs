@@ -9,3 +9,12 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export const ME = gql`
+  {
+    me {
+      username
+      password
+    }
+  }
+`;
