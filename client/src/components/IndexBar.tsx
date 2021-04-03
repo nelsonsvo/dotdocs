@@ -30,7 +30,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   //state
   const [currentTemplate, setTemplate] = useState("");
-  const [currentTempId, setCurrentTempId] = useState(null);
+  const [currentTempId, setCurrentTempId] = useState("");
 
   const [count, setCount] = useState(0);
   const [numberOfUploaded, setNumberUploaded] = useState(0);
@@ -64,6 +64,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   useEffect(() => {
     if (data) {
       console.log(data);
@@ -74,8 +75,12 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   const setTemplateState = (e: ChangeEvent<HTMLSelectElement>) => {
     setTemplate(e.target.value);
-    const templateId = data.applications.filter((t: Template) => t.name === currentTemplate)[0].id;
-    setCurrentTempId(templateId);
+
+    const index = e.target.selectedIndex;
+    const selected = e.target.children[index];
+
+    const option = selected.getAttribute("id");
+    setCurrentTempId(option!);
   };
 
   const onSubmit = handleSubmit(async (data) => {
@@ -105,8 +110,8 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <div className="min-h-screen w-100 h-screen flex-shrink-0 antialiased bg-white text-gray-700 border-r">
+      <div className="min-h-screen w-100 h-screen flex-shrink-0 antialiased bg-white text-gray-700 border-r">
+        <form onSubmit={onSubmit}>
           <div className="flex flex-col bg-white h-screen ">
             <div className="flex items-center justify-center">
               <NavLink to="/dashboard">
@@ -131,7 +136,11 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                   >
                     {data &&
                       data.applications.map((template: Template) => {
-                        return <option key={template.id}>{template.name}</option>;
+                        return (
+                          <option key={template.id} id={template.id}>
+                            {template.name}
+                          </option>
+                        );
                       })}
                   </select>
                 </div>
@@ -219,8 +228,8 @@ const IndexBar: React.FC<IndexBarProps> = () => {
               </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
