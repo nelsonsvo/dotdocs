@@ -26,8 +26,8 @@ const Index: React.FC<IndexProps> = () => {
             <Iframe
               url={FILE_SERVER_URL + uploadedFiles[0].location}
               id="myId"
-              className="w-full h-full "
-              position="absolute"
+              className="w-full h-full"
+              position="relative"
             />
           ) : (
             <div className="flex flex-row justify-center h-screen">
