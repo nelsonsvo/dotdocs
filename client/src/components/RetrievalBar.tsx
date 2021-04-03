@@ -18,8 +18,8 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
 
   return (
     <div className={className}>
-      <div className="min-h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700 border-r">
-        <div className="flex flex-col bg-white h-full ">
+      <div className="min-h-screen h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700 border-r">
+        <div className="flex flex-col bg-white h-screen ">
           <div className="flex items-center justify-center">
             <NavLink to="/dashboard">
               <img className="h-12" src="/images/dotdocs.png" alt="" />
@@ -73,21 +73,23 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
               </div>
             )}
           </div>
-          <div className="grid grid-cols-2 px-5 gap-3 mt-5">
-            <button
-              onClick={() => console.log("hello world")}
-              type="button"
-              className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Search
-            </button>
-            <button
-              onClick={() => console.log("hello world")}
-              type="button"
-              className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Clear
-            </button>
+          <div className="object-bottom mb-5 border-t">
+            <div className="grid grid-cols-2 px-5 gap-3 mt-5 ">
+              <button
+                onClick={() => console.log("hello world")}
+                type="button"
+                className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Search
+              </button>
+              <button
+                onClick={() => console.log("hello world")}
+                type="button"
+                className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
       </div>
