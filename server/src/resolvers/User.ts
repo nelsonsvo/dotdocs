@@ -1,20 +1,40 @@
-import { User } from "../entities/User";
-import { Arg, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import * as argon2 from "argon2";
 import { ApolloError } from "apollo-client";
+import { AuthenticationError } from "apollo-server-errors";
+import * as argon2 from "argon2";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { User } from "../entities/User";
+import { MyContext } from "./../types/ContextType";
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req, res }: MyContext) {
+    //not logged in
+
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+
+    return await User.findOne({ id: req.session.userId });
+  }
+
   @Query(() => [User])
   async users() {
     return User.find();
   }
   @Query(() => User, { nullable: true })
-  async login(@Arg("username") username: string, @Arg("password") password: string) {
+  async login(
+    @Arg("username") username: string,
+    @Arg("password") password: string,
+    @Ctx() { req, res }: MyContext
+  ) {
     const user = await User.findOne({ username });
     if (user) {
       const valid = await argon2.verify(user.password, password);
       if (valid) {
+        req.session.userId = user.id;
+        console.log(req.session.userId);
         return user;
       }
     }
@@ -27,18 +47,24 @@ export class UserResolver {
   async createUser(
     @Arg("username") username: string,
     @Arg("user_type") user_type: string,
-    @Arg("password") password: string
+    @Arg("password") password: string,
+    @Ctx() { req, res }: MyContext
   ) {
-    try {
-      const hash = await argon2.hash(password);
-      const user = User.create({ username, user_type, password: hash });
-      await User.save(user);
+    if (req.session.userId) {
+      try {
+        const hash = await argon2.hash(password);
+        const user = User.create({ username, user_type, password: hash });
+        await User.save(user);
 
-      return user;
-    } catch {
-      throw new ApolloError({
-        errorMessage: "Failed to create user",
-      });
+        return user;
+      } catch {
+        throw new ApolloError({
+          errorMessage: "Failed to create user",
+        });
+      }
+    } else {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT AUTHENTICATED");
     }
   }
 }
