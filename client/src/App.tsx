@@ -15,6 +15,7 @@ function App() {
   const [auth, setAuth] = useState<IAuth>({
     loggedIn: false,
     userType: null,
+    timeLoggedIn: null,
   });
 
   return (
