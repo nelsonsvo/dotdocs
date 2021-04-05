@@ -45,6 +45,24 @@ AppFieldInput = __decorate([
     type_graphql_1.InputType("AppFieldInput")
 ], AppFieldInput);
 exports.AppFieldInput = AppFieldInput;
+let AppFieldSearchInput = class AppFieldSearchInput {
+};
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldSearchInput.prototype, "id", void 0);
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldSearchInput.prototype, "value", void 0);
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldSearchInput.prototype, "name", void 0);
+AppFieldSearchInput = __decorate([
+    type_graphql_1.InputType("AppFieldSearchInpit")
+], AppFieldSearchInput);
+exports.AppFieldSearchInput = AppFieldSearchInput;
 let ApplicationFile = class ApplicationFile {
 };
 __decorate([
@@ -136,8 +154,12 @@ let FileResolver = class FileResolver {
             return true;
         });
     }
-    getFiles(id) {
+    getFiles(id, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
             const appFile = yield AppFile_1.AppFile.find({
                 where: {
                     application: id,
@@ -168,9 +190,9 @@ __decorate([
 ], FileResolver.prototype, "indexFile", null);
 __decorate([
     type_graphql_1.Query(() => [AppFile_1.AppFile]),
-    __param(0, type_graphql_1.Arg("id")),
+    __param(0, type_graphql_1.Arg("id")), __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "getFiles", null);
 FileResolver = __decorate([

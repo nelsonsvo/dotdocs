@@ -2,13 +2,13 @@ import { AuthenticationError } from "apollo-server-errors";
 import { createWriteStream } from "fs";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { join } from "path";
+import { MyContext } from "src/types/ContextType";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { v4 } from "uuid";
 import { AppField } from "../entities/AppField";
 import { AppFile } from "../entities/AppFile";
 import { FileField } from "../entities/FileField";
 import { Application } from "./../entities/Application";
-import { MyContext } from "./../types/ContextType";
 let fs = require("fs");
 
 @InputType("AppFieldInput")
@@ -18,6 +18,17 @@ export class AppFieldInput {
 
   @Field(() => String)
   value: string;
+}
+@InputType("AppFieldSearchInpit")
+export class AppFieldSearchInput {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  value: string;
+
+  @Field(() => String)
+  name: string;
 }
 
 @ObjectType()
@@ -122,7 +133,11 @@ export class FileResolver {
 
   //get the associate files for application
   @Query(() => [AppFile])
-  async getFiles(@Arg("id") id: string) {
+  async getFiles(@Arg("id") id: string, @Ctx() { req, res }: MyContext) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
     const appFile = await AppFile.find({
       where: {
         application: id,
