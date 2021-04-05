@@ -24,3 +24,17 @@ export const GET_RETRIEVAL_TEMPLATES = gql`
     }
   }
 `;
+
+export const GET_FILES = gql`
+  query($id: String!) {
+    getFiles(id: $id) {
+      id
+      filename
+      fields {
+        id
+        name
+        value
+      }
+    }
+  }
+`;
