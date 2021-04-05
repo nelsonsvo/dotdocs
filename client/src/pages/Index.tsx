@@ -10,6 +10,7 @@ interface IndexProps {}
 
 const Index: React.FC<IndexProps> = () => {
   const FILE_SERVER_URL = process.env.REACT_APP_FILE_SERVER_URL;
+
   const { loading, error, data } = useQuery(GET_RETRIEVAL_TEMPLATES);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
@@ -25,7 +26,7 @@ const Index: React.FC<IndexProps> = () => {
           {uploadedFiles.length > 0 ? (
             <Iframe
               url={FILE_SERVER_URL + uploadedFiles[0].location}
-              id="myId"
+              id="viewer"
               className="w-full h-full"
               position="relative"
             />
