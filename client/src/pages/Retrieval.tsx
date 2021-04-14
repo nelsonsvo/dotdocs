@@ -1,19 +1,74 @@
 import { useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import ReactDataGrid from "react-data-grid";
+import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GET_RETRIEVAL_TEMPLATES } from "../graphql/queries/Application";
 
 interface RetrievalProps {}
+interface ParamTypes {
+  id: string;
+}
 
 const Retrieval: React.FC<RetrievalProps> = () => {
+  const { id } = useParams<ParamTypes>();
+
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
   const [searchResults, setSearchResults] = useState<any>([]);
+  const [rowCount, setRowCount] = useState(0);
   const { error, data } = useQuery(GET_RETRIEVAL_TEMPLATES, {
     onCompleted: (data) => {
       setCurrentTemplate({ id: data.applications[0].id, name: data.applications[0].name });
     },
   });
+
+  useEffect(() => {
+    if (data && id) {
+      setCurrentTemplate({
+        id: id,
+        name: data.applications.filter((x: any) => x.id === id)[0].name,
+      });
+    }
+  }, [id, data]);
+
+  const getColumns = () => {
+    const defaultColumnProperties = {
+      resizable: true,
+      draggable: true,
+    };
+
+    const row = data.applications.filter((x: any) => x.id === currentTemplate.id)[0];
+    const cols = row.fields.map((f: any) => {
+      return {
+        key: f.name,
+        name: f.name,
+      };
+    });
+
+    console.log("columns:", cols);
+
+    return cols.map((c: any) => ({ ...c, ...defaultColumnProperties }));
+  };
+
+  const getRows = () => {
+    let rows: any = [];
+    searchResults.forEach((result: any) => {
+      console.log(result);
+      let fields: any = {};
+      result.fields.forEach((f: any, index: number) => {
+        console.log(f);
+        fields = { ...fields, id: index, [f.name]: f.name };
+
+        console.log(fields);
+      });
+      rows = [...rows, fields];
+    });
+
+    console.log("rows:", rows);
+    // setRowCount(rows.length);
+    return rows;
+  };
 
   return (
     <RetrievalContext.Provider
@@ -42,44 +97,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                 <h1>Delete</h1>
               </button>
             </div>
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="border-r"></th>
-                  {data.applications
-                    .filter((x: any) => x.id === currentTemplate.id)[0]
-                    .fields.map((f: any) => {
-                      console.log(f.name);
-                      return (
-                        <th
-                          scope="col"
-                          className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          {f.name}
-                        </th>
-                      );
-                    })}
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y  divide-gray-200">
-                {searchResults.map((result: any) => {
-                  return (
-                    <tr className="text-left" onClick={() => console.log(result.filename)}>
-                      <td className="text-md text-center text-gray-800 py-4 whitespace-nowrap border-r">
-                        <input type="checkbox" className="form-checkbox h-5 w-5 text-orange-600" />
-                      </td>
-                      {result.fields.map((f: any) => {
-                        return (
-                          <td className="text-md text-gray-800 px-3 py-3 border-b whitespace-nowrap ">
-                            {f.value}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <ReactDataGrid columns={getColumns()} rows={getRows()} />
           </div>
         ) : (
           <div className="flex flex-row justify-center h-screen">
