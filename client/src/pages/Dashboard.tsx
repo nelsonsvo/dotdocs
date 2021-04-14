@@ -1,78 +1,117 @@
+import { useQuery } from "@apollo/client";
 import React, { ReactElement } from "react";
+import { NavLink } from "react-router-dom";
 import MainBody from "../components/layouts/MainBody";
-import { VertCard } from "../components/ui/VertCard";
+import { GET_APPLICATIONS } from "../graphql/queries/Application";
 
 interface Props {}
 
 export default function Dashboard({}: Props): ReactElement {
+  const { loading, data, error } = useQuery(GET_APPLICATIONS);
+
   return (
     <MainBody>
-      <div className="flex h-screen">
-        <div className="grid grid-cols-2 m-auto">
-          <VertCard src="unnamed.jpeg">
-            <>
-              <div className="flex justify-center py-1 border-b text-lg">
-                <svg
-                  className="w-6 h-6 mr-5 text-gray-800"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"
-                  ></path>
-                </svg>
-                Retrieval Template
+      <div className="flex flex-col h-screen mx-20">
+        <div className="grid grid-cols-10">
+          <div className="col-span-10">
+            <div className="bg-white border-l-2 border-blue-500 w-100 py-8 px-10 mt-12 rounded-sm shadow-md">
+              <div className="flex flex-col w-full h-full">
+                <div>
+                  <h1 className="text-gray-800 text-4xl text-left">
+                    Welcome, {sessionStorage.username}
+                  </h1>
+                </div>
+                <NavLink to="/retrieval">
+                  <div className="flex flex-row mt-5">
+                    <div>
+                      <svg
+                        className="w-6 h-6 mr-3 text-gray-700"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <div className="text-gray-700 text-lg">Find a document</div>
+                  </div>
+                </NavLink>
+                <NavLink to="/index">
+                  <div className="flex flex-row mt-5">
+                    <div>
+                      <svg
+                        className="w-6 h-6 mr-3 text-gray-700"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <div className="text-gray-700 text-lg">Add a document</div>
+                  </div>
+                </NavLink>
               </div>
-              <div className="flex flex-col">
-                <div className="mt-5 cursor-pointer">
-                  <h1>hello world</h1>
-                </div>
-                <div className="mt-5 cursor-pointer">
-                  <h1> hellow world</h1>
-                </div>
-                <div className="mt-5 cursor-pointer">
-                  <h1> hellow world</h1>
-                </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-row justify-between mt-5 gap-3">
+          <div className="w-1/2 bg-white px-5 border-gray-300 shadow-sm border py-5">
+            <div className="flex flex-col h-full text-left space-y-3">
+              <h1 className=" text-gray-800 text-xl border-b">Retrieval Templates</h1>
+              <ul>
+                {!loading &&
+                  data.applications.map((app: any, index: number) => {
+                    return (
+                      <div className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
+                        <NavLink
+                          key={index}
+                          to={"/retrieval/" + app.id}
+                          className="text-gray-700 text-lg "
+                        >
+                          {app.name}
+                        </NavLink>
+                      </div>
+                    );
+                  })}
+              </ul>
+            </div>
+          </div>
+          <div className="w-1/2 bg-white px-5 border-gray-300 shadow-sm border py-5">
+            <div className="flex flex-col h-full text-left space-y-3">
+              <div className="flex border-b items-center space-x-2">
+                <h1 className=" text-gray-800 text-xl">Indexing Templates</h1>
               </div>
-            </>
-          </VertCard>
-          <VertCard src="unnamed.jpeg">
-            <>
-              <div className="flex justify-center py-1 border-b text-lg">
-                <svg
-                  className="w-6 h-6 mr-5 text-gray-800"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  ></path>
-                </svg>
-                Indexing Template
-              </div>
-              <div className="flex flex-col">
-                <div className="mt-5 cursor-pointer">
-                  <h1>hello world</h1>
-                </div>
-                <div className="mt-5 cursor-pointer">
-                  <h1> hellow world</h1>
-                </div>
-                <div className="mt-5 cursor-pointer">
-                  <h1> hellow world</h1>
-                </div>
-              </div>
-            </>
-          </VertCard>
+              <ul>
+                {!loading &&
+                  data.applications.map((app: any, index: number) => {
+                    return (
+                      <div className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
+                        <NavLink
+                          key={index}
+                          to={"/index/" + app.id}
+                          className="text-gray-700 text-lg"
+                        >
+                          {app.name}
+                        </NavLink>
+                      </div>
+                    );
+                  })}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </MainBody>
