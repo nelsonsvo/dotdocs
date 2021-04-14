@@ -28,8 +28,8 @@ function App() {
               <ProtectedRoute>
                 <Route path="/dashboard" component={Dashboard} />
                 <Route path="/settings" component={Settings} />
-                <Route path="/retrieval" component={Retrieval} />
-                <Route path="/index" component={Index} />
+                <Route path="/retrieval/:id?" component={Retrieval} />
+                <Route path="/index/:id?" component={Index} />
               </ProtectedRoute>
             </AuthContext.Provider>
           </Switch>
