@@ -1,5 +1,5 @@
 import { useLazyQuery } from "@apollo/client";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GET_FILES } from "../graphql/queries/Application";
@@ -9,7 +9,7 @@ interface RetrievalBarProps {
 }
 
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
-  const { data, error, currentTemplate, setCurrentTemplate, setSearchResults } = useContext(
+  const { data, currentTemplate, setCurrentTemplate, setSearchResults } = useContext(
     RetrievalContext
   );
 
@@ -39,6 +39,14 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
     });
   }, [currentTemplate.id, getFiles]);
 
+  const selectRef = useRef<HTMLSelectElement>(null);
+
+  useEffect(() => {
+    if (selectRef && selectRef.current) {
+      selectRef.current.value = currentTemplate.name;
+    }
+  }, [currentTemplate]);
+
   return (
     <div className={className}>
       <div className="min-h-screen h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700 border-r">
@@ -56,13 +64,18 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
               <div className="">
                 <select
                   id="type"
+                  ref={selectRef}
                   onChange={(e) => setTemplateState(e)}
                   name="type"
                   className=" block w-full py-2 px-3 border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                 >
                   {data &&
                     data.applications.map((template: any) => {
-                      return <option id={template.id}>{template.name}</option>;
+                      return (
+                        <option key={template.id} id={template.id}>
+                          {template.name}
+                        </option>
+                      );
                     })}
                 </select>
               </div>
