@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext } from "../context/IndexFileContext";
 import { INDEX_FILE, SINGLE_FILE_UPLOAD } from "../graphql/mutations/Application";
@@ -20,7 +20,15 @@ type Field = {
   type: string;
 };
 
+interface IndexParams {
+  id: string;
+}
+
 const IndexBar: React.FC<IndexBarProps> = () => {
+  let { id } = useParams<IndexParams>();
+  const selectRef = useRef<HTMLSelectElement>(null);
+  console.log(id);
+
   //context
   const { data, error } = useContext(IndexContext);
   const { uploadedFiles, setUploadedFiles } = useContext(IndexFileContext);
@@ -65,13 +73,20 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  //set the current template from the dashboard quick link
   useEffect(() => {
-    if (data) {
-      console.log(data);
+    if (id && data && selectRef && selectRef.current) {
+      //set template to the quick link
+      const templateName = data.applications.filter((x: any) => x.id === id)[0].name;
+      setTemplate(templateName);
+      setCurrentTempId(id);
+      selectRef.current.value = templateName;
+    } else if (data) {
+      // on first load with no template ID default to the first
       setTemplate(data.applications[0].name);
       setCurrentTempId(data.applications[0].id);
     }
-  }, [data]);
+  }, [id, data]);
 
   const setTemplateState = (e: ChangeEvent<HTMLSelectElement>) => {
     setTemplate(e.target.value);
@@ -123,13 +138,14 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                 <h3 className="px-3 tracking-widest text-center">ADD A DOCUMENT</h3>
               </div>
               <div className="py-5 bg-gray-100 mb-5" {...getRootProps()}>
-                <input {...getInputProps()} />
+                <input {...getInputProps()} accept=".pdf" />
                 {isDragActive ? <p>Drop the files here ...</p> : <p>Drop files here</p>}
               </div>
               <div>
                 <div className="px-4">
                   <select
                     id="type"
+                    ref={selectRef}
                     onChange={(e) => setTemplateState(e)}
                     name="type"
                     className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
