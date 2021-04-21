@@ -1,15 +1,15 @@
-import { createContext, Dispatch, SetStateAction } from "react";
+import { createContext } from "react";
 
 export interface IAuthContext {
-  auth: boolean;
-  setAuth: Dispatch<SetStateAction<boolean>>;
+  auth: IAuth;
+  setUserAuth: (isAuth: boolean, userType?: string) => void;
   userType: string;
 }
 
 export interface IAuth {
   loggedIn: boolean;
   userType: string | null;
-  timeLoggedIn: Date | null;
+  timeLoggedIn: Number | null;
 }
 
 export const AuthContext = createContext<IAuthContext | any>(null);
