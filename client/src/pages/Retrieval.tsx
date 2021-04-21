@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
-import ReactDataGrid from "react-data-grid";
+import DataGrid, { SelectColumn, TextEditor } from "react-data-grid";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
 import { RetrievalContext } from "../context/RetrievalContext";
@@ -16,12 +16,14 @@ const Retrieval: React.FC<RetrievalProps> = () => {
 
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
   const [searchResults, setSearchResults] = useState<any>([]);
-  const [rowCount, setRowCount] = useState(0);
   const { error, data } = useQuery(GET_RETRIEVAL_TEMPLATES, {
     onCompleted: (data) => {
       setCurrentTemplate({ id: data.applications[0].id, name: data.applications[0].name });
     },
   });
+
+  //table stuff
+  const [selectedRows, setSelectedRows] = useState(() => new Set<React.Key>());
 
   useEffect(() => {
     if (data && id) {
@@ -33,43 +35,45 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   }, [id, data]);
 
   const getColumns = () => {
-    const defaultColumnProperties = {
-      resizable: true,
-      draggable: true,
-    };
+    console.log(data);
+    if (data) {
+      const row = data.applications.filter((x: any) => x.id === currentTemplate.id)[0];
+      let cols = row.fields.map((f: any) => {
+        return {
+          key: f.name,
+          name: f.name,
+          resizable: true,
+          sortable: true,
+          editor: TextEditor,
+        };
+      });
 
-    const row = data.applications.filter((x: any) => x.id === currentTemplate.id)[0];
-    const cols = row.fields.map((f: any) => {
-      return {
-        key: f.name,
-        name: f.name,
-      };
-    });
-
-    console.log("columns:", cols);
-
-    return cols.map((c: any) => ({ ...c, ...defaultColumnProperties }));
+      console.log("columns:", cols);
+      cols = [SelectColumn, ...cols];
+      return cols;
+    }
   };
 
   const getRows = () => {
-    let rows: any = [];
-    searchResults.forEach((result: any) => {
-      console.log(result);
-      let fields: any = {};
-      result.fields.forEach((f: any, index: number) => {
-        console.log(f);
-        fields = { ...fields, id: index, [f.name]: f.name };
-
-        console.log(fields);
+    if (searchResults) {
+      let rows: any = [];
+      searchResults.forEach((result: any, index: number) => {
+        console.log(result);
+        let fields: any = {};
+        result.fields.forEach((f: any) => {
+          console.log(f);
+          fields = { ...fields, id: index, [f.name]: f.value };
+        });
+        rows = [...rows, fields];
       });
-      rows = [...rows, fields];
-    });
 
-    console.log("rows:", rows);
-    // setRowCount(rows.length);
-    return rows;
+      console.log("rows:", rows);
+      return rows;
+    }
   };
-
+  function rowKeyGetter(row: any) {
+    return row.id;
+  }
   return (
     <RetrievalContext.Provider
       value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults }}
@@ -97,7 +101,15 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                 <h1>Delete</h1>
               </button>
             </div>
-            <ReactDataGrid columns={getColumns()} rows={getRows()} />
+            <DataGrid
+              className={"rdg-light fill-grid min-h-screen"}
+              rowHeight={50}
+              columns={getColumns()}
+              selectedRows={selectedRows}
+              onSelectedRowsChange={setSelectedRows}
+              rows={getRows()}
+              rowKeyGetter={rowKeyGetter}
+            />
           </div>
         ) : (
           <div className="flex flex-row justify-center h-screen">
