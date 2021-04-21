@@ -117,7 +117,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
               <svg
                 className="w-80 h-80"
                 fill="none"
-                stroke="currentColor"
+                stroke="currentColors"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
               >
