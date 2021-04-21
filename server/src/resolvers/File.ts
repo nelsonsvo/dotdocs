@@ -19,7 +19,7 @@ export class AppFieldInput {
   @Field(() => String)
   value: string;
 }
-@InputType("AppFieldSearchInpit")
+@InputType("AppFieldSearchInput")
 export class AppFieldSearchInput {
   @Field(() => String)
   id: string;
@@ -133,7 +133,11 @@ export class FileResolver {
 
   //get the associate files for application
   @Query(() => [AppFile])
-  async getFiles(@Arg("id") id: string, @Ctx() { req, res }: MyContext) {
+  async getFiles(
+    @Arg("id") id: string,
+    // @Arg("fields", () => [AppFieldSearchInput]) fields: AppFieldSearchInput[],
+    @Ctx() { req, res }: MyContext
+  ) {
     if (!req.session.userId) {
       res.statusCode = 401;
       throw new AuthenticationError("USER NOT LOGGED IN");
@@ -141,8 +145,8 @@ export class FileResolver {
     const appFile = await AppFile.find({
       where: {
         application: id,
+        // fields: fields,
       },
-      relations: ["fields"],
     });
 
     return appFile;
