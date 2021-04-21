@@ -53,6 +53,7 @@ __decorate([
     type_graphql_1.Field(() => [FileField_1.FileField]),
     typeorm_1.OneToMany(() => FileField_1.FileField, (field) => field.file, {
         onDelete: "CASCADE",
+        eager: true,
         cascade: true,
     }),
     __metadata("design:type", Array)

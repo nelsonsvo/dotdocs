@@ -60,7 +60,7 @@ __decorate([
     __metadata("design:type", String)
 ], AppFieldSearchInput.prototype, "name", void 0);
 AppFieldSearchInput = __decorate([
-    type_graphql_1.InputType("AppFieldSearchInpit")
+    type_graphql_1.InputType("AppFieldSearchInput")
 ], AppFieldSearchInput);
 exports.AppFieldSearchInput = AppFieldSearchInput;
 let ApplicationFile = class ApplicationFile {
@@ -164,7 +164,6 @@ let FileResolver = class FileResolver {
                 where: {
                     application: id,
                 },
-                relations: ["fields"],
             });
             return appFile;
         });
@@ -190,7 +189,8 @@ __decorate([
 ], FileResolver.prototype, "indexFile", null);
 __decorate([
     type_graphql_1.Query(() => [AppFile_1.AppFile]),
-    __param(0, type_graphql_1.Arg("id")), __param(1, type_graphql_1.Ctx()),
+    __param(0, type_graphql_1.Arg("id")),
+    __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
