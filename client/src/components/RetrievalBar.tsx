@@ -26,7 +26,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
       const option = selected.getAttribute("id");
 
       setCurrentTemplate({ id: option, name: e.target.value });
-      setSearchResults("");
+      setSearchResults([]);
     },
     [setCurrentTemplate, setSearchResults]
   );
@@ -88,7 +88,6 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                   .filter((template: any) => template.name === currentTemplate.name)
                   .map((template: any) => {
                     return template.fields.map((f: any) => {
-                      console.log(f);
                       return (
                         <div key={f.id} className="px-2">
                           <label
