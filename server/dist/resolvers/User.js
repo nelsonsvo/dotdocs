@@ -27,22 +27,34 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const User_1 = require("../entities/User");
-const type_graphql_1 = require("type-graphql");
-const argon2 = __importStar(require("argon2"));
 const apollo_client_1 = require("apollo-client");
+const apollo_server_errors_1 = require("apollo-server-errors");
+const argon2 = __importStar(require("argon2"));
+const type_graphql_1 = require("type-graphql");
+const User_1 = require("../entities/User");
 let UserResolver = class UserResolver {
+    me({ req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            return yield User_1.User.findOne({ id: req.session.userId });
+        });
+    }
     users() {
         return __awaiter(this, void 0, void 0, function* () {
             return User_1.User.find();
         });
     }
-    login(username, password) {
+    login(username, password, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne({ username });
             if (user) {
                 const valid = yield argon2.verify(user.password, password);
                 if (valid) {
+                    req.session.userId = user.id;
+                    console.log(req.session.userId);
                     return user;
                 }
             }
@@ -51,22 +63,35 @@ let UserResolver = class UserResolver {
             });
         });
     }
-    createUser(username, user_type, password) {
+    createUser(username, user_type, password, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const hash = yield argon2.hash(password);
-                const user = User_1.User.create({ username, user_type, password: hash });
-                yield User_1.User.save(user);
-                return user;
+            if (req.session.userId) {
+                try {
+                    const hash = yield argon2.hash(password);
+                    const user = User_1.User.create({ username, user_type, password: hash });
+                    yield User_1.User.save(user);
+                    return user;
+                }
+                catch (_a) {
+                    throw new apollo_client_1.ApolloError({
+                        errorMessage: "Failed to create user",
+                    });
+                }
             }
-            catch (_a) {
-                throw new apollo_client_1.ApolloError({
-                    errorMessage: "Failed to create user",
-                });
+            else {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
             }
         });
     }
 };
+__decorate([
+    type_graphql_1.Query(() => User_1.User, { nullable: true }),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "me", null);
 __decorate([
     type_graphql_1.Query(() => [User_1.User]),
     __metadata("design:type", Function),
@@ -75,9 +100,11 @@ __decorate([
 ], UserResolver.prototype, "users", null);
 __decorate([
     type_graphql_1.Query(() => User_1.User, { nullable: true }),
-    __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("password")),
+    __param(0, type_graphql_1.Arg("username")),
+    __param(1, type_graphql_1.Arg("password")),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
 __decorate([
@@ -85,8 +112,9 @@ __decorate([
     __param(0, type_graphql_1.Arg("username")),
     __param(1, type_graphql_1.Arg("user_type")),
     __param(2, type_graphql_1.Arg("password")),
+    __param(3, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "createUser", null);
 UserResolver = __decorate([

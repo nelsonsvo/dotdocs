@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_APPLICATION = gql`
-  mutation CreateApplication($name: String!, $fields: [appField!]!) {
+  mutation CreateApplication($name: String!, $fields: [AppFieldCreateInput!]!) {
     createApplication(name: $name, fields: $fields) {
       id
       name

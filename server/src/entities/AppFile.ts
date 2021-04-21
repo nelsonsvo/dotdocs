@@ -19,7 +19,7 @@ This entity stores the Files in the application
 */
 
 @ObjectType("AppFile")
-@InputType("appFile")
+@InputType("AppFileInput")
 @Entity()
 export class AppFile extends BaseEntity {
   @Field(() => String)
@@ -47,7 +47,11 @@ export class AppFile extends BaseEntity {
   application: Application;
 
   @Field(() => [FileField])
-  @OneToMany(() => FileField, (field) => field.file)
+  @OneToMany(() => FileField, (field) => field.file, {
+    onDelete: "CASCADE",
+    eager: true,
+    cascade: true,
+  })
   fields: FileField[];
 
   @Field(() => Date)

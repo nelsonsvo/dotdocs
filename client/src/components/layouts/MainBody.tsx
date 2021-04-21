@@ -1,11 +1,9 @@
 import React from "react";
 import SideBar from "../SideBar";
 
-interface Props {
-  src?: string;
-}
+interface Props {}
 
-const MainBody: React.FC<Props> = ({ src, children }) => {
+const MainBody: React.FC<Props> = ({ children }) => {
   return (
     <div className="flex flex-row">
       <div className="w-64">

@@ -14,7 +14,7 @@ import { AppField } from "./AppField";
 import { AppFile } from "./AppFile";
 
 @ObjectType("Application")
-@InputType("application")
+@InputType("ApplicationInput")
 @Entity()
 export class Application extends BaseEntity {
   @Field(() => String)
@@ -25,15 +25,18 @@ export class Application extends BaseEntity {
   @Column({ unique: true })
   name!: string;
 
-  @Field((type) => [AppField])
+  @Field(() => [AppField])
   @OneToMany(() => AppField, (appField) => appField.application, {
     cascade: true,
     onDelete: "CASCADE",
   })
   fields: AppField[];
 
-  @Field((type) => [AppFile])
-  @OneToMany(() => AppFile, (file) => file.application)
+  @Field(() => [AppFile])
+  @OneToMany(() => AppFile, (file) => file.application, {
+    onDelete: "CASCADE",
+    cascade: true,
+  })
   files: AppFile[];
 
   @Field(() => Date)

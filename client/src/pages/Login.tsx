@@ -1,7 +1,8 @@
 import { useLazyQuery } from "@apollo/client";
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link, Redirect } from "react-router-dom";
+import { AuthContext, IAuthContext } from "../context/AuthContext";
 import { LOGIN } from "../graphql/queries/Login";
 
 type Inputs = {
@@ -13,7 +14,11 @@ interface LoginFormProps {}
 
 const Login: React.FC<LoginFormProps> = () => {
   const { register, handleSubmit, errors } = useForm<Inputs>();
-  const [login, { loading, data, error }] = useLazyQuery(LOGIN);
+  const { setUserAuth } = useContext<IAuthContext>(AuthContext);
+  const [login, { loading, data, error }] = useLazyQuery(LOGIN, {
+    fetchPolicy: "network-only",
+    onCompleted: (data) => setUserAuth(true, data.login.user_type),
+  });
 
   const onSubmit = (input: Inputs) => {
     login({
@@ -24,7 +29,6 @@ const Login: React.FC<LoginFormProps> = () => {
     });
   };
   if (!loading && data) {
-    console.log("logging in");
     const { username, user_type } = data.login;
     sessionStorage.setItem("username", username);
     sessionStorage.setItem("user_type", user_type);

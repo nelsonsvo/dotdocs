@@ -21,19 +21,44 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const apollo_client_1 = require("apollo-client");
+const apollo_server_errors_1 = require("apollo-server-errors");
 const type_graphql_1 = require("type-graphql");
-const AppField_1 = require("../entities/AppField");
 const Application_1 = require("./../entities/Application");
-var fs = require("fs");
+let AppFieldCreateInput = class AppFieldCreateInput {
+};
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldCreateInput.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
+], AppFieldCreateInput.prototype, "type", void 0);
+__decorate([
+    type_graphql_1.Field(() => Number),
+    __metadata("design:type", Number)
+], AppFieldCreateInput.prototype, "max_length", void 0);
+AppFieldCreateInput = __decorate([
+    type_graphql_1.InputType("AppFieldCreateInput")
+], AppFieldCreateInput);
+exports.AppFieldCreateInput = AppFieldCreateInput;
 let ApplicationResolver = class ApplicationResolver {
-    applications() {
+    applications({ req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+            }
             const apps = yield Application_1.Application.find({ relations: ["fields"] });
             return apps;
         });
     }
-    createApplication(name, fields) {
+    createApplication(name, fields, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+            }
             try {
                 let app = Application_1.Application.create({ name, fields: fields });
                 app = yield Application_1.Application.save(app);
@@ -46,8 +71,12 @@ let ApplicationResolver = class ApplicationResolver {
             }
         });
     }
-    deleteApplication(id) {
+    deleteApplication(id, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+            }
             try {
                 yield Application_1.Application.delete({ id });
                 return true;
@@ -60,23 +89,25 @@ let ApplicationResolver = class ApplicationResolver {
 };
 __decorate([
     type_graphql_1.Query(() => [Application_1.Application]),
+    __param(0, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ApplicationResolver.prototype, "applications", null);
 __decorate([
     type_graphql_1.Mutation(() => Application_1.Application),
     __param(0, type_graphql_1.Arg("name")),
-    __param(1, type_graphql_1.Arg("fields", () => [AppField_1.AppField])),
+    __param(1, type_graphql_1.Arg("fields", () => [AppFieldCreateInput])),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:paramtypes", [String, Array, Object]),
     __metadata("design:returntype", Promise)
 ], ApplicationResolver.prototype, "createApplication", null);
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
-    __param(0, type_graphql_1.Arg("id")),
+    __param(0, type_graphql_1.Arg("id")), __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ApplicationResolver.prototype, "deleteApplication", null);
 ApplicationResolver = __decorate([

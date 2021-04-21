@@ -9,7 +9,7 @@ This entity stores the fields ("information") by which the AppFile ("File") can 
 */
 
 @ObjectType("FileField")
-@InputType("fileField")
+@InputType("FileFieldInput")
 @Entity()
 export class FileField extends BaseEntity {
   @Field(() => String, { nullable: true })

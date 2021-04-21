@@ -1,14 +1,44 @@
+import { AuthenticationError } from "apollo-server-errors";
 import { createWriteStream } from "fs";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { join } from "path";
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { MyContext } from "src/types/ContextType";
+import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { v4 } from "uuid";
 import { AppField } from "../entities/AppField";
 import { AppFile } from "../entities/AppFile";
 import { FileField } from "../entities/FileField";
-import { AppFieldInput } from "./../entities/AppField";
 import { Application } from "./../entities/Application";
-var fs = require("fs");
+let fs = require("fs");
+
+@InputType("AppFieldInput")
+export class AppFieldInput {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  value: string;
+}
+@InputType("AppFieldSearchInput")
+export class AppFieldSearchInput {
+  @Field(() => String)
+  id: string;
+
+  @Field(() => String)
+  value: string;
+
+  @Field(() => String)
+  name: string;
+}
+
+@ObjectType()
+export class ApplicationFile {
+  @Field(() => AppFile)
+  file: AppFile;
+
+  @Field(() => [FileField])
+  fields: FileField[];
+}
 
 @Resolver()
 export class FileResolver {
@@ -16,34 +46,52 @@ export class FileResolver {
   async singleUpload(
     @Arg("file", () => GraphQLUpload)
     { createReadStream, filename, mimetype }: FileUpload,
-    @Arg("id", () => String) id: string
+    @Arg("id", () => String) id: string,
+    @Ctx() { req, res }: MyContext
   ): Promise<AppFile> {
     {
       return new Promise(async (resolve, reject) => {
+        if (!req.session.userId) {
+          res.statusCode = 400;
+          throw new AuthenticationError("USER NOT AUTHENTICATED");
+        }
+
         const app = await Application.findOne({ id });
+        console.log(app);
         if (app) {
           const guid = v4();
-          const extension = mimetype.split("/")[1];
+
+          let dir = join(__dirname, `/../../files/${app.name}`);
+
+          try {
+            if (!fs.existsSync(dir)) {
+              fs.mkdirSync(dir, { recursive: true });
+            }
+          } catch (err) {
+            console.log("error creating directories", err);
+          }
+          const fileExtension = filename.split(/\.(?=[^\.]+$)/)[1];
+          const newFileName = guid + "." + fileExtension;
 
           createReadStream()
-            .pipe(createWriteStream(__dirname + `/../../files/${app.name}/${guid}.${extension}`))
+            .pipe(createWriteStream(dir + `/${newFileName}`))
             .on("finish", async () => {
               let file = new AppFile();
               if (app) {
                 file.application = app;
-                file.filename = guid + "." + extension;
+                file.filename = newFileName;
                 file.mimetype = mimetype;
                 file.old_filename = filename;
-                let dir = join(__dirname, `/../../files/${app.name}/`);
 
-                if (!fs.existsSync(dir)) {
-                  fs.mkdirSync(dir);
-                }
                 console.log(dir + filename);
 
-                file.location = `/files/${app.name}/${guid}.${extension}`;
-
-                file = await AppFile.save(file);
+                file.location = `/files/${app.name}/${file.filename}`;
+                try {
+                  file = await AppFile.save(file);
+                } catch (err) {
+                  console.log(err);
+                  reject();
+                }
               }
               console.log(file);
               resolve(file);
@@ -59,8 +107,14 @@ export class FileResolver {
   @Mutation(() => Boolean)
   async indexFile(
     @Arg("fields", () => [AppFieldInput]) fields: [AppFieldInput],
-    @Arg("id") id: string
+    @Arg("id") id: string,
+    @Ctx() { req, res }: MyContext
   ) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+    console.log(id);
     fields.forEach(async (field) => {
       const newField = new FileField();
 
@@ -79,10 +133,22 @@ export class FileResolver {
 
   //get the associate files for application
   @Query(() => [AppFile])
-  async getFiles(@Arg("id") id: string) {
-    let app = await Application.find({ relations: ["files"] });
-    app = app.filter((a: Application) => a.id === id);
+  async getFiles(
+    @Arg("id") id: string,
+    // @Arg("fields", () => [AppFieldSearchInput]) fields: AppFieldSearchInput[],
+    @Ctx() { req, res }: MyContext
+  ) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+    const appFile = await AppFile.find({
+      where: {
+        application: id,
+        // fields: fields,
+      },
+    });
 
-    return app[0].files;
+    return appFile;
   }
 }

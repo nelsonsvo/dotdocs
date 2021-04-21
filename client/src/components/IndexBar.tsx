@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext } from "../context/IndexFileContext";
 import { INDEX_FILE, SINGLE_FILE_UPLOAD } from "../graphql/mutations/Application";
@@ -20,20 +20,33 @@ type Field = {
   type: string;
 };
 
-const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
+interface IndexParams {
+  id: string;
+}
+
+const IndexBar: React.FC<IndexBarProps> = () => {
+  let { id } = useParams<IndexParams>();
+  const selectRef = useRef<HTMLSelectElement>(null);
+  console.log(id);
+
+  //context
   const { data, error } = useContext(IndexContext);
   const { uploadedFiles, setUploadedFiles } = useContext(IndexFileContext);
 
+  //form
   const { register, handleSubmit, reset } = useForm<any>();
 
+  //state
   const [currentTemplate, setTemplate] = useState("");
-  const [currentTempId, setCurrentTempId] = useState(null);
+  const [currentTempId, setCurrentTempId] = useState("");
 
   const [count, setCount] = useState(0);
   const [numberOfUploaded, setNumberUploaded] = useState(0);
 
+  //mutations
   const [uploadFile, { loading, error: uploadError }] = useMutation(SINGLE_FILE_UPLOAD, {
     onCompleted: (data) => setUploadedFiles([...uploadedFiles, data.singleUpload]),
+    onError: (err) => console.log(err),
   });
 
   const [indexFile] = useMutation(INDEX_FILE, {
@@ -59,18 +72,30 @@ const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  //set the current template from the dashboard quick link
   useEffect(() => {
-    if (data) {
-      console.log(data);
+    if (id && data && selectRef && selectRef.current) {
+      //set template to the quick link
+      const templateName = data.applications.filter((x: any) => x.id === id)[0].name;
+      setTemplate(templateName);
+      setCurrentTempId(id);
+      selectRef.current.value = templateName;
+    } else if (data) {
+      // on first load with no template ID default to the first
       setTemplate(data.applications[0].name);
       setCurrentTempId(data.applications[0].id);
     }
-  }, [data]);
+  }, [id, data]);
 
   const setTemplateState = (e: ChangeEvent<HTMLSelectElement>) => {
     setTemplate(e.target.value);
-    const templateId = data.applications.filter((t: Template) => t.name === currentTemplate)[0].id;
-    setCurrentTempId(templateId);
+
+    const index = e.target.selectedIndex;
+    const selected = e.target.children[index];
+
+    const option = selected.getAttribute("id");
+    setCurrentTempId(option!);
   };
 
   const onSubmit = handleSubmit(async (data) => {
@@ -100,9 +125,9 @@ const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
 
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <div className="min-h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700">
-          <div className="flex flex-col bg-white h-full ">
+      <div className="min-h-screen w-100 h-screen flex-shrink-0 antialiased bg-white text-gray-700 border-r">
+        <form onSubmit={onSubmit}>
+          <div className="flex flex-col bg-white h-screen ">
             <div className="flex items-center justify-center">
               <NavLink to="/dashboard">
                 <img className="h-12" src="/images/dotdocs.png" alt="" />
@@ -113,20 +138,25 @@ const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
                 <h3 className="px-3 tracking-widest text-center">ADD A DOCUMENT</h3>
               </div>
               <div className="py-5 bg-gray-100 mb-5" {...getRootProps()}>
-                <input {...getInputProps()} />
+                <input {...getInputProps()} accept=".pdf" />
                 {isDragActive ? <p>Drop the files here ...</p> : <p>Drop files here</p>}
               </div>
               <div>
                 <div className="px-4">
                   <select
                     id="type"
+                    ref={selectRef}
                     onChange={(e) => setTemplateState(e)}
                     name="type"
                     className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                   >
                     {data &&
                       data.applications.map((template: Template) => {
-                        return <option key={template.id}>{template.name}</option>;
+                        return (
+                          <option key={template.id} id={template.id}>
+                            {template.name}
+                          </option>
+                        );
                       })}
                   </select>
                 </div>
@@ -187,35 +217,37 @@ const IndexBar: React.FC<IndexBarProps> = React.memo(() => {
                 </span>
               </div>
             )}
-            <div>
-              {uploadedFiles.length > 0 && (
-                <p>
-                  {count} of {numberOfUploaded} indexed
-                </p>
-              )}
-            </div>
-            <div className="grid grid-cols-2 px-5 gap-3 mt-5">
-              <button
-                type="submit"
-                className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Index
-              </button>
+            <div className="border-t">
+              <div>
+                {uploadedFiles.length > 0 && (
+                  <p className="mt-5">
+                    {count} of {numberOfUploaded} indexed
+                  </p>
+                )}
+              </div>
+              <div className="grid grid-cols-2 px-5 gap-3 mt-5 mb-5">
+                <button
+                  type="submit"
+                  className="w-full cursor-pointer justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Index
+                </button>
 
-              <input type="file" className="hidden" id="uploadFile" ref={inputRef} />
-              <button
-                onClick={() => console.log("hello world")}
-                type="button"
-                className="w-full  justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Clear
-              </button>
+                <input type="file" className="hidden" id="uploadFile" ref={inputRef} />
+                <button
+                  onClick={() => reset()}
+                  type="button"
+                  className="w-full cursor-pointer justify-center py-2 px-2 border border-transparent shadow-sm  text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
-});
+};
 
 export default IndexBar;

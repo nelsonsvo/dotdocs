@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   BeforeInsert,
@@ -17,22 +17,21 @@ this entity contains the fields for the Applications
 */
 
 @ObjectType("AppField")
-@InputType("appField")
 @Entity()
 export class AppField extends BaseEntity {
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @PrimaryColumn("uuid")
-  id: string;
+  id!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @Column()
   type!: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @Column()
   name!: string;
 
-  @Field(() => Number, { nullable: true })
+  @Field(() => Number)
   @Column()
   max_length?: number;
 
@@ -41,7 +40,7 @@ export class AppField extends BaseEntity {
   })
   application: Application;
 
-  @Field(() => [FileField])
+  @Field(() => [FileField], { nullable: true })
   @OneToMany(() => FileField, (field) => field.field)
   filefields: FileField[];
 
@@ -49,12 +48,4 @@ export class AppField extends BaseEntity {
   addId() {
     this.id = v4();
   }
-}
-@InputType("AppFieldInput")
-export class AppFieldInput {
-  @Field(() => String)
-  id: string;
-
-  @Field(() => String)
-  value: string;
 }

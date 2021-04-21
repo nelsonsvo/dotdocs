@@ -1,26 +1,56 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useLazyQuery } from "@apollo/client";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
+import { GET_FILES } from "../graphql/queries/Application";
 
 interface RetrievalBarProps {
   className?: string;
 }
 
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
-  const [currentTemplate, setTemplate] = useState("");
-  // const { loading, error, data } = useQuery(GET_RETRIEVAL_TEMPLATES);
-  const data = useContext(RetrievalContext);
+  const { data, currentTemplate, setCurrentTemplate, setSearchResults } = useContext(
+    RetrievalContext
+  );
+
+  const [getFiles] = useLazyQuery(GET_FILES, {
+    fetchPolicy: "network-only",
+    onCompleted: (data) => setSearchResults(data.getFiles),
+  });
+
+  const setTemplateState = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const index = e.target.selectedIndex;
+      const selected = e.target.children[index];
+
+      const option = selected.getAttribute("id");
+
+      setCurrentTemplate({ id: option, name: e.target.value });
+      setSearchResults([]);
+    },
+    [setCurrentTemplate, setSearchResults]
+  );
+
+  const searchApplication = useCallback(async () => {
+    getFiles({
+      variables: {
+        id: currentTemplate.id,
+      },
+    });
+  }, [currentTemplate.id, getFiles]);
+
+  const selectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
-    if (data) {
-      setTemplate(data.applications[0].name);
+    if (selectRef && selectRef.current) {
+      selectRef.current.value = currentTemplate.name;
     }
-  }, [data]);
+  }, [currentTemplate]);
 
   return (
     <div className={className}>
-      <div className="min-h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700">
-        <div className="flex flex-col bg-white h-full ">
+      <div className="min-h-screen h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700 border-r">
+        <div className="flex flex-col bg-white h-screen ">
           <div className="flex items-center justify-center">
             <NavLink to="/dashboard">
               <img className="h-12" src="/images/dotdocs.png" alt="" />
@@ -34,13 +64,18 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
               <div className="">
                 <select
                   id="type"
-                  onChange={(e) => setTemplate(e.target.value)}
+                  ref={selectRef}
+                  onChange={(e) => setTemplateState(e)}
                   name="type"
                   className=" block w-full py-2 px-3 border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                 >
                   {data &&
                     data.applications.map((template: any) => {
-                      return <option>{template.name}</option>;
+                      return (
+                        <option key={template.id} id={template.id}>
+                          {template.name}
+                        </option>
+                      );
                     })}
                 </select>
               </div>
@@ -50,12 +85,11 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
             {data && (
               <div className="flex flex-col gap-5 mt-3">
                 {data.applications
-                  .filter((template: any) => template.name === currentTemplate)
+                  .filter((template: any) => template.name === currentTemplate.name)
                   .map((template: any) => {
                     return template.fields.map((f: any) => {
-                      console.log(f);
                       return (
-                        <div className="px-2">
+                        <div key={f.id} className="px-2">
                           <label
                             htmlFor={f.name}
                             className="block  text-sm font-medium text-gray-700"
@@ -74,21 +108,23 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
               </div>
             )}
           </div>
-          <div className="grid grid-cols-2 px-5 gap-3 mt-5">
-            <button
-              onClick={() => console.log("hello world")}
-              type="button"
-              className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Search
-            </button>
-            <button
-              onClick={() => console.log("hello world")}
-              type="button"
-              className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Clear
-            </button>
+          <div className="object-bottom mb-5 border-t">
+            <div className="grid grid-cols-2 px-5 gap-3 mt-5 ">
+              <button
+                onClick={() => searchApplication()}
+                type="button"
+                className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Search
+              </button>
+              <button
+                onClick={() => console.log("hello world")}
+                type="button"
+                className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
       </div>
