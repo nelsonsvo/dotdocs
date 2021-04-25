@@ -4,6 +4,7 @@ import { FileUpload, GraphQLUpload } from "graphql-upload";
 import { join } from "path";
 import { MyContext } from "src/types/ContextType";
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { getManager, In } from "typeorm";
 import { v4 } from "uuid";
 import { AppField } from "../entities/AppField";
 import { AppFile } from "../entities/AppFile";
@@ -22,13 +23,10 @@ export class AppFieldInput {
 @InputType("AppFieldSearchInput")
 export class AppFieldSearchInput {
   @Field(() => String)
-  id: string;
+  name: string;
 
   @Field(() => String)
   value: string;
-
-  @Field(() => String)
-  name: string;
 }
 
 @ObjectType()
@@ -52,7 +50,7 @@ export class FileResolver {
     {
       return new Promise(async (resolve, reject) => {
         if (!req.session.userId) {
-          res.statusCode = 400;
+          res.statusCode = 401;
           throw new AuthenticationError("USER NOT AUTHENTICATED");
         }
 
@@ -124,6 +122,7 @@ export class FileResolver {
         newField.field = appField;
         newField.name = appField.name;
         newField.value = field.value;
+        newField.value_id_string = appField.name + "_" + field.value;
         newField.file = file;
         FileField.save(newField);
       }
@@ -135,20 +134,85 @@ export class FileResolver {
   @Query(() => [AppFile])
   async getFiles(
     @Arg("id") id: string,
-    // @Arg("fields", () => [AppFieldSearchInput]) fields: AppFieldSearchInput[],
+    @Arg("fields", () => [AppFieldSearchInput]) fields: AppFieldSearchInput[],
     @Ctx() { req, res }: MyContext
   ) {
     if (!req.session.userId) {
       res.statusCode = 401;
       throw new AuthenticationError("USER NOT LOGGED IN");
     }
-    const appFile = await AppFile.find({
-      where: {
-        application: id,
-        // fields: fields,
-      },
+
+    let concatValues: string[] = [];
+
+    let allNull = true;
+
+    fields.map((f: any) => {
+      if (f.value !== "") {
+        concatValues = [...concatValues, f.name + "_" + f.value];
+        allNull = false;
+      }
     });
 
-    return appFile;
+    //if all search fields are null return all the files
+    if (allNull) {
+      return await AppFile.find({ where: { application: id } });
+    } else {
+      console.log(concatValues);
+
+      const entityManager = getManager();
+
+      let PARAMS = "";
+      let param_arr = [];
+      concatValues.forEach((val: any, index: number) => {
+        var num = index + 1;
+        PARAMS += "$" + num + ",";
+
+        param_arr.push(val);
+      });
+
+      param_arr.push(concatValues.length);
+
+      const lastParam = concatValues.length + 1;
+      const fieldResults = await entityManager.query(
+        `SELECT
+      "file"."id" AS "file_id",
+      "file"."filename" AS "file_filename",
+      "file"."old_filename" AS "file_old_filename",
+      "file"."mimetype" AS "file_mimetype",
+      "file"."location" AS "file_location",
+      "file"."createdAt" AS "file_createdAt",
+      "file"."updatedAt" AS "file_updatedAt",
+      "file"."applicationId" AS "file_applicationId"
+    FROM
+      "file_field" "field"
+      LEFT JOIN "app_file" "file" ON "file"."id" = "field"."fileId"
+    WHERE
+      "field"."value_id_string" IN (${PARAMS.substring(0, PARAMS.length - 1)})
+    GROUP BY
+      "file"."id"
+    HAVING
+      count(DISTINCT "field"."value_id_string") = ${"$" + lastParam}`,
+        param_arr
+      );
+
+      console.log(fieldResults);
+
+      let appIds: string[] = [];
+
+      fieldResults.forEach((file: any) => {
+        if (!appIds.includes(file.file_id)) {
+          appIds.push(file.file_id);
+        }
+      });
+
+      console.log(appIds);
+
+      return await AppFile.find({
+        relations: ["fields"],
+        where: {
+          id: In(appIds),
+        },
+      });
+    }
   }
 }
