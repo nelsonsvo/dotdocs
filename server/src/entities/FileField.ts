@@ -24,6 +24,9 @@ export class FileField extends BaseEntity {
   @Column()
   value: string;
 
+  @Column()
+  value_id_string: string;
+
   @Field(() => AppFile)
   @ManyToOne(() => AppFile, (file) => file.fields)
   file: AppFile;
