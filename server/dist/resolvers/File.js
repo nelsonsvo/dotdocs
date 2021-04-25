@@ -25,6 +25,7 @@ const fs_1 = require("fs");
 const graphql_upload_1 = require("graphql-upload");
 const path_1 = require("path");
 const type_graphql_1 = require("type-graphql");
+const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
 const AppField_1 = require("../entities/AppField");
 const AppFile_1 = require("../entities/AppFile");
@@ -50,15 +51,11 @@ let AppFieldSearchInput = class AppFieldSearchInput {
 __decorate([
     type_graphql_1.Field(() => String),
     __metadata("design:type", String)
-], AppFieldSearchInput.prototype, "id", void 0);
+], AppFieldSearchInput.prototype, "name", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     __metadata("design:type", String)
 ], AppFieldSearchInput.prototype, "value", void 0);
-__decorate([
-    type_graphql_1.Field(() => String),
-    __metadata("design:type", String)
-], AppFieldSearchInput.prototype, "name", void 0);
 AppFieldSearchInput = __decorate([
     type_graphql_1.InputType("AppFieldSearchInput")
 ], AppFieldSearchInput);
@@ -83,7 +80,7 @@ let FileResolver = class FileResolver {
             {
                 return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                     if (!req.session.userId) {
-                        res.statusCode = 400;
+                        res.statusCode = 401;
                         throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
                     }
                     const app = yield Application_1.Application.findOne({ id });
@@ -147,6 +144,7 @@ let FileResolver = class FileResolver {
                     newField.field = appField;
                     newField.name = appField.name;
                     newField.value = field.value;
+                    newField.value_id_string = appField.name + "_" + field.value;
                     newField.file = file;
                     FileField_1.FileField.save(newField);
                 }
@@ -154,18 +152,68 @@ let FileResolver = class FileResolver {
             return true;
         });
     }
-    getFiles(id, { req, res }) {
+    getFiles(id, fields, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.session.userId) {
                 res.statusCode = 401;
                 throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
             }
-            const appFile = yield AppFile_1.AppFile.find({
-                where: {
-                    application: id,
-                },
+            let concatValues = [];
+            let allNull = true;
+            fields.map((f) => {
+                if (f.value !== "") {
+                    concatValues = [...concatValues, f.name + "_" + f.value];
+                    allNull = false;
+                }
             });
-            return appFile;
+            if (allNull) {
+                return yield AppFile_1.AppFile.find({ where: { application: id } });
+            }
+            else {
+                console.log(concatValues);
+                const entityManager = typeorm_1.getManager();
+                let PARAMS = "";
+                let param_arr = [];
+                concatValues.forEach((val, index) => {
+                    var num = index + 1;
+                    PARAMS += "$" + num + ",";
+                    param_arr.push(val);
+                });
+                param_arr.push(concatValues.length);
+                const lastParam = concatValues.length + 1;
+                const fieldResults = yield entityManager.query(`SELECT
+      "file"."id" AS "file_id",
+      "file"."filename" AS "file_filename",
+      "file"."old_filename" AS "file_old_filename",
+      "file"."mimetype" AS "file_mimetype",
+      "file"."location" AS "file_location",
+      "file"."createdAt" AS "file_createdAt",
+      "file"."updatedAt" AS "file_updatedAt",
+      "file"."applicationId" AS "file_applicationId"
+    FROM
+      "file_field" "field"
+      LEFT JOIN "app_file" "file" ON "file"."id" = "field"."fileId"
+    WHERE
+      "field"."value_id_string" IN (${PARAMS.substring(0, PARAMS.length - 1)})
+    GROUP BY
+      "file"."id"
+    HAVING
+      count(DISTINCT "field"."value_id_string") = ${"$" + lastParam}`, param_arr);
+                console.log(fieldResults);
+                let appIds = [];
+                fieldResults.forEach((file) => {
+                    if (!appIds.includes(file.file_id)) {
+                        appIds.push(file.file_id);
+                    }
+                });
+                console.log(appIds);
+                return yield AppFile_1.AppFile.find({
+                    relations: ["fields"],
+                    where: {
+                        id: typeorm_1.In(appIds),
+                    },
+                });
+            }
         });
     }
 };
@@ -190,9 +238,10 @@ __decorate([
 __decorate([
     type_graphql_1.Query(() => [AppFile_1.AppFile]),
     __param(0, type_graphql_1.Arg("id")),
-    __param(1, type_graphql_1.Ctx()),
+    __param(1, type_graphql_1.Arg("fields", () => [AppFieldSearchInput])),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Array, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "getFiles", null);
 FileResolver = __decorate([
