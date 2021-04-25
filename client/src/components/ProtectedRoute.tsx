@@ -11,7 +11,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { auth, setUserAuth } = useContext<IAuthContext>(AuthContext);
   const [checkCookie] = useLazyQuery(ME, {
     fetchPolicy: "network-only",
-    onError: () => setUserAuth(false),
+    onError: () => {
+      setUserAuth(false);
+    },
   });
 
   //check if cookie has expired every minute
@@ -23,7 +25,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
-  return auth.loggedIn || Boolean(localStorage.getItem("isAuth")) ? (
+  return auth.loggedIn === true || localStorage.getItem("isAuth") === "true" ? (
     <>{children}</>
   ) : (
     <Redirect to="/" />
