@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { AuthContext, IAuthContext } from "../context/AuthContext";
 
 interface SideBarProps {
   className?: string;
@@ -7,6 +8,7 @@ interface SideBarProps {
 
 const SideBar: React.FC<SideBarProps> = ({ className }) => {
   const [page, setPage] = useState("");
+  const { setUserAuth } = useContext<IAuthContext>(AuthContext);
 
   return (
     <div className={className}>
@@ -140,9 +142,9 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
             </ul>
           </div>
           <div className="object-bottom cursor-pointer">
-            <Link
-              to="/"
-              className=" flex flex-row items-center h-11 focus:outline-none bg-gray-100 hover:bg-gray-200 text-gray-800 border-l-4 border-transparent  pr-6"
+            <div
+              onClick={() => setUserAuth(false)}
+              className="cursor-pointer flex flex-row items-center h-11 focus:outline-none bg-gray-100 hover:bg-gray-200 text-gray-800 border-l-4 border-transparent  pr-6"
             >
               <span className="inline-flex justify-center items-center ml-4">
                 <svg
@@ -161,7 +163,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                 </svg>
               </span>
               <span className="ml-2 text-sm tracking-wide truncate">Logout</span>
-            </Link>
+            </div>
           </div>
         </div>
       </div>

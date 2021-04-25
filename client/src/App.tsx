@@ -30,6 +30,7 @@ function App() {
         timeLoggedIn: timeLogged,
       });
     } else {
+      localStorage.setItem("isAuth", isAuth.toString());
       setAuth({
         loggedIn: isAuth,
         userType: null,

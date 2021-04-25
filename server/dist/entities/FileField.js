@@ -35,6 +35,10 @@ __decorate([
     __metadata("design:type", String)
 ], FileField.prototype, "value", void 0);
 __decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], FileField.prototype, "value_id_string", void 0);
+__decorate([
     type_graphql_1.Field(() => AppFile_1.AppFile),
     typeorm_1.ManyToOne(() => AppFile_1.AppFile, (file) => file.fields),
     __metadata("design:type", AppFile_1.AppFile)
