@@ -122,6 +122,8 @@ export class FileResolver {
         newField.field = appField;
         newField.name = appField.name;
         newField.value = field.value;
+
+        //TODO: use appField id instead of name + generate guid here for the FileField id
         newField.value_id_string = appField.name + "_" + field.value;
         newField.file = file;
         FileField.save(newField);
