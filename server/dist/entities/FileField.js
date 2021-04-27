@@ -11,13 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
-const uuid_1 = require("uuid");
 const AppField_1 = require("./AppField");
 const AppFile_1 = require("./AppFile");
 let FileField = class FileField extends typeorm_1.BaseEntity {
-    addId() {
-        this.id = uuid_1.v4();
-    }
 };
 __decorate([
     type_graphql_1.Field(() => String, { nullable: true }),
@@ -48,12 +44,6 @@ __decorate([
     typeorm_1.ManyToOne(() => AppField_1.AppField, (field) => field.filefields),
     __metadata("design:type", AppField_1.AppField)
 ], FileField.prototype, "field", void 0);
-__decorate([
-    typeorm_1.BeforeInsert(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], FileField.prototype, "addId", null);
 FileField = __decorate([
     type_graphql_1.ObjectType("FileField"),
     type_graphql_1.InputType("FileFieldInput"),
