@@ -51,7 +51,7 @@ let AppFieldSearchInput = class AppFieldSearchInput {
 __decorate([
     type_graphql_1.Field(() => String),
     __metadata("design:type", String)
-], AppFieldSearchInput.prototype, "name", void 0);
+], AppFieldSearchInput.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     __metadata("design:type", String)
@@ -141,10 +141,12 @@ let FileResolver = class FileResolver {
                 const appField = yield AppField_1.AppField.findOne({ id: field.id });
                 const file = yield AppFile_1.AppFile.findOne({ id });
                 if (file && appField) {
+                    const id = uuid_1.v4();
+                    newField.id = id;
                     newField.field = appField;
                     newField.name = appField.name;
                     newField.value = field.value;
-                    newField.value_id_string = appField.name + "_" + field.value;
+                    newField.value_id_string = id + "_" + field.value;
                     newField.file = file;
                     FileField_1.FileField.save(newField);
                 }
@@ -162,7 +164,7 @@ let FileResolver = class FileResolver {
             let allNull = true;
             fields.map((f) => {
                 if (f.value !== "") {
-                    concatValues = [...concatValues, f.name + "_" + f.value];
+                    concatValues = [...concatValues, f.id + "_" + f.value];
                     allNull = false;
                 }
             });

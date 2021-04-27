@@ -23,7 +23,7 @@ export class AppFieldInput {
 @InputType("AppFieldSearchInput")
 export class AppFieldSearchInput {
   @Field(() => String)
-  name: string;
+  id: string;
 
   @Field(() => String)
   value: string;
@@ -119,11 +119,14 @@ export class FileResolver {
       const appField = await AppField.findOne({ id: field.id });
       const file = await AppFile.findOne({ id });
       if (file && appField) {
+        const id = v4();
+        newField.id = id;
         newField.field = appField;
         newField.name = appField.name;
         newField.value = field.value;
-        newField.value_id_string = appField.name + "_" + field.value;
+        newField.value_id_string = id + "_" + field.value;
         newField.file = file;
+
         FileField.save(newField);
       }
     });
@@ -148,7 +151,7 @@ export class FileResolver {
 
     fields.map((f: any) => {
       if (f.value !== "") {
-        concatValues = [...concatValues, f.name + "_" + f.value];
+        concatValues = [...concatValues, f.id + "_" + f.value];
         allNull = false;
       }
     });

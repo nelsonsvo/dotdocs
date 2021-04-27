@@ -30,6 +30,7 @@ export const GET_FILES = gql`
     getFiles(id: $id, fields: $fields) {
       id
       filename
+      location
       fields {
         id
         name

@@ -53,7 +53,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
     let fieldArr = [];
     for (const [key, value] of Object.entries(data)) {
       fieldArr.push({
-        name: key,
+        id: key,
         value,
       });
     }
@@ -120,7 +120,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                             </label>
                             <input
                               type={f.type.toLowerCase()}
-                              name={f.name}
+                              name={f.id}
                               ref={register}
                               className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
                             />
