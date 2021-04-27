@@ -1,8 +1,11 @@
-import { useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { CREATE_APPLICATION, DELETE_APPLICATION } from "../../graphql/mutations/Application";
-import { GET_APPLICATIONS } from "../../graphql/queries/Application";
+import {
+  CreateApplicationDocument,
+  useCreateApplicationMutation,
+  useDeleteApplicationMutation,
+  useGetApplicationsQuery,
+} from "../../generated/graphql";
 import ApplicationCard from "../cards/ApplicationCard";
 import SettingSectionCard from "../ui/SettingSectionCard";
 
@@ -14,31 +17,23 @@ type FormInputs = {
   type: string;
   max_length?: string;
 };
-interface Field {
-  name: string;
-  type: string;
-  max_length?: number | null;
-}
-
 const Applications: React.FC<ApplicationsProps> = () => {
-  const [createApplication, { error }] = useMutation(CREATE_APPLICATION, {
-    refetchQueries: [{ query: GET_APPLICATIONS }],
+  const [createApplication, { error }] = useCreateApplicationMutation({
+    refetchQueries: [{ query: CreateApplicationDocument }],
     errorPolicy: "all",
   });
 
-  const [deleteApplication, { error: deleteError }] = useMutation(DELETE_APPLICATION, {
-    // refetchQueries: [{ query: GET_APPLICATIONS }]
-
+  const [deleteApplication, { error: deleteError }] = useDeleteApplicationMutation({
     errorPolicy: "all",
   });
 
-  const { loading, error: _error, data } = useQuery(GET_APPLICATIONS);
+  const { loading, error: _error, data } = useGetApplicationsQuery();
 
   const { register, handleSubmit, errors } = useForm<FormInputs>();
 
   const [fieldType, setFieldType] = useState("");
   const [isNewApplication, setIsNewApplication] = useState(false);
-  const [currentFields, setCurrentFields] = useState<Field[]>([]);
+  const [currentFields, setCurrentFields] = useState<any>([]);
   const [appName, setName] = useState("");
 
   const resetState = (): void => {
@@ -185,7 +180,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                                     </tr>
                                   </thead>
                                   <tbody className="bg-white divide-y divide-gray-200 py-5 px-5">
-                                    {currentFields.map((field) => {
+                                    {currentFields.map((field: any) => {
                                       return (
                                         <tr className="">
                                           <td className=" text-md text-gray-800 px-6 py-4 ">
