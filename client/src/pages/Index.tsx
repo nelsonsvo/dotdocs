@@ -1,17 +1,16 @@
-import { useQuery } from "@apollo/client";
 import React, { useMemo, useState } from "react";
 import Iframe from "react-iframe";
 import IndexBody from "../components/layouts/IndexBody";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext, UploadedFile } from "../context/IndexFileContext";
-import { GET_RETRIEVAL_TEMPLATES } from "../graphql/queries/Application";
+import { useGetRetrievalTemplatesQuery } from "../generated/graphql";
 
 interface IndexProps {}
 
 const Index: React.FC<IndexProps> = () => {
   const FILE_SERVER_URL = process.env.REACT_APP_FILE_SERVER_URL;
 
-  const { loading, error, data } = useQuery(GET_RETRIEVAL_TEMPLATES);
+  const { loading, error, data } = useGetRetrievalTemplatesQuery();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   const indexFileValue = useMemo(() => ({ uploadedFiles, setUploadedFiles }), [
