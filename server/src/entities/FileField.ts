@@ -1,6 +1,5 @@
 import { Field, InputType, ObjectType } from "type-graphql";
-import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import { v4 } from "uuid";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { AppField } from "./AppField";
 import { AppFile } from "./AppFile";
 
@@ -34,9 +33,4 @@ export class FileField extends BaseEntity {
   @Field(() => AppField)
   @ManyToOne(() => AppField, (field) => field.filefields)
   field: AppField;
-
-  @BeforeInsert()
-  addId() {
-    this.id = v4();
-  }
 }
