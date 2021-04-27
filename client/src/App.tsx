@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Retrieval from "./pages/Retrieval";
 import Settings from "./pages/Settings";
+import Viewer from "./pages/Viewer";
 
 function App() {
   const [auth, setAuth] = useState<IAuth>({
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/settings" component={Settings} />
                 <Route path="/retrieval/:id?" component={Retrieval} />
                 <Route path="/index/:id?" component={Index} />
+                <Route path="/viewer/:file" component={Viewer} />
               </ProtectedRoute>
             </AuthContext.Provider>
           </Switch>
