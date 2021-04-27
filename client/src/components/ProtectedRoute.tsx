@@ -1,15 +1,14 @@
-import { useLazyQuery } from "@apollo/client";
 import React, { useContext, useEffect } from "react";
 import { Redirect } from "react-router";
 import { AuthContext, IAuthContext } from "../context/AuthContext";
-import { ME } from "../graphql/queries/Login";
+import { useMeLazyQuery } from "../generated/graphql";
 
 //this component is a wrapper component to pass protected routes through
 interface ProtectedRouteProps {}
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { auth, setUserAuth } = useContext<IAuthContext>(AuthContext);
-  const [checkCookie] = useLazyQuery(ME, {
+  const [checkCookie] = useMeLazyQuery({
     fetchPolicy: "network-only",
     onError: () => {
       setUserAuth(false);
