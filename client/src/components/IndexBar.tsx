@@ -1,23 +1,16 @@
-import { useMutation } from "@apollo/client";
 import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { NavLink, useParams } from "react-router-dom";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext } from "../context/IndexFileContext";
-import { INDEX_FILE, SINGLE_FILE_UPLOAD } from "../graphql/mutations/Application";
+import { useIndexFileMutation, useSingleUploadMutation } from "../generated/graphql";
 
 interface IndexBarProps {}
 
 type Template = {
   name: string;
   id: string;
-};
-
-type Field = {
-  id: string;
-  name: string;
-  type: string;
 };
 
 interface IndexParams {
@@ -44,12 +37,12 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   const [numberOfUploaded, setNumberUploaded] = useState(0);
 
   //mutations
-  const [uploadFile, { loading, error: uploadError }] = useMutation(SINGLE_FILE_UPLOAD, {
+  const [uploadFile, { loading, error: uploadError }] = useSingleUploadMutation({
     onCompleted: (data) => setUploadedFiles([...uploadedFiles, data.singleUpload]),
     onError: (err) => console.log(err),
   });
 
-  const [indexFile] = useMutation(INDEX_FILE, {
+  const [indexFile] = useIndexFileMutation({
     onCompleted: () => setCount(count + 1),
   });
 
@@ -100,11 +93,11 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     if (uploadedFiles.length > 0) {
-      let fieldArr = [];
+      let fieldArr: any[] = [];
       for (const [key, value] of Object.entries(data)) {
         fieldArr.push({
           id: key,
-          value,
+          value: value,
         });
       }
       //using a queue system FIFO so get the first file that went in
@@ -167,9 +160,9 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                 {data && data && (
                   <div className="flex flex-col gap-5 mt-3">
                     {data.applications
-                      .filter((template: Template) => template.name === currentTemplate)
+                      .filter((template: any) => template.name === currentTemplate)
                       .map((template: any) => {
-                        return template.fields.map((f: Field) => {
+                        return template.fields.map((f: any) => {
                           console.log(f);
                           return (
                             <li className="px-2" key={f.id}>
