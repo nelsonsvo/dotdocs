@@ -1,0 +1,33 @@
+query GetApplications {
+  applications {
+    id
+    name
+  }
+}
+
+query GetRetrievalTemplates {
+  applications {
+    id
+    name
+    updatedAt
+    fields {
+      id
+      name
+      type
+      max_length
+    }
+  }
+}
+
+query GetFiles($id: String!, $fields: [AppFieldSearchInput!]!) {
+  getFiles(id: $id, fields: $fields) {
+    id
+    filename
+    location
+    fields {
+      id
+      name
+      value
+    }
+  }
+}
