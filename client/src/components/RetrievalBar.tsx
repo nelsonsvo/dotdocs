@@ -1,25 +1,34 @@
-import { useLazyQuery } from "@apollo/client";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
-import { GET_FILES } from "../graphql/queries/Application";
+import { GetFilesQuery, useGetFilesLazyQuery } from "../generated/graphql";
 
 interface RetrievalBarProps {
   className?: string;
 }
 
+interface IRetrievalContext {
+  data: any;
+  currentTemplate: any;
+  setCurrentTemplate: (template: any) => void;
+  setSearchResults: (results: GetFilesQuery["getFiles"] | []) => void;
+}
+
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
-  const { data, currentTemplate, setCurrentTemplate, setSearchResults } = useContext(
-    RetrievalContext
-  );
+  const {
+    data,
+    currentTemplate,
+    setCurrentTemplate,
+    setSearchResults,
+  } = useContext<IRetrievalContext>(RetrievalContext);
 
   const { register, handleSubmit, reset } = useForm();
 
-  const [getFiles] = useLazyQuery(GET_FILES, {
+  const [getFiles] = useGetFilesLazyQuery({
     fetchPolicy: "network-only",
     onCompleted: (data) => {
-      console.log(data.getFiles);
+      console.log("search results:", data.getFiles);
       setSearchResults(data.getFiles);
     },
   });
