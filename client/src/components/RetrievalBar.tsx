@@ -2,34 +2,24 @@ import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
-import { GetFilesQuery, useGetFilesLazyQuery } from "../generated/graphql";
+import { useGetFilesLazyQuery } from "../generated/graphql";
 
 interface RetrievalBarProps {
   className?: string;
 }
 
-interface IRetrievalContext {
-  data: any;
-  currentTemplate: any;
-  setCurrentTemplate: (template: any) => void;
-  setSearchResults: (results: GetFilesQuery["getFiles"] | []) => void;
-}
-
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
-  const {
-    data,
-    currentTemplate,
-    setCurrentTemplate,
-    setSearchResults,
-  } = useContext<IRetrievalContext>(RetrievalContext);
+  const { data, currentTemplate, setCurrentTemplate, setSearchResults } = useContext(
+    RetrievalContext
+  );
 
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const [getFiles] = useGetFilesLazyQuery({
     fetchPolicy: "network-only",
     onCompleted: (data) => {
       console.log("search results:", data.getFiles);
-      setSearchResults(data.getFiles);
+      setSearchResults!(data.getFiles);
     },
   });
 
@@ -40,8 +30,8 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
 
       const option = selected.getAttribute("id");
 
-      setCurrentTemplate({ id: option, name: e.target.value });
-      setSearchResults([]);
+      setCurrentTemplate!({ id: option!, name: e.target.value });
+      setSearchResults!([]);
     },
     [setCurrentTemplate, setSearchResults]
   );
@@ -50,12 +40,12 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
     async (fieldArr) => {
       getFiles({
         variables: {
-          id: currentTemplate.id,
+          id: currentTemplate!.id,
           fields: fieldArr,
         },
       });
     },
-    [currentTemplate.id, getFiles]
+    [currentTemplate, getFiles]
   );
 
   const onSubmit = handleSubmit((data) => {
@@ -73,7 +63,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
 
   useEffect(() => {
     if (selectRef && selectRef.current) {
-      selectRef.current.value = currentTemplate.name;
+      selectRef.current.value = currentTemplate!.name;
     }
   }, [currentTemplate]);
 
@@ -116,9 +106,9 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
               {data && (
                 <div className="flex flex-col gap-5 mt-3">
                   {data.applications
-                    .filter((template: any) => template.name === currentTemplate.name)
-                    .map((template: any) => {
-                      return template.fields.map((f: any) => {
+                    .filter((template) => template.name === currentTemplate!.name)
+                    .map((template) => {
+                      return template.fields.map((f) => {
                         return (
                           <div key={f.id} className="px-2">
                             <label
