@@ -5,6 +5,7 @@ import { NavLink, useParams } from "react-router-dom";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext } from "../context/IndexFileContext";
 import { useIndexFileMutation, useSingleUploadMutation } from "../generated/graphql";
+import Modal from "./ui/Modal";
 
 interface IndexBarProps {}
 
@@ -30,6 +31,9 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   const [count, setCount] = useState(0);
   const [numberOfUploaded, setNumberUploaded] = useState(0);
+
+  //modal state
+  const [open, setModalOpen] = useState(false);
 
   //mutations
   const [uploadFile, { loading }] = useSingleUploadMutation({
@@ -113,8 +117,21 @@ const IndexBar: React.FC<IndexBarProps> = () => {
     }
   });
 
+  useEffect(() => {
+    if (count === numberOfUploaded && numberOfUploaded !== 0) setModalOpen(true);
+  }, [count, numberOfUploaded]);
+
   return (
     <div>
+      <Modal
+        open={open}
+        setModalOpen={setModalOpen}
+        success={true}
+        btnLabel="Ok"
+        title="Indexing Complete"
+      >
+        All files in the indexing queue have been indexed.
+      </Modal>
       <div className="min-h-screen w-100 h-screen flex-shrink-0 antialiased bg-white text-gray-700 border-r">
         <form onSubmit={onSubmit}>
           <div className="flex flex-col bg-white h-screen ">
