@@ -10,11 +10,9 @@ interface ParamTypes {
   id: string;
 }
 
-interface IField {
-  name: string;
-  value: string;
+type Row = {
   id: string;
-}
+};
 
 const Retrieval: React.FC<RetrievalProps> = () => {
   const { id } = useParams<ParamTypes>();
@@ -62,12 +60,12 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   const getRows = () => {
     if (searchResults) {
       let rows: any = [];
-      searchResults.forEach((result: any) => {
+      searchResults.forEach((result) => {
         console.log(result);
-        let fields: any = {};
-        result.fields.forEach((f: any) => {
+        let fields = {};
+        result.fields.forEach((f) => {
           console.log(f);
-          fields = { ...fields, id: result.id, [f.name]: f.value };
+          fields = { ...fields, id: result.id, [f.name!]: f.value };
         });
         rows = [...rows, fields];
       });
@@ -77,7 +75,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     }
   };
 
-  const rowKeyGetter = (row: any) => {
+  const rowKeyGetter = (row: Row) => {
     return row.id;
   };
 
@@ -93,7 +91,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
         });
       } else if (selectedRows.size > 1) {
         selectedRows.forEach((value) => {
-          const res = searchResults.find((f: any) => f.id === value);
+          const res = searchResults.find((f) => f.id === value);
           console.log(res);
           console.log("opening", res!.location);
 
