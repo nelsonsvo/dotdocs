@@ -17,23 +17,29 @@ type FormInputs = {
   type: string;
   max_length?: string;
 };
+
+interface ICurrentFields {
+  name: string;
+  type: string;
+  max_length: number;
+}
 const Applications: React.FC<ApplicationsProps> = () => {
-  const [createApplication, { error }] = useCreateApplicationMutation({
+  const [createApplication] = useCreateApplicationMutation({
     refetchQueries: [{ query: CreateApplicationDocument }],
     errorPolicy: "all",
   });
 
-  const [deleteApplication, { error: deleteError }] = useDeleteApplicationMutation({
+  const [deleteApplication] = useDeleteApplicationMutation({
     errorPolicy: "all",
   });
 
-  const { loading, error: _error, data } = useGetApplicationsQuery();
+  const { loading, data } = useGetApplicationsQuery();
 
-  const { register, handleSubmit, errors } = useForm<FormInputs>();
+  const { register, handleSubmit } = useForm<FormInputs>();
 
   const [fieldType, setFieldType] = useState("");
   const [isNewApplication, setIsNewApplication] = useState(false);
-  const [currentFields, setCurrentFields] = useState<any>([]);
+  const [currentFields, setCurrentFields] = useState<Array<ICurrentFields>>([]);
   const [appName, setName] = useState("");
 
   const resetState = (): void => {
@@ -103,7 +109,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                     <div className="flex flex-col gap-3">
                       {!loading &&
                         data &&
-                        data.applications.map((app: any) => {
+                        data.applications.map((app) => {
                           return (
                             <ApplicationCard
                               key={app.id}
@@ -180,7 +186,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                                     </tr>
                                   </thead>
                                   <tbody className="bg-white divide-y divide-gray-200 py-5 px-5">
-                                    {currentFields.map((field: any) => {
+                                    {currentFields.map((field) => {
                                       return (
                                         <tr className="">
                                           <td className=" text-md text-gray-800 px-6 py-4 ">
