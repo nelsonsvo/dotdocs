@@ -8,11 +8,6 @@ import { useIndexFileMutation, useSingleUploadMutation } from "../generated/grap
 
 interface IndexBarProps {}
 
-type Template = {
-  name: string;
-  id: string;
-};
-
 interface IndexParams {
   id: string;
 }
@@ -23,7 +18,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   console.log(id);
 
   //context
-  const { data, error } = useContext(IndexContext);
+  const { data } = useContext(IndexContext);
   const { uploadedFiles, setUploadedFiles } = useContext(IndexFileContext);
 
   //form
@@ -37,8 +32,10 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   const [numberOfUploaded, setNumberUploaded] = useState(0);
 
   //mutations
-  const [uploadFile, { loading, error: uploadError }] = useSingleUploadMutation({
-    onCompleted: (data) => setUploadedFiles([...uploadedFiles, data.singleUpload]),
+  const [uploadFile, { loading }] = useSingleUploadMutation({
+    onCompleted: (data) => {
+      setUploadedFiles!([...uploadedFiles!, data.singleUpload]);
+    },
     onError: (err) => console.log(err),
   });
 
@@ -70,7 +67,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   useEffect(() => {
     if (id && data && selectRef && selectRef.current) {
       //set template to the quick link
-      const templateName = data.applications.filter((x: any) => x.id === id)[0].name;
+      const templateName = data.applications.filter((x) => x.id === id)[0].name;
       setTemplate(templateName);
       setCurrentTempId(id);
       selectRef.current.value = templateName;
@@ -92,7 +89,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (uploadedFiles.length > 0) {
+    if (uploadedFiles && uploadedFiles.length > 0) {
       let fieldArr: any[] = [];
       for (const [key, value] of Object.entries(data)) {
         fieldArr.push({
@@ -101,17 +98,17 @@ const IndexBar: React.FC<IndexBarProps> = () => {
         });
       }
       //using a queue system FIFO so get the first file that went in
-      const fileToUpload = uploadedFiles.shift();
+      const fileToUpload = uploadedFiles!.shift();
 
       await indexFile({
         variables: {
-          id: fileToUpload.id,
+          id: fileToUpload!.id,
           fields: fieldArr,
         },
       });
 
       //remove the uploaded file from state
-      setUploadedFiles(uploadedFiles.filter((f: any) => f.id !== fileToUpload.id));
+      setUploadedFiles!(uploadedFiles.filter((f) => f.id !== fileToUpload!.id));
       reset();
     }
   });
@@ -144,7 +141,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                     className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                   >
                     {data &&
-                      data.applications.map((template: Template) => {
+                      data.applications.map((template) => {
                         return (
                           <option key={template.id} id={template.id}>
                             {template.name}
@@ -160,9 +157,9 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                 {data && data && (
                   <div className="flex flex-col gap-5 mt-3">
                     {data.applications
-                      .filter((template: any) => template.name === currentTemplate)
-                      .map((template: any) => {
-                        return template.fields.map((f: any) => {
+                      .filter((template) => template.name === currentTemplate)
+                      .map((template) => {
+                        return template.fields.map((f) => {
                           console.log(f);
                           return (
                             <li className="px-2" key={f.id}>
@@ -212,7 +209,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
             )}
             <div className="border-t">
               <div>
-                {uploadedFiles.length > 0 && (
+                {uploadedFiles && uploadedFiles.length > 0 && (
                   <p className="mt-5">
                     {count} of {numberOfUploaded} indexed
                   </p>
