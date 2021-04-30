@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { useGetFilesLazyQuery } from "../generated/graphql";
+import { FieldType } from "./settings/Applications";
 
 interface RetrievalBarProps {
   className?: string;
@@ -109,22 +110,45 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                     .filter((template) => template.name === currentTemplate!.name)
                     .map((template) => {
                       return template.fields.map((f) => {
-                        return (
-                          <div key={f.id} className="px-2">
-                            <label
-                              htmlFor={f.name}
-                              className="block  text-sm font-medium text-gray-700"
-                            >
-                              {f.name}
-                            </label>
-                            <input
-                              type={f.type.toLowerCase()}
-                              name={f.id}
-                              ref={register}
-                              className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
-                            />
-                          </div>
-                        );
+                        if (f.type === FieldType.PickList) {
+                          console.log("its a picklist");
+                          return (
+                            <div key={f.id} className="px-2">
+                              <label
+                                htmlFor={f.name}
+                                className="block  text-sm font-medium text-gray-700"
+                              >
+                                {f.name}
+                              </label>
+                              <select
+                                name={f.id}
+                                ref={register}
+                                className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
+                              >
+                                {f.picklist_values.map((val: string, index: number) => {
+                                  return <option key={index + 10000}>{val}</option>;
+                                })}
+                              </select>
+                            </div>
+                          );
+                        } else if (f.type === FieldType.Text) {
+                          return (
+                            <div key={f.id} className="px-2">
+                              <label
+                                htmlFor={f.name}
+                                className="block  text-sm font-medium text-gray-700"
+                              >
+                                {f.name}
+                              </label>
+                              <input
+                                type={f.type.toLowerCase()}
+                                name={f.id}
+                                ref={register}
+                                className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                              />
+                            </div>
+                          );
+                        }
                       });
                     })}
                 </div>
