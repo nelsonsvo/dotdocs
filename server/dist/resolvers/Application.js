@@ -38,6 +38,10 @@ __decorate([
     type_graphql_1.Field(() => Number),
     __metadata("design:type", Number)
 ], AppFieldCreateInput.prototype, "max_length", void 0);
+__decorate([
+    type_graphql_1.Field(() => [String], { nullable: true }),
+    __metadata("design:type", Array)
+], AppFieldCreateInput.prototype, "picklist_values", void 0);
 AppFieldCreateInput = __decorate([
     type_graphql_1.InputType("AppFieldCreateInput")
 ], AppFieldCreateInput);

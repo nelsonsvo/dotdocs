@@ -1,3 +1,10 @@
+import { ApolloError } from "@apollo/client";
 import { createContext } from "react";
+import { GetRetrievalTemplatesQuery } from "./../generated/graphql";
 
-export const IndexContext = createContext<any>(null);
+export type IndexContextType = {
+  data: GetRetrievalTemplatesQuery | null;
+  error: ApolloError | null;
+};
+
+export const IndexContext = createContext<Partial<IndexContextType>>({});

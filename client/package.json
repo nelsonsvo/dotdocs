@@ -33,7 +33,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "gen": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
     "extends": [
@@ -54,14 +55,16 @@
     ]
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "1.21.3",
-    "@graphql-codegen/typescript": "1.21.1",
-    "@graphql-codegen/typescript-operations": "^1.17.15",
-    "@graphql-codegen/typescript-react-apollo": "2.2.3",
+    "@graphql-codegen/cli": "1.21.4",
+    "@graphql-codegen/typescript": "1.22.0",
+    "@graphql-codegen/typescript-operations": "1.17.16",
+    "@graphql-codegen/typescript-react-apollo": "2.2.4",
     "@tailwindcss/postcss7-compat": "^2.0.3",
     "@types/apollo-upload-client": "^14.1.0",
+    "@types/graphql": "^14.5.0",
     "@types/react-dropzone": "^5.1.0",
     "@types/react-pdf": "^5.0.2",
+    "apollo": "^2.32.10",
     "autoprefixer": "^9.8.6",
     "postcss": "^7.0.35",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3"

@@ -1,9 +1,9 @@
-import { useLazyQuery } from "@apollo/client";
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
-import { GET_FILES } from "../graphql/queries/Application";
+import { useGetFilesLazyQuery } from "../generated/graphql";
+import { FieldType } from "./settings/Applications";
 
 interface RetrievalBarProps {
   className?: string;
@@ -14,13 +14,13 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
     RetrievalContext
   );
 
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit } = useForm();
 
-  const [getFiles] = useLazyQuery(GET_FILES, {
+  const [getFiles] = useGetFilesLazyQuery({
     fetchPolicy: "network-only",
     onCompleted: (data) => {
-      console.log(data.getFiles);
-      setSearchResults(data.getFiles);
+      console.log("search results:", data.getFiles);
+      setSearchResults!(data.getFiles);
     },
   });
 
@@ -31,8 +31,8 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
 
       const option = selected.getAttribute("id");
 
-      setCurrentTemplate({ id: option, name: e.target.value });
-      setSearchResults([]);
+      setCurrentTemplate!({ id: option!, name: e.target.value });
+      setSearchResults!([]);
     },
     [setCurrentTemplate, setSearchResults]
   );
@@ -41,12 +41,12 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
     async (fieldArr) => {
       getFiles({
         variables: {
-          id: currentTemplate.id,
+          id: currentTemplate!.id,
           fields: fieldArr,
         },
       });
     },
-    [currentTemplate.id, getFiles]
+    [currentTemplate, getFiles]
   );
 
   const onSubmit = handleSubmit((data) => {
@@ -64,7 +64,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
 
   useEffect(() => {
     if (selectRef && selectRef.current) {
-      selectRef.current.value = currentTemplate.name;
+      selectRef.current.value = currentTemplate!.name;
     }
   }, [currentTemplate]);
 
@@ -107,25 +107,48 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
               {data && (
                 <div className="flex flex-col gap-5 mt-3">
                   {data.applications
-                    .filter((template: any) => template.name === currentTemplate.name)
-                    .map((template: any) => {
-                      return template.fields.map((f: any) => {
-                        return (
-                          <div key={f.id} className="px-2">
-                            <label
-                              htmlFor={f.name}
-                              className="block  text-sm font-medium text-gray-700"
-                            >
-                              {f.name}
-                            </label>
-                            <input
-                              type={f.type.toLowerCase()}
-                              name={f.id}
-                              ref={register}
-                              className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
-                            />
-                          </div>
-                        );
+                    .filter((template) => template.name === currentTemplate!.name)
+                    .map((template) => {
+                      return template.fields.map((f) => {
+                        if (f.type === FieldType.PickList) {
+                          console.log("its a picklist");
+                          return (
+                            <div key={f.id} className="px-2">
+                              <label
+                                htmlFor={f.name}
+                                className="block  text-sm font-medium text-gray-700"
+                              >
+                                {f.name}
+                              </label>
+                              <select
+                                name={f.id}
+                                ref={register}
+                                className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
+                              >
+                                {f.picklist_values.map((val: string, index: number) => {
+                                  return <option key={index + 10000}>{val}</option>;
+                                })}
+                              </select>
+                            </div>
+                          );
+                        } else if (f.type === FieldType.Text) {
+                          return (
+                            <div key={f.id} className="px-2">
+                              <label
+                                htmlFor={f.name}
+                                className="block  text-sm font-medium text-gray-700"
+                              >
+                                {f.name}
+                              </label>
+                              <input
+                                type={f.type.toLowerCase()}
+                                name={f.id}
+                                ref={register}
+                                className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                              />
+                            </div>
+                          );
+                        }
                       });
                     })}
                 </div>

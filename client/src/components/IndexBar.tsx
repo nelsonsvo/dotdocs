@@ -1,24 +1,14 @@
-import { useMutation } from "@apollo/client";
 import React, { ChangeEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { NavLink, useParams } from "react-router-dom";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext } from "../context/IndexFileContext";
-import { INDEX_FILE, SINGLE_FILE_UPLOAD } from "../graphql/mutations/Application";
+import { useIndexFileMutation, useSingleUploadMutation } from "../generated/graphql";
+import { FieldType } from "./settings/Applications";
+import Modal from "./ui/Modal";
 
 interface IndexBarProps {}
-
-type Template = {
-  name: string;
-  id: string;
-};
-
-type Field = {
-  id: string;
-  name: string;
-  type: string;
-};
 
 interface IndexParams {
   id: string;
@@ -30,7 +20,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   console.log(id);
 
   //context
-  const { data, error } = useContext(IndexContext);
+  const { data } = useContext(IndexContext);
   const { uploadedFiles, setUploadedFiles } = useContext(IndexFileContext);
 
   //form
@@ -43,13 +33,18 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   const [count, setCount] = useState(0);
   const [numberOfUploaded, setNumberUploaded] = useState(0);
 
+  //modal state
+  const [open, setModalOpen] = useState(false);
+
   //mutations
-  const [uploadFile, { loading, error: uploadError }] = useMutation(SINGLE_FILE_UPLOAD, {
-    onCompleted: (data) => setUploadedFiles([...uploadedFiles, data.singleUpload]),
+  const [uploadFile, { loading }] = useSingleUploadMutation({
+    onCompleted: (data) => {
+      setUploadedFiles!([...uploadedFiles!, data.singleUpload]);
+    },
     onError: (err) => console.log(err),
   });
 
-  const [indexFile] = useMutation(INDEX_FILE, {
+  const [indexFile] = useIndexFileMutation({
     onCompleted: () => setCount(count + 1),
   });
 
@@ -77,7 +72,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   useEffect(() => {
     if (id && data && selectRef && selectRef.current) {
       //set template to the quick link
-      const templateName = data.applications.filter((x: any) => x.id === id)[0].name;
+      const templateName = data.applications.filter((x) => x.id === id)[0].name;
       setTemplate(templateName);
       setCurrentTempId(id);
       selectRef.current.value = templateName;
@@ -99,32 +94,45 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (uploadedFiles.length > 0) {
-      let fieldArr = [];
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      let fieldArr: any[] = [];
       for (const [key, value] of Object.entries(data)) {
         fieldArr.push({
           id: key,
-          value,
+          value: value,
         });
       }
       //using a queue system FIFO so get the first file that went in
-      const fileToUpload = uploadedFiles.shift();
+      const fileToUpload = uploadedFiles!.shift();
 
       await indexFile({
         variables: {
-          id: fileToUpload.id,
+          id: fileToUpload!.id,
           fields: fieldArr,
         },
       });
 
       //remove the uploaded file from state
-      setUploadedFiles(uploadedFiles.filter((f: any) => f.id !== fileToUpload.id));
+      setUploadedFiles!(uploadedFiles.filter((f) => f.id !== fileToUpload!.id));
       reset();
     }
   });
 
+  useEffect(() => {
+    if (count === numberOfUploaded && numberOfUploaded !== 0) setModalOpen(true);
+  }, [count, numberOfUploaded]);
+
   return (
     <div>
+      <Modal
+        open={open}
+        setModalOpen={setModalOpen}
+        success={true}
+        btnLabel="Ok"
+        title="Indexing Complete"
+      >
+        All files in the indexing queue have been indexed.
+      </Modal>
       <div className="min-h-screen w-100 h-screen flex-shrink-0 antialiased bg-white text-gray-700 border-r">
         <form onSubmit={onSubmit}>
           <div className="flex flex-col bg-white h-screen ">
@@ -151,7 +159,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                     className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                   >
                     {data &&
-                      data.applications.map((template: Template) => {
+                      data.applications.map((template) => {
                         return (
                           <option key={template.id} id={template.id}>
                             {template.name}
@@ -164,30 +172,54 @@ const IndexBar: React.FC<IndexBarProps> = () => {
             </div>
             <div className="overflow-y-auto overflow-x-hidden py-5 px-3 flex-grow text-left">
               <ul>
-                {data && data && (
+                {data && (
                   <div className="flex flex-col gap-5 mt-3">
                     {data.applications
-                      .filter((template: Template) => template.name === currentTemplate)
-                      .map((template: any) => {
-                        return template.fields.map((f: Field) => {
+                      .filter((template) => template.name === currentTemplate)
+                      .map((template) => {
+                        return template.fields.map((f) => {
                           console.log(f);
-                          return (
-                            <li className="px-2" key={f.id}>
-                              <label
-                                htmlFor={f.name}
-                                className="block  text-sm font-medium text-gray-700"
-                              >
-                                {f.name}
-                              </label>
-                              <input
-                                type={f.type.toLowerCase()}
-                                name={f.id}
-                                defaultValue={""}
-                                ref={register}
-                                className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
-                              />
-                            </li>
-                          );
+                          if (f.type === FieldType.PickList) {
+                            console.log("its a picklist");
+                            return (
+                              <li className="px-2" key={f.id}>
+                                <label
+                                  htmlFor={f.name}
+                                  className="block  text-sm font-medium text-gray-700"
+                                >
+                                  {f.name}
+                                </label>
+                                <select
+                                  id={f.id}
+                                  name={f.id}
+                                  ref={register}
+                                  className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
+                                >
+                                  {f.picklist_values.map((val: string, index: number) => {
+                                    return <option key={index + 10000}>{val}</option>;
+                                  })}
+                                </select>
+                              </li>
+                            );
+                          } else if (f.type === FieldType.Text) {
+                            return (
+                              <li className="px-2" key={f.id}>
+                                <label
+                                  htmlFor={f.name}
+                                  className="block  text-sm font-medium text-gray-700"
+                                >
+                                  {f.name}
+                                </label>
+                                <input
+                                  type={f.type.toLowerCase()}
+                                  name={f.id}
+                                  defaultValue={""}
+                                  ref={register}
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                />
+                              </li>
+                            );
+                          }
                         });
                       })}
                   </div>
@@ -219,7 +251,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
             )}
             <div className="border-t">
               <div>
-                {uploadedFiles.length > 0 && (
+                {uploadedFiles && uploadedFiles.length > 0 && (
                   <p className="mt-5">
                     {count} of {numberOfUploaded} indexed
                   </p>

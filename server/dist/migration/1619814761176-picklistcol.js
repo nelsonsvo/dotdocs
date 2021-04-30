@@ -8,15 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class fileFieldIdString1619383362148 {
+class picklistcol1619814761176 {
+    constructor() {
+        this.name = 'picklistcol1619814761176';
+    }
     up(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield queryRunner.query(`COMMENT ON COLUMN "app_field"."picklist_values" IS NULL`);
+            yield queryRunner.query(`ALTER TABLE "app_field" ALTER COLUMN "picklist_values" DROP DEFAULT`);
         });
     }
     down(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield queryRunner.query(`ALTER TABLE "app_field" ALTER COLUMN "picklist_values" SET DEFAULT '{}'`);
+            yield queryRunner.query(`COMMENT ON COLUMN "app_field"."picklist_values" IS NULL`);
         });
     }
 }
-exports.fileFieldIdString1619383362148 = fileFieldIdString1619383362148;
-//# sourceMappingURL=1619383362148-file_field_id_string.js.map
+exports.picklistcol1619814761176 = picklistcol1619814761176;
+//# sourceMappingURL=1619814761176-picklistcol.js.map

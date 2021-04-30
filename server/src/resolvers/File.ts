@@ -124,7 +124,7 @@ export class FileResolver {
         newField.field = appField;
         newField.name = appField.name;
         newField.value = field.value;
-        newField.value_id_string = id + "_" + field.value;
+        newField.value_id_string = newField.field.id + "_" + field.value;
         newField.file = file;
 
         FileField.save(newField);

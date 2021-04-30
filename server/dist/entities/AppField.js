@@ -51,6 +51,11 @@ __decorate([
     __metadata("design:type", Array)
 ], AppField.prototype, "filefields", void 0);
 __decorate([
+    type_graphql_1.Field(() => [String], { nullable: true }),
+    typeorm_1.Column("text", { array: true, nullable: true }),
+    __metadata("design:type", Array)
+], AppField.prototype, "picklist_values", void 0);
+__decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

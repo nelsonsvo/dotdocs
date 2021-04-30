@@ -1,13 +1,12 @@
-import { useLazyQuery } from "@apollo/client";
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link, Redirect } from "react-router-dom";
 import { AuthContext, IAuthContext } from "../context/AuthContext";
-import { LOGIN } from "../graphql/queries/Login";
+import { useLoginLazyQuery } from "../generated/graphql";
 
 type Inputs = {
-  username: String;
-  password: String;
+  username: string;
+  password: string;
 };
 
 interface LoginFormProps {}
@@ -15,9 +14,9 @@ interface LoginFormProps {}
 const Login: React.FC<LoginFormProps> = () => {
   const { register, handleSubmit, errors } = useForm<Inputs>();
   const { setUserAuth } = useContext<IAuthContext>(AuthContext);
-  const [login, { loading, data, error }] = useLazyQuery(LOGIN, {
+  const [login, { loading, data, error }] = useLoginLazyQuery({
     fetchPolicy: "network-only",
-    onCompleted: (data) => setUserAuth(true, data.login.user_type),
+    onCompleted: (data) => setUserAuth(true, data!.login!.user_type),
   });
 
   const onSubmit = (input: Inputs) => {
@@ -29,7 +28,7 @@ const Login: React.FC<LoginFormProps> = () => {
     });
   };
   if (!loading && data) {
-    const { username, user_type } = data.login;
+    const { username, user_type } = data.login!;
     sessionStorage.setItem("username", username);
     sessionStorage.setItem("user_type", user_type);
     return <Redirect to="/dashboard" />;

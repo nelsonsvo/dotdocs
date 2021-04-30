@@ -44,6 +44,10 @@ export class AppField extends BaseEntity {
   @OneToMany(() => FileField, (field) => field.field)
   filefields: FileField[];
 
+  @Field(() => [String], { nullable: true })
+  @Column("text", { array: true, nullable: true })
+  picklist_values: string[];
+
   @BeforeInsert()
   addId() {
     this.id = v4();

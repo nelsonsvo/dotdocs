@@ -1,13 +1,12 @@
-import { useQuery } from "@apollo/client";
 import React, { ReactElement } from "react";
 import { NavLink } from "react-router-dom";
 import MainBody from "../components/layouts/MainBody";
-import { GET_APPLICATIONS } from "../graphql/queries/Application";
+import { useGetApplicationsQuery } from "../generated/graphql";
 
 interface Props {}
 
 export default function Dashboard({}: Props): ReactElement {
-  const { loading, data, error } = useQuery(GET_APPLICATIONS);
+  const { loading, data, error } = useGetApplicationsQuery();
 
   return (
     <MainBody>
@@ -73,7 +72,8 @@ export default function Dashboard({}: Props): ReactElement {
               <h1 className=" text-gray-800 text-xl border-b">Retrieval Templates</h1>
               <ul>
                 {!loading &&
-                  data.applications.map((app: any, index: number) => {
+                  data &&
+                  data.applications.map((app, index: number) => {
                     return (
                       <div className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
                         <NavLink
@@ -96,7 +96,8 @@ export default function Dashboard({}: Props): ReactElement {
               </div>
               <ul>
                 {!loading &&
-                  data.applications.map((app: any, index: number) => {
+                  data &&
+                  data.applications.map((app, index: number) => {
                     return (
                       <div className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
                         <NavLink

@@ -1,42 +1,25 @@
-import { useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import DataGrid, { SelectColumn, TextEditor } from "react-data-grid";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
 import { RetrievalContext } from "../context/RetrievalContext";
-import { GET_RETRIEVAL_TEMPLATES } from "../graphql/queries/Application";
+import { GetFilesQuery, useGetRetrievalTemplatesQuery } from "../generated/graphql";
 
 interface RetrievalProps {}
 interface ParamTypes {
   id: string;
 }
 
-interface IField {
-  name: string;
-  value: string;
+type Row = {
   id: string;
-}
-
-interface IApplication {
-  id: string;
-  fields: Array<IField>;
-}
-
-interface IRow {
-  id: string;
-  key: string;
-  name: string;
-  resizable: boolean;
-  sortable: boolean;
-  editor: JSX.Element;
-}
+};
 
 const Retrieval: React.FC<RetrievalProps> = () => {
   const { id } = useParams<ParamTypes>();
 
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
-  const [searchResults, setSearchResults] = useState<any>([]);
-  const { error, data } = useQuery(GET_RETRIEVAL_TEMPLATES, {
+  const [searchResults, setSearchResults] = useState<GetFilesQuery["getFiles"]>();
+  const { error, data } = useGetRetrievalTemplatesQuery({
     onCompleted: (data) => {
       setCurrentTemplate({ id: data.applications[0].id, name: data.applications[0].name });
     },
@@ -49,7 +32,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     if (data && id) {
       setCurrentTemplate({
         id: id,
-        name: data.applications.filter((x: IApplication) => x.id === id)[0].name,
+        name: data.applications.filter((x) => x.id === id)[0].name,
       });
     }
   }, [id, data]);
@@ -57,8 +40,9 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   const getColumns = () => {
     console.log(data);
     if (data) {
-      const row = data.applications.filter((x: any) => x.id === currentTemplate.id)[0];
-      let cols = row.fields.map((f: IField) => {
+      const row = data.applications.filter((x) => x.id === currentTemplate.id)[0];
+
+      let cols: any = row.fields.map((f) => {
         return {
           key: f.name,
           name: f.name,
@@ -76,12 +60,12 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   const getRows = () => {
     if (searchResults) {
       let rows: any = [];
-      searchResults.forEach((result: IApplication) => {
+      searchResults.forEach((result) => {
         console.log(result);
-        let fields: any = {};
-        result.fields.forEach((f: IField) => {
+        let fields = {};
+        result.fields.forEach((f) => {
           console.log(f);
-          fields = { ...fields, id: result.id, [f.name]: f.value };
+          fields = { ...fields, id: result.id, [f.name!]: f.value };
         });
         rows = [...rows, fields];
       });
@@ -91,27 +75,29 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     }
   };
 
-  const rowKeyGetter = (row: IRow) => {
+  const rowKeyGetter = (row: Row) => {
     return row.id;
   };
 
   //for viewing a document or multiple documents
   const viewDocument = () => {
-    if (selectedRows.size === 1) {
-      selectedRows.forEach((value) => {
-        const res = searchResults.find((f: IField) => f.id === value);
-        console.log(res.location);
+    if (searchResults) {
+      if (selectedRows.size === 1) {
+        selectedRows.forEach((value) => {
+          const res = searchResults.find((f) => f.id === value);
+          console.log(res!.location);
 
-        window.open(`/viewer/${res.location.replaceAll("/", "_")}`, "_blank");
-      });
-    } else if (selectedRows.size > 1) {
-      selectedRows.forEach((value) => {
-        const res = searchResults.find((f: IField) => f.id === value);
-        console.log(res);
-        console.log("opening", res.location);
+          window.open(`/viewer/${res!.location.replaceAll("/", "_")}`, "_blank");
+        });
+      } else if (selectedRows.size > 1) {
+        selectedRows.forEach((value) => {
+          const res = searchResults.find((f) => f.id === value);
+          console.log(res);
+          console.log("opening", res!.location);
 
-        window.open(`/viewer/${res.location.replaceAll("/", "_")}`, "_blank");
-      });
+          window.open(`/viewer/${res!.location.replaceAll("/", "_")}`, "_blank");
+        });
+      }
     }
   };
 
@@ -120,7 +106,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
       value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults }}
     >
       <RetrievalBody>
-        {searchResults.length > 0 ? (
+        {searchResults && searchResults.length > 0 ? (
           <div className="flex flex-col">
             {selectedRows.size > 0 ? (
               <div className="flex flex-row px-3 py-3 transition duration-500 ease-linear bg-gray-50 border-b border-r justify-start gap-2 text-sm font-light text-gray-800">
