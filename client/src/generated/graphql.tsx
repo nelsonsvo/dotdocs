@@ -25,12 +25,14 @@ export type AppField = {
   name: Scalars['String'];
   max_length: Scalars['Float'];
   filefields?: Maybe<Array<FileField>>;
+  picklist_values: Array<Scalars['String']>;
 };
 
 export type AppFieldCreateInput = {
   name: Scalars['String'];
   type: Scalars['String'];
   max_length: Scalars['Float'];
+  picklist_values?: Maybe<Array<Scalars['String']>>;
 };
 
 export type AppFieldInput = {
@@ -215,7 +217,7 @@ export type GetRetrievalTemplatesQuery = (
     & Pick<Application, 'id' | 'name' | 'updatedAt'>
     & { fields: Array<(
       { __typename?: 'AppField' }
-      & Pick<AppField, 'id' | 'name' | 'type' | 'max_length'>
+      & Pick<AppField, 'id' | 'name' | 'type' | 'max_length' | 'picklist_values'>
     )> }
   )> }
 );
@@ -445,6 +447,7 @@ export const GetRetrievalTemplatesDocument = gql`
       name
       type
       max_length
+      picklist_values
     }
   }
 }
