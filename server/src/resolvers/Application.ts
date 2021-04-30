@@ -15,6 +15,9 @@ export class AppFieldCreateInput {
 
   @Field(() => Number)
   max_length: number;
+
+  @Field(() => [String], { nullable: true })
+  picklist_values?: string[];
 }
 
 @Resolver()
