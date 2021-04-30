@@ -8,15 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class migration1617369360832 {
+class picklistcol1619814693970 {
+    constructor() {
+        this.name = 'picklistcol1619814693970';
+    }
     up(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield queryRunner.query(`ALTER TABLE "app_field" ADD "picklist_values" text array NOT NULL DEFAULT '{}'::text[]`);
         });
     }
     down(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield queryRunner.query(`ALTER TABLE "app_field" DROP COLUMN "picklist_values"`);
         });
     }
 }
-exports.migration1617369360832 = migration1617369360832;
-//# sourceMappingURL=1617369360832-migration.js.map
+exports.picklistcol1619814693970 = picklistcol1619814693970;
+//# sourceMappingURL=1619814693970-picklistcol.js.map
