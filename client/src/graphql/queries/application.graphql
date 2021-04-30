@@ -15,6 +15,7 @@ query GetRetrievalTemplates {
       name
       type
       max_length
+      picklist_values
     }
   }
 }
