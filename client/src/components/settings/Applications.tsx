@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  CreateApplicationDocument,
+  GetApplicationsDocument,
   useCreateApplicationMutation,
   useDeleteApplicationMutation,
   useGetApplicationsQuery,
@@ -10,6 +10,13 @@ import ApplicationCard from "../cards/ApplicationCard";
 import SettingSectionCard from "../ui/SettingSectionCard";
 
 interface ApplicationsProps {}
+
+enum Field {
+  PickList = "Pick List",
+  Date = "Date",
+  Text = "Text",
+  Number = "Number",
+}
 
 type FormInputs = {
   app_name: string;
@@ -22,11 +29,11 @@ interface ICurrentFields {
   name: string;
   type: string;
   max_length: number;
+  picklist_values: string[];
 }
 const Applications: React.FC<ApplicationsProps> = () => {
   const [createApplication] = useCreateApplicationMutation({
-    refetchQueries: [{ query: CreateApplicationDocument }],
-    errorPolicy: "all",
+    refetchQueries: [{ query: GetApplicationsDocument }],
   });
 
   const [deleteApplication] = useDeleteApplicationMutation({
@@ -35,18 +42,21 @@ const Applications: React.FC<ApplicationsProps> = () => {
 
   const { loading, data } = useGetApplicationsQuery();
 
-  const { register, handleSubmit } = useForm<FormInputs>();
+  const { register, handleSubmit, reset } = useForm<FormInputs>();
 
   const [fieldType, setFieldType] = useState("");
   const [isNewApplication, setIsNewApplication] = useState(false);
   const [currentFields, setCurrentFields] = useState<Array<ICurrentFields>>([]);
   const [appName, setName] = useState("");
 
+  const [picklistValues, setPicklistValues] = useState<string[]>([]);
+
   const resetState = (): void => {
     setName("");
     setFieldType("");
     setIsNewApplication(false);
     setCurrentFields([]);
+    setPicklistValues([]);
   };
 
   const onSubmit = handleSubmit((data: FormInputs) => {
@@ -56,6 +66,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
         name: data.name,
         type: data.type,
         max_length: Number(data.max_length),
+        picklist_values: picklistValues,
       },
     ]);
   });
@@ -89,6 +100,15 @@ const Applications: React.FC<ApplicationsProps> = () => {
         },
       });
     } catch {}
+  };
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const addPickListEntry = () => {
+    if (inputRef.current) {
+      setPicklistValues([...picklistValues, inputRef!.current!.value]);
+      inputRef!.current!.value = "";
+    }
   };
 
   return (
@@ -128,7 +148,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                     <button
                       type="button"
                       onClick={() => setIsNewApplication(!isNewApplication)}
-                      className={`w-full justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-${
+                      className={`w-full justify-center py-2 px-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-${
                         !isNewApplication ? "blue" : "red"
                       }-600 hover:bg-${
                         !isNewApplication ? "blue" : "red"
@@ -136,7 +156,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                         !isNewApplication ? "blue" : "red"
                       }-500`}
                     >
-                      {!isNewApplication ? "Create New" : "Cancel"}
+                      {!isNewApplication ? "Create Application" : "Cancel"}
                     </button>
                   </div>
                   {isNewApplication && (
@@ -156,63 +176,63 @@ const Applications: React.FC<ApplicationsProps> = () => {
                           className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         />
                       </div>
-                      <h1 className="col-span-6 text-lg text-gray-700 font-bold">Fields:</h1>
-                      {currentFields && (
-                        <div className="flex flex-col col-span-6">
-                          <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                              <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                  <thead className="bg-gray-50">
-                                    <tr>
-                                      <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                      >
-                                        Name
-                                      </th>
-                                      <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                      >
-                                        Type
-                                      </th>
-                                      <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                      >
-                                        Max Length
-                                      </th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className="bg-white divide-y divide-gray-200 py-5 px-5">
-                                    {currentFields.map((field) => {
-                                      return (
-                                        <tr className="">
-                                          <td className=" text-md text-gray-800 px-6 py-4 ">
-                                            {field.name}
-                                          </td>
-                                          <td className=" text-md text-gray-800 px-6 py-4 ">
-                                            {field.type}
-                                          </td>
-                                          <td className="text-md text-gray-800 px-6 py-4 ">
-                                            {field.max_length}
-                                          </td>
-                                        </tr>
-                                      );
-                                    })}
-                                  </tbody>
-                                </table>
+                      {currentFields.length > 0 && (
+                        <>
+                          <h1 className="col-span-6 text-lg text-gray-700 font-bold">Fields:</h1>
+                          <div className="flex flex-col col-span-6">
+                            <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                              <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                  <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                      <tr>
+                                        <th
+                                          scope="col"
+                                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                          Name
+                                        </th>
+                                        <th
+                                          scope="col"
+                                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                          Type
+                                        </th>
+                                        <th
+                                          scope="col"
+                                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                          Max Length
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200 py-5 px-5">
+                                      {currentFields.map((field) => {
+                                        return (
+                                          <tr className="">
+                                            <td className=" text-md text-gray-800 px-6 py-4 ">
+                                              {field.name}
+                                            </td>
+                                            <td className=" text-md text-gray-800 px-6 py-4 ">
+                                              {field.type}
+                                            </td>
+                                            <td className="text-md text-gray-800 px-6 py-4 ">
+                                              {field.max_length}
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </table>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </>
                       )}
-
                       <div className="col-span-6">
                         <h1 className="text-lg text-gray-700">Add Fields</h1>
                       </div>
-
                       <div className="col-span-2">
                         <label
                           htmlFor="last_name"
@@ -267,21 +287,62 @@ const Applications: React.FC<ApplicationsProps> = () => {
                           />
                         </div>
                       )}
-
                       <div className="col-span-1 py-6">
                         <button
                           type="submit"
-                          className="w-full text-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          className="w-full text-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                         >
-                          Add
+                          Add Field
                         </button>
                       </div>
-                      <div className="col-span-5"></div>
-                      <div className="col-span-1 py-6">
+                      {fieldType === Field.PickList && (
+                        <>
+                          <div className="col-span-6">
+                            <p className="text-lg text-gray-700 w-1/2">New Picklist Values</p>
+                            <ul className="mt-4 space-y-3 text-gray-700 text-md ml-3">
+                              {picklistValues.map((val: string, index: number) => {
+                                return (
+                                  <li
+                                    key={index}
+                                    className="px-4 py-3 bg-gray-100 shadow-md rounded"
+                                  >
+                                    {val}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                          <div className="col-span-3">
+                            <label
+                              htmlFor="last_name"
+                              className="block  text-sm font-medium text-gray-700"
+                            >
+                              Name
+                            </label>
+                            <input
+                              type="text"
+                              name="name"
+                              id="name"
+                              ref={inputRef}
+                              className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                            />
+                          </div>
+                          <div className="col-span-3 py-6">
+                            <button
+                              type="button"
+                              onClick={() => addPickListEntry()}
+                              className="text-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                            >
+                              Add Entry
+                            </button>
+                          </div>
+                        </>
+                      )}
+                      <div className="col-span-6 justify-end py-6">
                         <button
                           onClick={() => saveApplication()}
                           type="button"
-                          className="w-full justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          className="justify-end py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
                           Save Application
                         </button>
