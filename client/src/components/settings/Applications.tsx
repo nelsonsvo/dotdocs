@@ -11,7 +11,7 @@ import SettingSectionCard from "../ui/SettingSectionCard";
 
 interface ApplicationsProps {}
 
-enum Field {
+export enum FieldType {
   PickList = "Pick List",
   Date = "Date",
   Text = "Text",
@@ -295,7 +295,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                           Add Field
                         </button>
                       </div>
-                      {fieldType === Field.PickList && (
+                      {fieldType === FieldType.PickList && (
                         <>
                           <div className="col-span-6">
                             <p className="text-lg text-gray-700 w-1/2">New Picklist Values</p>
