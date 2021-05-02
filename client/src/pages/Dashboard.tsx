@@ -20,7 +20,10 @@ export default function Dashboard({}: Props): ReactElement {
                     Welcome, {sessionStorage.username}
                   </h1>
                 </div>
-                <NavLink to="/retrieval">
+                <NavLink
+                  to="/retrieval"
+                  className="transition duration-500 ease-in-out transform hover:-translate-y-1 "
+                >
                   <div className="flex flex-row mt-5">
                     <div>
                       <svg
@@ -38,10 +41,13 @@ export default function Dashboard({}: Props): ReactElement {
                         ></path>
                       </svg>
                     </div>
-                    <div className="text-gray-700 text-lg">Find a document</div>
+                    <p className="text-gray-700 text-lg ">Find a document</p>
                   </div>
                 </NavLink>
-                <NavLink to="/index">
+                <NavLink
+                  to="/index"
+                  className="transition duration-500 ease-in-out transform hover:-translate-y-1 "
+                >
                   <div className="flex flex-row mt-5">
                     <div>
                       <svg
