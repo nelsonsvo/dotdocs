@@ -1,7 +1,9 @@
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import DataGrid, { SelectColumn, TextEditor } from "react-data-grid";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
+import { FieldType } from "../components/settings/Applications";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GetFilesQuery, useGetRetrievalTemplatesQuery } from "../generated/graphql";
 
@@ -64,8 +66,12 @@ const Retrieval: React.FC<RetrievalProps> = () => {
         console.log(result);
         let fields = {};
         result.fields.forEach((f) => {
-          console.log(f);
-          fields = { ...fields, id: result.id, [f.name!]: f.value };
+          let fieldValue = f.value;
+          if (f.field.type === FieldType.Date) {
+            moment.locale("gb");
+            fieldValue = moment(f.value).format("DD/MM/YYYY");
+          }
+          fields = { ...fields, id: result.id, [f.name!]: fieldValue };
         });
         rows = [...rows, fields];
       });
