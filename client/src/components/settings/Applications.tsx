@@ -60,12 +60,17 @@ const Applications: React.FC<ApplicationsProps> = () => {
   };
 
   const onSubmit = handleSubmit((data: FormInputs) => {
+    var max_length = 0;
+
+    if (data.max_length) {
+      max_length = Number(data.max_length);
+    }
     setCurrentFields([
       ...currentFields,
       {
         name: data.name,
         type: data.type,
-        max_length: Number(data.max_length),
+        max_length: max_length,
         picklist_values: picklistValues,
       },
     ]);
