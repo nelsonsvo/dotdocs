@@ -25,7 +25,7 @@ export type AppField = {
   name: Scalars['String'];
   max_length: Scalars['Float'];
   filefields?: Maybe<Array<FileField>>;
-  picklist_values: Array<Scalars['String']>;
+  picklist_values?: Maybe<Array<Scalars['String']>>;
 };
 
 export type AppFieldCreateInput = {
@@ -236,6 +236,10 @@ export type GetFilesQuery = (
     & { fields: Array<(
       { __typename?: 'FileField' }
       & Pick<FileField, 'id' | 'name' | 'value'>
+      & { field: (
+        { __typename?: 'AppField' }
+        & Pick<AppField, 'type'>
+      ) }
     )> }
   )> }
 );
@@ -489,6 +493,9 @@ export const GetFilesDocument = gql`
       id
       name
       value
+      field {
+        type
+      }
     }
   }
 }
