@@ -229,7 +229,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                   {f.name}
                                 </label>
                                 <input
-                                  type="datetime-local"
+                                  type="date"
                                   name={f.id}
                                   maxLength={f.max_length}
                                   ref={register}

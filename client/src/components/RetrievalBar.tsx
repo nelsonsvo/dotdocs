@@ -158,7 +158,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                                 {f.name}
                               </label>
                               <input
-                                type="datetime-local"
+                                type="date"
                                 name={f.id}
                                 maxLength={f.max_length}
                                 ref={register}
