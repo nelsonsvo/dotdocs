@@ -7,6 +7,7 @@ import {
   useGetApplicationsQuery,
 } from "../../generated/graphql";
 import ApplicationCard from "../cards/ApplicationCard";
+import Modal from "../ui/Modal";
 import SettingSectionCard from "../ui/SettingSectionCard";
 
 interface ApplicationsProps {}
@@ -48,6 +49,12 @@ const Applications: React.FC<ApplicationsProps> = () => {
   const [isNewApplication, setIsNewApplication] = useState(false);
   const [currentFields, setCurrentFields] = useState<Array<ICurrentFields>>([]);
   const [appName, setName] = useState("");
+
+  //modal
+  const [open, setModalOpen] = useState(false);
+  const [modalSuccess, setModalSuccess] = useState(true);
+  let modalTitle = "Application Created";
+  let modalMessage = "Application was created successfully";
 
   const [picklistValues, setPicklistValues] = useState<string[]>([]);
 
@@ -104,7 +111,15 @@ const Applications: React.FC<ApplicationsProps> = () => {
           cache.gc();
         },
       });
-    } catch {}
+
+      setModalOpen(true);
+      modalTitle = "Application Created";
+      modalMessage = "Application was created successfully";
+    } catch {
+      setModalOpen(true);
+      modalTitle = "Error";
+      modalMessage = "Failed to create an application please try again.";
+    }
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -119,6 +134,15 @@ const Applications: React.FC<ApplicationsProps> = () => {
   return (
     <>
       <SettingSectionCard>
+        <Modal
+          open={open}
+          setModalOpen={setModalOpen}
+          title={modalTitle}
+          success={modalSuccess}
+          btnLabel="Ok"
+        >
+          {modalMessage}
+        </Modal>
         <div className="mt-10 sm:mt-0">
           <div className="shadow overflow-hidden sm:rounded-md" />
           <div className="mt-10 sm:mt-0">

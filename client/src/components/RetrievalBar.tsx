@@ -125,7 +125,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                                 ref={register}
                                 className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                               >
-                                {f.picklist_values.map((val: string, index: number) => {
+                                {f.picklist_values!.map((val: string, index: number) => {
                                   return <option key={index + 10000}>{val}</option>;
                                 })}
                               </select>
@@ -158,7 +158,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                                 {f.name}
                               </label>
                               <input
-                                type="datetime-local"
+                                type="date"
                                 name={f.id}
                                 maxLength={f.max_length}
                                 ref={register}

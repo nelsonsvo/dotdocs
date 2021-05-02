@@ -209,13 +209,13 @@ export class FileResolver {
       });
 
       console.log(appIds);
-
-      return await AppFile.find({
-        relations: ["fields"],
+      const res = await AppFile.find({
+        relations: ["fields", "fields.field"],
         where: {
           id: In(appIds),
         },
       });
+      return res;
     }
   }
 }

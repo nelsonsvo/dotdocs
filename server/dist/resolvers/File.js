@@ -209,12 +209,13 @@ let FileResolver = class FileResolver {
                     }
                 });
                 console.log(appIds);
-                return yield AppFile_1.AppFile.find({
-                    relations: ["fields"],
+                const res = yield AppFile_1.AppFile.find({
+                    relations: ["fields", "fields.field"],
                     where: {
                         id: typeorm_1.In(appIds),
                     },
                 });
+                return res;
             }
         });
     }

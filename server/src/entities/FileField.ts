@@ -31,6 +31,6 @@ export class FileField extends BaseEntity {
   file: AppFile;
 
   @Field(() => AppField)
-  @ManyToOne(() => AppField, (field) => field.filefields)
+  @ManyToOne(() => AppField, (field) => field.filefields, { eager: true })
   field: AppField;
 }

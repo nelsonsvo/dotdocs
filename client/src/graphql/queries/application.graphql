@@ -29,6 +29,9 @@ query GetFiles($id: String!, $fields: [AppFieldSearchInput!]!) {
       id
       name
       value
+      field {
+        type
+      }
     }
   }
 }
