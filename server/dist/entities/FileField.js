@@ -41,7 +41,7 @@ __decorate([
 ], FileField.prototype, "file", void 0);
 __decorate([
     type_graphql_1.Field(() => AppField_1.AppField),
-    typeorm_1.ManyToOne(() => AppField_1.AppField, (field) => field.filefields),
+    typeorm_1.ManyToOne(() => AppField_1.AppField, (field) => field.filefields, { eager: true }),
     __metadata("design:type", AppField_1.AppField)
 ], FileField.prototype, "field", void 0);
 FileField = __decorate([
