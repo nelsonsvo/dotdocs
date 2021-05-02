@@ -213,7 +213,43 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                 <input
                                   type={f.type.toLowerCase()}
                                   name={f.id}
-                                  defaultValue={""}
+                                  maxLength={f.max_length}
+                                  ref={register}
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                />
+                              </li>
+                            );
+                          } else if (f.type === FieldType.Date) {
+                            return (
+                              <li className="px-2" key={f.id}>
+                                <label
+                                  htmlFor={f.name}
+                                  className="block  text-sm font-medium text-gray-700"
+                                >
+                                  {f.name}
+                                </label>
+                                <input
+                                  type="datetime-local"
+                                  name={f.id}
+                                  maxLength={f.max_length}
+                                  ref={register}
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                />
+                              </li>
+                            );
+                          } else if (f.type === FieldType.Number) {
+                            return (
+                              <li className="px-2" key={f.id}>
+                                <label
+                                  htmlFor={f.name}
+                                  className="block  text-sm font-medium text-gray-700"
+                                >
+                                  {f.name}
+                                </label>
+                                <input
+                                  type={f.type}
+                                  name={f.id}
+                                  max={f.max_length}
                                   ref={register}
                                   className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
                                 />
