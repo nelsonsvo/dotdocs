@@ -36,7 +36,7 @@ const Login: React.FC<LoginFormProps> = () => {
 
   return (
     <div>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
             <div className="flex flex-col items-center">
@@ -55,7 +55,7 @@ const Login: React.FC<LoginFormProps> = () => {
                   name="username"
                   type="username"
                   autoComplete="username"
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border bg-gray-100 border-gray-300 placeholder-gray-600 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Username"
                   ref={register({ required: true })}
                 />
@@ -75,7 +75,7 @@ const Login: React.FC<LoginFormProps> = () => {
                   name="password"
                   type="password"
                   autoComplete="current-password"
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border bg-gray-100 border-gray-300 placeholder-gray-600 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                   ref={register({ required: true })}
                 />
@@ -96,7 +96,10 @@ const Login: React.FC<LoginFormProps> = () => {
                   type="checkbox"
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700i">
+                <label
+                  htmlFor="remember_me"
+                  className="ml-2 font-medium block text-sm text-gray-800"
+                >
                   Remember me
                 </label>
               </div>
