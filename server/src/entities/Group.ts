@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, BeforeInsert, Column, Entity, PrimaryColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
@@ -18,6 +19,10 @@ export class Group extends BaseEntity {
   @Field(() => [String], { nullable: true })
   @Column("text", { array: true, nullable: true })
   permissions: string[];
+
+  @Field(() => User)
+  @OneToMany(() => User, (user) => user.groups)
+  user: User;
 
   @BeforeInsert()
   addId() {
