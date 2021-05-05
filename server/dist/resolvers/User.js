@@ -31,6 +31,7 @@ const apollo_client_1 = require("apollo-client");
 const apollo_server_errors_1 = require("apollo-server-errors");
 const argon2 = __importStar(require("argon2"));
 const type_graphql_1 = require("type-graphql");
+const Group_1 = require("../entities/Group");
 const User_1 = require("../entities/User");
 let UserResolver = class UserResolver {
     me({ req, res }) {
@@ -63,12 +64,23 @@ let UserResolver = class UserResolver {
             });
         });
     }
-    createUser(username, user_type, password, { req, res }) {
+    createUser(username, user_type, password, email, groupId, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
                 try {
                     const hash = yield argon2.hash(password);
-                    const user = User_1.User.create({ username, user_type, password: hash });
+                    const groups = yield Group_1.Group.find({
+                        where: {
+                            id: groupId,
+                        },
+                    });
+                    const user = User_1.User.create({
+                        username,
+                        user_type,
+                        email,
+                        password: hash,
+                        groups,
+                    });
                     yield User_1.User.save(user);
                     return user;
                 }
@@ -112,9 +124,11 @@ __decorate([
     __param(0, type_graphql_1.Arg("username")),
     __param(1, type_graphql_1.Arg("user_type")),
     __param(2, type_graphql_1.Arg("password")),
-    __param(3, type_graphql_1.Ctx()),
+    __param(3, type_graphql_1.Arg("email")),
+    __param(4, type_graphql_1.Arg("groupId")),
+    __param(5, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "createUser", null);
 UserResolver = __decorate([

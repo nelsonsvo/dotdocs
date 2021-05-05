@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
-const Group_1 = require("./Group");
-let User = class User extends typeorm_1.BaseEntity {
+const User_1 = require("./User");
+let Group = class Group extends typeorm_1.BaseEntity {
     addId() {
         this.id = uuid_1.v4();
     }
@@ -22,43 +22,31 @@ __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.PrimaryColumn("uuid"),
     __metadata("design:type", String)
-], User.prototype, "id", void 0);
+], Group.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.Column("text"),
     __metadata("design:type", String)
-], User.prototype, "user_type", void 0);
+], Group.prototype, "name", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
-    typeorm_1.Column("text", { unique: true }),
-    __metadata("design:type", String)
-], User.prototype, "username", void 0);
-__decorate([
-    type_graphql_1.Field(() => String),
-    typeorm_1.Column("text", { unique: true }),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    type_graphql_1.Field(() => String),
-    typeorm_1.Column("text"),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    type_graphql_1.Field(() => [Group_1.Group], { nullable: true }),
-    typeorm_1.ManyToOne(() => Group_1.Group, (group) => group.user, {
-        eager: true,
-    }),
+    type_graphql_1.Field(() => [String], { nullable: true }),
+    typeorm_1.Column("text", { array: true, nullable: true }),
     __metadata("design:type", Array)
-], User.prototype, "groups", void 0);
+], Group.prototype, "permissions", void 0);
+__decorate([
+    type_graphql_1.Field(() => User_1.User),
+    typeorm_1.OneToMany(() => User_1.User, (user) => user.groups),
+    __metadata("design:type", User_1.User)
+], Group.prototype, "user", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], User.prototype, "addId", null);
-User = __decorate([
+], Group.prototype, "addId", null);
+Group = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity()
-], User);
-exports.User = User;
-//# sourceMappingURL=User.js.map
+], Group);
+exports.Group = Group;
+//# sourceMappingURL=Group.js.map

@@ -2,6 +2,7 @@ import { ApolloError } from "apollo-client";
 import { AuthenticationError } from "apollo-server-errors";
 import * as argon2 from "argon2";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Group } from "../entities/Group";
 import { User } from "../entities/User";
 import { MyContext } from "./../types/ContextType";
 
@@ -48,12 +49,27 @@ export class UserResolver {
     @Arg("username") username: string,
     @Arg("user_type") user_type: string,
     @Arg("password") password: string,
+    @Arg("email") email: string,
+    @Arg("groupId") groupId: string,
     @Ctx() { req, res }: MyContext
   ) {
     if (req.session.userId) {
       try {
         const hash = await argon2.hash(password);
-        const user = User.create({ username, user_type, password: hash });
+
+        const groups = await Group.find({
+          where: {
+            id: groupId,
+          },
+        });
+
+        const user = User.create({
+          username,
+          user_type,
+          email,
+          password: hash,
+          groups,
+        });
         await User.save(user);
 
         return user;

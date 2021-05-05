@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, BeforeInsert, Column, Entity, PrimaryColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
+import { Group } from "./Group";
 
 @ObjectType()
 @Entity()
@@ -18,8 +19,18 @@ export class User extends BaseEntity {
   username!: string;
 
   @Field(() => String)
+  @Column("text", { unique: true })
+  email!: string;
+
+  @Field(() => String)
   @Column("text")
   password!: string;
+
+  @Field(() => [Group], { nullable: true })
+  @ManyToOne(() => Group, (group) => group.user, {
+    eager: true,
+  })
+  groups: Group[];
 
   @BeforeInsert()
   addId() {

@@ -78,12 +78,21 @@ export type FileField = {
   field: AppField;
 };
 
+export type Group = {
+  __typename?: 'Group';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  permissions?: Maybe<Array<Scalars['String']>>;
+  user: User;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createApplication: Application;
   deleteApplication: Scalars['Boolean'];
   singleUpload: AppFile;
   indexFile: Scalars['Boolean'];
+  createGroup: User;
   createUser: User;
 };
 
@@ -111,7 +120,15 @@ export type MutationIndexFileArgs = {
 };
 
 
+export type MutationCreateGroupArgs = {
+  permissions: Array<Scalars['String']>;
+  name: Scalars['String'];
+};
+
+
 export type MutationCreateUserArgs = {
+  groupId: Scalars['String'];
+  email: Scalars['String'];
   password: Scalars['String'];
   user_type: Scalars['String'];
   username: Scalars['String'];
@@ -121,6 +138,7 @@ export type Query = {
   __typename?: 'Query';
   applications: Array<Application>;
   getFiles: Array<AppFile>;
+  groups: Array<Group>;
   me?: Maybe<User>;
   users: Array<User>;
   login?: Maybe<User>;
@@ -144,7 +162,9 @@ export type User = {
   id: Scalars['String'];
   user_type: Scalars['String'];
   username: Scalars['String'];
+  email: Scalars['String'];
   password: Scalars['String'];
+  groups?: Maybe<Array<Group>>;
 };
 
 export type CreateApplicationMutationVariables = Exact<{
@@ -244,6 +264,17 @@ export type GetFilesQuery = (
   )> }
 );
 
+export type GetGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetGroupsQuery = (
+  { __typename?: 'Query' }
+  & { groups: Array<(
+    { __typename?: 'Group' }
+    & Pick<Group, 'name' | 'permissions'>
+  )> }
+);
+
 export type LoginQueryVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
@@ -266,6 +297,21 @@ export type MeQuery = (
   & { me?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'username' | 'password'>
+  )> }
+);
+
+export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUsersQuery = (
+  { __typename?: 'Query' }
+  & { users: Array<(
+    { __typename?: 'User' }
+    & Pick<User, 'username' | 'email'>
+    & { groups?: Maybe<Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'name'>
+    )>> }
   )> }
 );
 
@@ -529,6 +575,41 @@ export function useGetFilesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetFilesQueryHookResult = ReturnType<typeof useGetFilesQuery>;
 export type GetFilesLazyQueryHookResult = ReturnType<typeof useGetFilesLazyQuery>;
 export type GetFilesQueryResult = Apollo.QueryResult<GetFilesQuery, GetFilesQueryVariables>;
+export const GetGroupsDocument = gql`
+    query GetGroups {
+  groups {
+    name
+    permissions
+  }
+}
+    `;
+
+/**
+ * __useGetGroupsQuery__
+ *
+ * To run a query within a React component, call `useGetGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetGroupsQuery(baseOptions?: Apollo.QueryHookOptions<GetGroupsQuery, GetGroupsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetGroupsQuery, GetGroupsQueryVariables>(GetGroupsDocument, options);
+      }
+export function useGetGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetGroupsQuery, GetGroupsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetGroupsQuery, GetGroupsQueryVariables>(GetGroupsDocument, options);
+        }
+export type GetGroupsQueryHookResult = ReturnType<typeof useGetGroupsQuery>;
+export type GetGroupsLazyQueryHookResult = ReturnType<typeof useGetGroupsLazyQuery>;
+export type GetGroupsQueryResult = Apollo.QueryResult<GetGroupsQuery, GetGroupsQueryVariables>;
 export const LoginDocument = gql`
     query Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
@@ -602,3 +683,41 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const GetUsersDocument = gql`
+    query GetUsers {
+  users {
+    username
+    email
+    groups {
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUsersQuery__
+ *
+ * To run a query within a React component, call `useGetUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUsersQuery(baseOptions?: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+      }
+export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+        }
+export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
+export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
+export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;

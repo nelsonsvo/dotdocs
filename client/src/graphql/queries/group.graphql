@@ -1,0 +1,6 @@
+query GetGroups {
+  groups {
+    name
+    permissions
+  }
+}
