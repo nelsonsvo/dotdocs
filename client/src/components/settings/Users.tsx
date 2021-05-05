@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import Gravatar from "react-gravatar";
+import { useGetGroupsQuery, useGetUsersQuery } from "../../generated/graphql";
+import GroupModal from "../ui/GroupModal";
 import SettingSectionCard from "../ui/SettingSectionCard";
 
 interface UsersProps {}
 
 const Users: React.FC<UsersProps> = () => {
+  const { loading, data, error } = useGetUsersQuery();
+  const { loading: isLoading, data: groups, error: isError } = useGetGroupsQuery();
+
+  const [groupModalOpen, setGroupModalOpen] = useState<boolean>(false);
+
   const createNewGroup = () => {
     console.log("im clicked");
   };
@@ -14,6 +21,8 @@ const Users: React.FC<UsersProps> = () => {
 
   return (
     <SettingSectionCard>
+      <GroupModal open={true} setModalOpen={setGroupModalOpen} />
+
       <div className="flex flex-col w-full">
         <div className="space-y-5">
           <h1 className="text-gray-700 mb-10 text-2xl font-medium tracking-wide text-left">
@@ -53,17 +62,28 @@ const Users: React.FC<UsersProps> = () => {
                 </tr>
               </thead>
               <tbody className="bg-gray-50 divide-y  divide-gray-200 py-5 text-left ">
-                <tr className="">
-                  <td className="px-6 py-4 text-sm  text-gray-900">Admin</td>
-                  <td className="px-6 py-2 whitespace-pre-line ">
-                    <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Yes
-                    </span>
-                  </td>
-                  <td className="text-sm cursor-pointer text-blue-500 font-medium text-right px-8 py-2 ">
-                    Edit
-                  </td>
-                </tr>
+                {isLoading &&
+                  groups &&
+                  groups.groups.map((group) => {
+                    return (
+                      <tr>
+                        <td className="px-6 py-4 text-sm  text-gray-900">{group.name}</td>
+                        <td className="px-6 py-2 whitespace-pre-line ">
+                          {group.permissions &&
+                            group.permissions.map((perm) => {
+                              return (
+                                <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                  {perm}
+                                </span>
+                              );
+                            })}
+                        </td>
+                        <td className="text-sm cursor-pointer text-blue-500 font-medium text-right px-8 py-2 ">
+                          Edit
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
@@ -96,12 +116,6 @@ const Users: React.FC<UsersProps> = () => {
                     scope="col"
                     className=" px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Role
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3  text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
                     Groups
                   </th>
 
@@ -112,43 +126,40 @@ const Users: React.FC<UsersProps> = () => {
                 </tr>
               </thead>
               <tbody className="bg-gray-50 divide-y  divide-gray-200 py-5 text-left ">
-                <tr className="">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <Gravatar email="nelsonrowley02@gmail.com" className="rounded-full" />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">nrowley</div>
-                        <div className="text-sm text-gray-500">nelsonrowley02@gmail.com</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm  text-gray-900">Admin</td>
-                  <td className="px-6 py-2 whitespace-pre-line ">
-                    <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Yes
-                    </span>
-                    <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Yes
-                    </span>
-                    <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Yes
-                    </span>
-                    <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Yes
-                    </span>
-                    <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Yes
-                    </span>
-                    <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Yes
-                    </span>
-                  </td>
-                  <td className="text-sm cursor-pointer text-blue-500 font-medium  text-right px-8 py-2">
-                    Edit
-                  </td>
-                </tr>
+                {!loading &&
+                  data &&
+                  data.users.map((user) => {
+                    return (
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10">
+                              <Gravatar email={user.email} className="rounded-full" />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {user.username}
+                              </div>
+                              <div className="text-sm text-gray-500">{user.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-2 whitespace-pre-line ">
+                          {user.groups &&
+                            user.groups.map((group) => {
+                              return (
+                                <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                  {group.name}
+                                </span>
+                              );
+                            })}
+                        </td>
+                        <td className="text-sm cursor-pointer text-blue-500 font-medium  text-right px-8 py-2">
+                          Edit
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
