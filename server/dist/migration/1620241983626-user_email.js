@@ -8,22 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class picklistcol1619814761176 {
+class userEmail1620241983626 {
     constructor() {
-        this.name = 'picklistcol1619814761176';
+        this.name = 'userEmail1620241983626';
     }
     up(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield queryRunner.query(`COMMENT ON COLUMN "app_field"."picklist_values" IS NULL`);
-            yield queryRunner.query(`ALTER TABLE "app_field" ALTER COLUMN "picklist_values" DROP DEFAULT`);
+            yield queryRunner.query(`ALTER TABLE "user" ADD "email" text NOT NULL`);
+            yield queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email")`);
         });
     }
     down(queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield queryRunner.query(`ALTER TABLE "app_field" ALTER COLUMN "picklist_values" SET DEFAULT '{}'`);
-            yield queryRunner.query(`COMMENT ON COLUMN "app_field"."picklist_values" IS NULL`);
+            yield queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22"`);
+            yield queryRunner.query(`ALTER TABLE "user" DROP COLUMN "email"`);
         });
     }
 }
-exports.picklistcol1619814761176 = picklistcol1619814761176;
-//# sourceMappingURL=1619814761176-picklistcol.js.map
+exports.userEmail1620241983626 = userEmail1620241983626;
+//# sourceMappingURL=1620241983626-user_email.js.map

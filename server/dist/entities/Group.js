@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
+const User_1 = require("./User");
 let Group = class Group extends typeorm_1.BaseEntity {
     addId() {
         this.id = uuid_1.v4();
@@ -32,6 +33,11 @@ __decorate([
     typeorm_1.Column("text", { array: true, nullable: true }),
     __metadata("design:type", Array)
 ], Group.prototype, "permissions", void 0);
+__decorate([
+    type_graphql_1.Field(() => User_1.User),
+    typeorm_1.OneToMany(() => User_1.User, (user) => user.groups),
+    __metadata("design:type", User_1.User)
+], Group.prototype, "user", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),

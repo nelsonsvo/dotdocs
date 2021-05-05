@@ -25,6 +25,7 @@ const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const Application_1 = require("./resolvers/Application");
 const File_1 = require("./resolvers/File");
+const Group_1 = require("./resolvers/Group");
 const User_1 = require("./resolvers/User");
 dotenv_1.default.config();
 const RedisStore = connect_redis_1.default(express_session_1.default);
@@ -50,7 +51,7 @@ const main = () => __awaiter(this, void 0, void 0, function* () {
         resave: false,
     }));
     const schema = yield type_graphql_1.buildSchema({
-        resolvers: [User_1.UserResolver, Application_1.ApplicationResolver, File_1.FileResolver],
+        resolvers: [User_1.UserResolver, Application_1.ApplicationResolver, File_1.FileResolver, Group_1.GroupResolver],
     });
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema,
