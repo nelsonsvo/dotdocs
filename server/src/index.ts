@@ -12,6 +12,7 @@ import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { ApplicationResolver } from "./resolvers/Application";
 import { FileResolver } from "./resolvers/File";
+import { GroupResolver } from "./resolvers/Group";
 import { UserResolver } from "./resolvers/User";
 import { MyContext } from "./types/ContextType";
 
@@ -55,7 +56,7 @@ const main = async () => {
   );
 
   const schema = await buildSchema({
-    resolvers: [UserResolver, ApplicationResolver, FileResolver],
+    resolvers: [UserResolver, ApplicationResolver, FileResolver, GroupResolver],
   });
 
   const apolloServer = new ApolloServer({
