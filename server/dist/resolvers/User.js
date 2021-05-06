@@ -45,7 +45,7 @@ let UserResolver = class UserResolver {
     }
     users() {
         return __awaiter(this, void 0, void 0, function* () {
-            return User_1.User.find();
+            return User_1.User.find({ relations: ["groups"] });
         });
     }
     login(username, password, { req, res }) {

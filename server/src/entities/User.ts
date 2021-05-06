@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, ManyToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
 import { Group } from "./Group";
 
@@ -27,8 +27,8 @@ export class User extends BaseEntity {
   password!: string;
 
   @Field(() => [Group], { nullable: true })
-  @ManyToOne(() => Group, (group) => group.user, {
-    eager: true,
+  @ManyToMany(() => Group, (group) => group.users, {
+    cascade: true,
   })
   groups: Group[];
 

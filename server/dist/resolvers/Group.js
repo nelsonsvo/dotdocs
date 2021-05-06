@@ -24,11 +24,12 @@ const apollo_client_1 = require("apollo-client");
 const apollo_server_errors_1 = require("apollo-server-errors");
 const type_graphql_1 = require("type-graphql");
 const Group_1 = require("../entities/Group");
-const User_1 = require("../entities/User");
 let GroupResolver = class GroupResolver {
     groups() {
         return __awaiter(this, void 0, void 0, function* () {
-            return Group_1.Group.find();
+            const res = yield Group_1.Group.find();
+            console.log(res);
+            return res;
         });
     }
     createGroup(name, permissions, { req, res }) {
@@ -38,13 +39,36 @@ let GroupResolver = class GroupResolver {
                 throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
             }
             try {
-                const group = Group_1.Group.create({ name, permissions });
+                let group = Group_1.Group.create({ name, permissions });
+                group = yield Group_1.Group.save(group);
                 return group;
             }
             catch (_a) {
                 throw new apollo_client_1.ApolloError({
                     errorMessage: "Failed to create group",
                 });
+            }
+        });
+    }
+    deleteGroup(id, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+            }
+            try {
+                try {
+                    yield Group_1.Group.delete(id);
+                    return true;
+                }
+                finally {
+                }
+            }
+            catch (_a) {
+                throw new apollo_client_1.ApolloError({
+                    errorMessage: "Failed to create group",
+                });
+                return false;
             }
         });
     }
@@ -56,14 +80,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GroupResolver.prototype, "groups", null);
 __decorate([
-    type_graphql_1.Mutation(() => User_1.User),
+    type_graphql_1.Mutation(() => Group_1.Group),
     __param(0, type_graphql_1.Arg("name")),
-    __param(1, type_graphql_1.Arg("permissions", (type) => [String])),
+    __param(1, type_graphql_1.Arg("permissions", () => [String])),
     __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Array, Object]),
     __metadata("design:returntype", Promise)
 ], GroupResolver.prototype, "createGroup", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("id")), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], GroupResolver.prototype, "deleteGroup", null);
 GroupResolver = __decorate([
     type_graphql_1.Resolver()
 ], GroupResolver);

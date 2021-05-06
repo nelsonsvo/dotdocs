@@ -1,0 +1,11 @@
+mutation CreateGroup($permissions: [String!]!, $name: String!) {
+  createGroup(permissions: $permissions, name: $name) {
+    id
+    name
+    permissions
+  }
+}
+
+mutation DeleteGroup($id: String!) {
+  deleteGroup(id: $id)
+}

@@ -4,20 +4,14 @@ interface ModalProps {
   open: boolean;
   title: string;
   success: boolean;
+  onSuccess?: () => void;
   btnLabel: string;
   setModalOpen: (bool: boolean) => void;
 }
 
-const Modal: React.FC<ModalProps> = ({
-  open,
-  title,
-  success,
-  btnLabel,
-
-  setModalOpen,
-  children,
-}) => {
+const Modal: React.FC<ModalProps> = ({ open, title, success, btnLabel, onSuccess, setModalOpen, children }) => {
   const onBtnClick = () => {
+    if (onSuccess) onSuccess();
     setModalOpen(!open);
   };
 
@@ -29,10 +23,7 @@ const Modal: React.FC<ModalProps> = ({
       aria-modal="true"
     >
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          aria-hidden="true"
-        ></div>
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
 
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
@@ -76,7 +67,11 @@ const Modal: React.FC<ModalProps> = ({
             <button
               type="button"
               onClick={() => onBtnClick()}
-              className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm`}
+              className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white bg-${
+                success ? "blue" : "red"
+              }-600 hover:bg-${
+                success ? "blue" : "red"
+              }-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm`}
             >
               {btnLabel}
             </button>
