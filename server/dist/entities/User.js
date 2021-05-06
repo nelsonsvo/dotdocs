@@ -45,8 +45,8 @@ __decorate([
 ], User.prototype, "password", void 0);
 __decorate([
     type_graphql_1.Field(() => [Group_1.Group], { nullable: true }),
-    typeorm_1.ManyToOne(() => Group_1.Group, (group) => group.user, {
-        eager: true,
+    typeorm_1.ManyToMany(() => Group_1.Group, (group) => group.users, {
+        cascade: true,
     }),
     __metadata("design:type", Array)
 ], User.prototype, "groups", void 0);

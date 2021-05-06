@@ -25,7 +25,7 @@ __decorate([
 ], Group.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
-    typeorm_1.Column("text"),
+    typeorm_1.Column("text", { unique: true }),
     __metadata("design:type", String)
 ], Group.prototype, "name", void 0);
 __decorate([
@@ -34,10 +34,11 @@ __decorate([
     __metadata("design:type", Array)
 ], Group.prototype, "permissions", void 0);
 __decorate([
-    type_graphql_1.Field(() => User_1.User),
-    typeorm_1.OneToMany(() => User_1.User, (user) => user.groups),
-    __metadata("design:type", User_1.User)
-], Group.prototype, "user", void 0);
+    type_graphql_1.Field(() => [User_1.User], { nullable: true }),
+    typeorm_1.ManyToMany(() => User_1.User, (user) => user.groups, { nullable: true, eager: true }),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Array)
+], Group.prototype, "users", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),
     __metadata("design:type", Function),
