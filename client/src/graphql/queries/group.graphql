@@ -1,6 +1,10 @@
 query GetGroups {
   groups {
+    id
     name
     permissions
+    users {
+      username
+    }
   }
 }
