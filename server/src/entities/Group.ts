@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, BeforeInsert, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
 import { User } from "./User";
 
@@ -11,7 +11,7 @@ export class Group extends BaseEntity {
   id: string;
 
   @Field(() => String)
-  @Column("text")
+  @Column("text", { unique: true })
   name: string;
 
   //this takes on the format of APPNAME_ACTION
@@ -20,9 +20,10 @@ export class Group extends BaseEntity {
   @Column("text", { array: true, nullable: true })
   permissions: string[];
 
-  @Field(() => User)
-  @OneToMany(() => User, (user) => user.groups)
-  user: User;
+  @Field(() => [User], { nullable: true })
+  @ManyToMany(() => User, (user) => user.groups, { nullable: true, eager: true })
+  @JoinTable()
+  users?: User[];
 
   @BeforeInsert()
   addId() {
