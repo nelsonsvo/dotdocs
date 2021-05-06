@@ -22,7 +22,7 @@ export class UserResolver {
 
   @Query(() => [User])
   async users() {
-    return User.find();
+    return User.find({ relations: ["groups"] });
   }
   @Query(() => User, { nullable: true })
   async login(
