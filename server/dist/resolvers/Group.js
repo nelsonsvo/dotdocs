@@ -57,17 +57,15 @@ let GroupResolver = class GroupResolver {
                 throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
             }
             try {
-                try {
-                    yield Group_1.Group.delete(id);
-                    return true;
-                }
-                finally {
-                }
+                yield Group_1.Group.delete(id);
+                return true;
             }
             catch (_a) {
                 throw new apollo_client_1.ApolloError({
                     errorMessage: "Failed to create group",
                 });
+            }
+            finally {
                 return false;
             }
         });

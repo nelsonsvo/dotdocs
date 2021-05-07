@@ -64,7 +64,7 @@ let UserResolver = class UserResolver {
             });
         });
     }
-    createUser(username, user_type, password, email, groupId, { req, res }) {
+    createUser(username, password, email, groupId, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
                 try {
@@ -76,8 +76,7 @@ let UserResolver = class UserResolver {
                     });
                     const user = User_1.User.create({
                         username,
-                        user_type,
-                        email,
+                        email: email === "" ? null : email,
                         password: hash,
                         groups,
                     });
@@ -88,6 +87,28 @@ let UserResolver = class UserResolver {
                     throw new apollo_client_1.ApolloError({
                         errorMessage: "Failed to create user",
                     });
+                }
+            }
+            else {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+            }
+        });
+    }
+    deleteUser(id, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (req.session.userId) {
+                try {
+                    yield User_1.User.delete(id);
+                    return true;
+                }
+                catch (_a) {
+                    throw new apollo_client_1.ApolloError({
+                        errorMessage: "Failed to create user",
+                    });
+                }
+                finally {
+                    return false;
                 }
             }
             else {
@@ -112,9 +133,7 @@ __decorate([
 ], UserResolver.prototype, "users", null);
 __decorate([
     type_graphql_1.Query(() => User_1.User, { nullable: true }),
-    __param(0, type_graphql_1.Arg("username")),
-    __param(1, type_graphql_1.Arg("password")),
-    __param(2, type_graphql_1.Ctx()),
+    __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("password")), __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
@@ -122,15 +141,22 @@ __decorate([
 __decorate([
     type_graphql_1.Mutation(() => User_1.User),
     __param(0, type_graphql_1.Arg("username")),
-    __param(1, type_graphql_1.Arg("user_type")),
-    __param(2, type_graphql_1.Arg("password")),
-    __param(3, type_graphql_1.Arg("email")),
-    __param(4, type_graphql_1.Arg("groupId")),
-    __param(5, type_graphql_1.Ctx()),
+    __param(1, type_graphql_1.Arg("password")),
+    __param(2, type_graphql_1.Arg("email")),
+    __param(3, type_graphql_1.Arg("groupId")),
+    __param(4, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "createUser", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("id")),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "deleteUser", null);
 UserResolver = __decorate([
     type_graphql_1.Resolver()
 ], UserResolver);
