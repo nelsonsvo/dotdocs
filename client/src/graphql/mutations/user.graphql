@@ -1,0 +1,10 @@
+mutation CreateUser($groupId: String!, $email: String!, $password: String!, $username: String!) {
+  createUser(groupId: $groupId, email: $email, password: $password, username: $username) {
+    id
+    username
+  }
+}
+
+mutation DeleteUser($id: String!) {
+  deleteUser(id: $id)
+}
