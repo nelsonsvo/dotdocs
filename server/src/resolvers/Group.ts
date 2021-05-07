@@ -43,16 +43,14 @@ export class GroupResolver {
       throw new AuthenticationError("USER NOT AUTHENTICATED");
     }
     try {
-      try{
-        await Group.delete(id);
-        return true
-      } 
+      await Group.delete(id);
+      return true;
     } catch {
       throw new ApolloError({
         errorMessage: "Failed to create group",
       });
-
-      return false
+    } finally {
+      return false;
     }
   }
 }
