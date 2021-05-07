@@ -11,16 +11,12 @@ export class User extends BaseEntity {
   id: string;
 
   @Field(() => String)
-  @Column("text")
-  user_type!: string;
-
-  @Field(() => String)
   @Column("text", { unique: true })
   username!: string;
 
-  @Field(() => String)
-  @Column("text", { unique: true })
-  email!: string;
+  @Field(() => String, { nullable: true })
+  @Column("text", { unique: true, nullable: true })
+  email: string | null;
 
   @Field(() => String)
   @Column("text")
