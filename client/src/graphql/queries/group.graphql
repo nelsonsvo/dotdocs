@@ -8,3 +8,10 @@ query GetGroups {
     }
   }
 }
+
+query GetGroupNames {
+  groups {
+    id
+    name
+  }
+}
