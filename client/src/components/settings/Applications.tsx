@@ -53,6 +53,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
   //modal
   const [open, setModalOpen] = useState(false);
   const [modalSuccess, setModalSuccess] = useState(true);
+
   let modalTitle = "Application Created";
   let modalMessage = "Application was created successfully";
 
@@ -113,10 +114,12 @@ const Applications: React.FC<ApplicationsProps> = () => {
       });
 
       setModalOpen(true);
+      setModalSuccess(true);
       modalTitle = "Application Created";
       modalMessage = "Application was created successfully";
     } catch {
       setModalOpen(true);
+      setModalSuccess(false);
       modalTitle = "Error";
       modalMessage = "Failed to create an application please try again.";
     }
@@ -134,22 +137,14 @@ const Applications: React.FC<ApplicationsProps> = () => {
   return (
     <>
       <SettingSectionCard>
-        <Modal
-          open={open}
-          setModalOpen={setModalOpen}
-          title={modalTitle}
-          success={modalSuccess}
-          btnLabel="Ok"
-        >
+        <Modal open={open} setModalOpen={setModalOpen} title={modalTitle} success={modalSuccess} btnLabel="Ok">
           {modalMessage}
         </Modal>
         <div className="mt-10 sm:mt-0">
           <form onSubmit={onSubmit}>
             <div className="grid grid-cols-6 gap-6 text-left">
               <div className="col-span-6">
-                <h3 className="text-gray-700 tracking-wide text-md font-medium md:text-2xl">
-                  Applications
-                </h3>
+                <h3 className="text-gray-700 tracking-wide text-md font-medium md:text-2xl">Applications</h3>
               </div>
               <div className="col-span-6">
                 <div className="flex flex-col gap-3">
@@ -168,9 +163,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                 </div>
               </div>
 
-              <div className="col-span-5 text-xl font-medium text-gray-600">
-                Add New Application
-              </div>
+              <div className="col-span-5 text-xl font-medium text-gray-600">Add New Application</div>
 
               <div className="col-span-1">
                 <button
@@ -235,15 +228,9 @@ const Applications: React.FC<ApplicationsProps> = () => {
                                   {currentFields.map((field) => {
                                     return (
                                       <tr className="">
-                                        <td className=" text-md text-gray-800 px-6 py-4 ">
-                                          {field.name}
-                                        </td>
-                                        <td className=" text-md text-gray-800 px-6 py-4 ">
-                                          {field.type}
-                                        </td>
-                                        <td className="text-md text-gray-800 px-6 py-4 ">
-                                          {field.max_length}
-                                        </td>
+                                        <td className=" text-md text-gray-800 px-6 py-4 ">{field.name}</td>
+                                        <td className=" text-md text-gray-800 px-6 py-4 ">{field.type}</td>
+                                        <td className="text-md text-gray-800 px-6 py-4 ">{field.max_length}</td>
                                       </tr>
                                     );
                                   })}
@@ -289,10 +276,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                   </div>
                   {fieldType !== "Date" && (
                     <div className="col-span-1">
-                      <label
-                        htmlFor="last_name"
-                        className="block  text-sm font-medium text-gray-700"
-                      >
+                      <label htmlFor="last_name" className="block  text-sm font-medium text-gray-700">
                         Max Length
                       </label>
                       <input
@@ -329,10 +313,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                         </ul>
                       </div>
                       <div className="col-span-3">
-                        <label
-                          htmlFor="last_name"
-                          className="block  text-sm font-medium text-gray-700"
-                        >
+                        <label htmlFor="last_name" className="block  text-sm font-medium text-gray-700">
                           Name
                         </label>
                         <input

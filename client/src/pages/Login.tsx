@@ -16,7 +16,7 @@ const Login: React.FC<LoginFormProps> = () => {
   const { setUserAuth } = useContext<IAuthContext>(AuthContext);
   const [login, { loading, data, error }] = useLoginLazyQuery({
     fetchPolicy: "network-only",
-    onCompleted: (data) => setUserAuth(true, data!.login!.user_type),
+    onCompleted: (data) => setUserAuth(true),
   });
 
   const onSubmit = (input: Inputs) => {
@@ -28,9 +28,8 @@ const Login: React.FC<LoginFormProps> = () => {
     });
   };
   if (!loading && data) {
-    const { username, user_type } = data.login!;
+    const { username } = data.login!;
     sessionStorage.setItem("username", username);
-    sessionStorage.setItem("user_type", user_type);
     return <Redirect to="/dashboard" />;
   }
 
@@ -59,12 +58,8 @@ const Login: React.FC<LoginFormProps> = () => {
                   placeholder="Username"
                   ref={register({ required: true })}
                 />
-                {errors.username && (
-                  <p className="text-red-500 text-sm text-left">Username is required</p>
-                )}
-                {error && (
-                  <p className="text-red-500 text-sm text-left tracking-wide">Incorrect username</p>
-                )}
+                {errors.username && <p className="text-red-500 text-sm text-left">Username is required</p>}
+                {error && <p className="text-red-500 text-sm text-left tracking-wide">Incorrect username</p>}
               </div>
               <div>
                 <label htmlFor="password" className="sr-only">
@@ -80,12 +75,8 @@ const Login: React.FC<LoginFormProps> = () => {
                   ref={register({ required: true })}
                 />
               </div>
-              {errors.password && (
-                <p className="text-red-500  text-sm text-left">Password is required</p>
-              )}
-              {error && (
-                <p className="text-red-500 text-sm text-left tracking-wide">Incorrect password</p>
-              )}
+              {errors.password && <p className="text-red-500  text-sm text-left">Password is required</p>}
+              {error && <p className="text-red-500 text-sm text-left tracking-wide">Incorrect password</p>}
             </div>
 
             <div className="flex items-center justify-between">
@@ -96,19 +87,13 @@ const Login: React.FC<LoginFormProps> = () => {
                   type="checkbox"
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label
-                  htmlFor="remember_me"
-                  className="ml-2 font-medium block text-sm text-gray-800"
-                >
+                <label htmlFor="remember_me" className="ml-2 font-medium block text-sm text-gray-800">
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <Link
-                  to="/forgot-password"
-                  className="font-medium text-gray-800 hover:text-blue-500"
-                >
+                <Link to="/forgot-password" className="font-medium text-gray-800 hover:text-blue-500">
                   Forgot your password?
                 </Link>
               </div>

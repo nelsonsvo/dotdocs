@@ -13,7 +13,7 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({ title, open, succ
     if (open) {
       const timer = setTimeout(() => {
         setToastOpen(false);
-      }, 5000);
+      }, 2000);
       return () => {
         clearTimeout(timer);
       };

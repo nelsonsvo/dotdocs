@@ -2,13 +2,13 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { GetGroupsDocument, useCreateGroupMutation, useGetApplicationsQuery } from "../../generated/graphql";
 
-interface GroupModalProps {
+interface CreateGroupDialogProps {
   open: boolean;
   onSuccess: () => void;
   setModalOpen: (bool: boolean) => void;
 }
 
-const GroupModal: React.FC<GroupModalProps> = ({ open, setModalOpen, onSuccess }) => {
+const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpen, onSuccess }) => {
   const { loading, data, error } = useGetApplicationsQuery();
   const [createGroup] = useCreateGroupMutation({
     refetchQueries: [{ query: GetGroupsDocument }],
@@ -17,28 +17,30 @@ const GroupModal: React.FC<GroupModalProps> = ({ open, setModalOpen, onSuccess }
   const { register, errors, handleSubmit } = useForm();
 
   const onSubmit = handleSubmit((data: any) => {
-    console.log(data);
-    let name: any = "";
-    const permissions = [];
-    for (const [key, value] of Object.entries(data)) {
-      if (key !== "name") {
-        const val: any = value;
-        permissions.push(`${key}_${val.toString().toUpperCase()}`);
-      } else {
-        name = value;
+    try {
+      console.log(data);
+      let name: any = "";
+      const permissions = [];
+      for (const [key, value] of Object.entries(data)) {
+        if (key !== "name") {
+          const val: any = value;
+          permissions.push(`${key}_${val.toString().toUpperCase()}`);
+        } else {
+          name = value;
+        }
       }
-    }
-    console.log(name);
-    console.log(permissions);
+      console.log(name);
+      console.log(permissions);
 
-    createGroup({
-      variables: {
-        name,
-        permissions,
-      },
-    });
+      createGroup({
+        variables: {
+          name,
+          permissions,
+        },
+      });
+      onSuccess();
+    } catch {}
 
-    onSuccess();
     setModalOpen(false);
   });
 
@@ -76,17 +78,18 @@ const GroupModal: React.FC<GroupModalProps> = ({ open, setModalOpen, onSuccess }
                     Create Group
                   </h3>
                   <div className="mt-8">
-                    <p className="text-sm text-gray-500">
-                      <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
-                        Group Name
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        ref={register}
-                        className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </p>
+                    <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
+                      Group Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      ref={register({ required: "Group name is required" })}
+                      className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                    />
+                    {errors.name && (
+                      <p className="text-red-500  font-medium text-sm text-left">{errors.name.message}</p>
+                    )}
                   </div>
                   <div className="mt-5">
                     <h3 className="font-medium text-lg text-gray-700">Permissions</h3>
@@ -196,4 +199,4 @@ const GroupModal: React.FC<GroupModalProps> = ({ open, setModalOpen, onSuccess }
   );
 };
 
-export default GroupModal;
+export default CreateGroupDialog;

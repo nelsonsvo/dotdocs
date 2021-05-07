@@ -95,6 +95,7 @@ export type Mutation = {
   createGroup: Group;
   deleteGroup: Scalars['Boolean'];
   createUser: User;
+  deleteUser: Scalars['Boolean'];
 };
 
 
@@ -136,8 +137,12 @@ export type MutationCreateUserArgs = {
   groupId: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
-  user_type: Scalars['String'];
   username: Scalars['String'];
+};
+
+
+export type MutationDeleteUserArgs = {
+  id: Scalars['String'];
 };
 
 export type Query = {
@@ -166,9 +171,8 @@ export type QueryLoginArgs = {
 export type User = {
   __typename?: 'User';
   id: Scalars['String'];
-  user_type: Scalars['String'];
   username: Scalars['String'];
-  email: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
   password: Scalars['String'];
   groups?: Maybe<Array<Group>>;
 };
@@ -246,6 +250,32 @@ export type DeleteGroupMutation = (
   & Pick<Mutation, 'deleteGroup'>
 );
 
+export type CreateUserMutationVariables = Exact<{
+  groupId: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
+  username: Scalars['String'];
+}>;
+
+
+export type CreateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { createUser: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
+);
+
+export type DeleteUserMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteUserMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteUser'>
+);
+
 export type GetApplicationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -309,6 +339,17 @@ export type GetGroupsQuery = (
   )> }
 );
 
+export type GetGroupNamesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetGroupNamesQuery = (
+  { __typename?: 'Query' }
+  & { groups: Array<(
+    { __typename?: 'Group' }
+    & Pick<Group, 'id' | 'name'>
+  )> }
+);
+
 export type LoginQueryVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
@@ -319,7 +360,7 @@ export type LoginQuery = (
   { __typename?: 'Query' }
   & { login?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'password' | 'user_type'>
+    & Pick<User, 'username' | 'password'>
   )> }
 );
 
@@ -341,7 +382,7 @@ export type GetUsersQuery = (
   { __typename?: 'Query' }
   & { users: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'email'>
+    & Pick<User, 'id' | 'username' | 'email'>
     & { groups?: Maybe<Array<(
       { __typename?: 'Group' }
       & Pick<Group, 'name'>
@@ -552,6 +593,79 @@ export function useDeleteGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteGroupMutationHookResult = ReturnType<typeof useDeleteGroupMutation>;
 export type DeleteGroupMutationResult = Apollo.MutationResult<DeleteGroupMutation>;
 export type DeleteGroupMutationOptions = Apollo.BaseMutationOptions<DeleteGroupMutation, DeleteGroupMutationVariables>;
+export const CreateUserDocument = gql`
+    mutation CreateUser($groupId: String!, $email: String!, $password: String!, $username: String!) {
+  createUser(
+    groupId: $groupId
+    email: $email
+    password: $password
+    username: $username
+  ) {
+    id
+    username
+  }
+}
+    `;
+export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      groupId: // value for 'groupId'
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const DeleteUserDocument = gql`
+    mutation DeleteUser($id: String!) {
+  deleteUser(id: $id)
+}
+    `;
+export type DeleteUserMutationFn = Apollo.MutationFunction<DeleteUserMutation, DeleteUserMutationVariables>;
+
+/**
+ * __useDeleteUserMutation__
+ *
+ * To run a mutation, you first call `useDeleteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteUserMutation, { data, loading, error }] = useDeleteUserMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<DeleteUserMutation, DeleteUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument, options);
+      }
+export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
+export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
+export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
 export const GetApplicationsDocument = gql`
     query GetApplications {
   applications {
@@ -715,12 +829,46 @@ export function useGetGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type GetGroupsQueryHookResult = ReturnType<typeof useGetGroupsQuery>;
 export type GetGroupsLazyQueryHookResult = ReturnType<typeof useGetGroupsLazyQuery>;
 export type GetGroupsQueryResult = Apollo.QueryResult<GetGroupsQuery, GetGroupsQueryVariables>;
+export const GetGroupNamesDocument = gql`
+    query GetGroupNames {
+  groups {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useGetGroupNamesQuery__
+ *
+ * To run a query within a React component, call `useGetGroupNamesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGroupNamesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetGroupNamesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetGroupNamesQuery(baseOptions?: Apollo.QueryHookOptions<GetGroupNamesQuery, GetGroupNamesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetGroupNamesQuery, GetGroupNamesQueryVariables>(GetGroupNamesDocument, options);
+      }
+export function useGetGroupNamesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetGroupNamesQuery, GetGroupNamesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetGroupNamesQuery, GetGroupNamesQueryVariables>(GetGroupNamesDocument, options);
+        }
+export type GetGroupNamesQueryHookResult = ReturnType<typeof useGetGroupNamesQuery>;
+export type GetGroupNamesLazyQueryHookResult = ReturnType<typeof useGetGroupNamesLazyQuery>;
+export type GetGroupNamesQueryResult = Apollo.QueryResult<GetGroupNamesQuery, GetGroupNamesQueryVariables>;
 export const LoginDocument = gql`
     query Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
     username
     password
-    user_type
   }
 }
     `;
@@ -791,6 +939,7 @@ export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const GetUsersDocument = gql`
     query GetUsers {
   users {
+    id
     username
     email
     groups {

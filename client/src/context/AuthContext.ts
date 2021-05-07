@@ -2,13 +2,12 @@ import { createContext } from "react";
 
 export interface IAuthContext {
   auth: IAuth;
-  setUserAuth: (isAuth: boolean, userType?: string) => void;
+  setUserAuth: (isAuth: boolean) => void;
   userType: string;
 }
 
 export interface IAuth {
   loggedIn: boolean;
-  userType: string | null;
   timeLoggedIn: Number | null;
 }
 
