@@ -25,11 +25,7 @@ export class UserResolver {
     return User.find({ relations: ["groups"] });
   }
   @Query(() => User, { nullable: true })
-  async login(
-    @Arg("username") username: string,
-    @Arg("password") password: string,
-    @Ctx() { req, res }: MyContext
-  ) {
+  async login(@Arg("username") username: string, @Arg("password") password: string, @Ctx() { req, res }: MyContext) {
     const user = await User.findOne({ username });
     if (user) {
       const valid = await argon2.verify(user.password, password);
@@ -47,7 +43,6 @@ export class UserResolver {
   @Mutation(() => User)
   async createUser(
     @Arg("username") username: string,
-    @Arg("user_type") user_type: string,
     @Arg("password") password: string,
     @Arg("email") email: string,
     @Arg("groupId") groupId: string,
@@ -65,8 +60,7 @@ export class UserResolver {
 
         const user = User.create({
           username,
-          user_type,
-          email,
+          email: email === "" ? null : email,
           password: hash,
           groups,
         });
@@ -77,6 +71,29 @@ export class UserResolver {
         throw new ApolloError({
           errorMessage: "Failed to create user",
         });
+      }
+    } else {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT AUTHENTICATED");
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async deleteUser(
+    @Arg("id") id: string,
+
+    @Ctx() { req, res }: MyContext
+  ) {
+    if (req.session.userId) {
+      try {
+        await User.delete(id);
+        return true;
+      } catch {
+        throw new ApolloError({
+          errorMessage: "Failed to create user",
+        });
+      } finally {
+        return false;
       }
     } else {
       res.statusCode = 401;
