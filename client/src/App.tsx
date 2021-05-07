@@ -15,7 +15,6 @@ import Viewer from "./pages/Viewer";
 function App() {
   const [auth, setAuth] = useState<IAuth>({
     loggedIn: false,
-    userType: null,
     timeLoggedIn: null,
   });
 
@@ -23,18 +22,15 @@ function App() {
     if (isAuth && userType) {
       const timeLogged = new Date().getTime();
       localStorage.setItem("isAuth", isAuth.toString());
-      localStorage.setItem("userType", userType);
       localStorage.setItem("timeLoggedIn", timeLogged.toString());
       setAuth({
         loggedIn: isAuth,
-        userType,
         timeLoggedIn: timeLogged,
       });
     } else {
       localStorage.setItem("isAuth", isAuth.toString());
       setAuth({
         loggedIn: isAuth,
-        userType: null,
         timeLoggedIn: null,
       });
     }
@@ -42,10 +38,9 @@ function App() {
 
   //match state and localstorage after page refresh
   useEffect(() => {
-    if (!auth.loggedIn && auth.userType === null && auth.timeLoggedIn === null) {
+    if (!auth.loggedIn === null && auth.timeLoggedIn === null) {
       setAuth({
         loggedIn: Boolean(localStorage.getItem("isAuth")),
-        userType: localStorage.getItem("userType"),
         timeLoggedIn: Number(localStorage.getItem("timeLoggedIn")),
       });
     }
