@@ -3,14 +3,18 @@ import { useForm } from "react-hook-form";
 import {
   GetGroupsDocument,
   GetUsersDocument,
+  GetUsersQuery,
   useCreateUserMutation,
   useGetGroupNamesQuery,
+  useUpdateUserMutation,
 } from "../../generated/graphql";
 
 interface CreateUserDialogProps {
   open: boolean;
   onSuccess: () => void;
   setModalOpen: (bool: boolean) => void;
+  userData: GetUsersQuery["users"][number] | null;
+  onClose: () => void;
 }
 
 interface UserFormFields {
@@ -20,33 +24,51 @@ interface UserFormFields {
   groupId: string;
 }
 
-const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen, onSuccess }) => {
+const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen, onSuccess, onClose, userData }) => {
+  const updatingUser = !!userData;
+
   const { loading, data, error } = useGetGroupNamesQuery();
 
+  let groupId = "";
+
   const [createUser] = useCreateUserMutation({
+    refetchQueries: [{ query: GetGroupsDocument }, { query: GetUsersDocument }],
+  });
+
+  const [updateUser] = useUpdateUserMutation({
     refetchQueries: [{ query: GetGroupsDocument }, { query: GetUsersDocument }],
   });
 
   const { register, errors, handleSubmit } = useForm();
 
   const onSubmit = handleSubmit(({ username, email, password, groupId }: UserFormFields) => {
-    try {
-      createUser({
+    if (!updatingUser) {
+      try {
+        createUser({
+          variables: {
+            username,
+            email,
+            password,
+            groupId,
+          },
+        });
+
+        onSuccess();
+      } catch {
+        //do something on error
+      }
+    } else {
+      updateUser({
         variables: {
+          id: userData!.id!,
           username,
           email,
-          password,
           groupId,
         },
       });
-
-      onSuccess();
-    } catch {
-      //do something on error
     }
     setModalOpen(false);
   });
-
   return open ? (
     <div className="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -78,7 +100,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                 </div>
                 <div className="mt-0 w-full text-center sm:mt-2 sm:ml-4 sm:text-left">
                   <h3 className="text-3xl leading-6 font-medium text-gray-800" id="modal-title">
-                    Create User
+                    {updatingUser ? "Update" : "Create"} User
                   </h3>
                   <div className="mt-8 space-y-3">
                     <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
@@ -87,6 +109,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                     <input
                       type="text"
                       name="username"
+                      defaultValue={userData?.username || ""}
                       ref={register({
                         required: "Username is required",
                       })}
@@ -95,26 +118,32 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                     {errors.username && (
                       <p className="text-red-500  font-medium text-sm text-left">{errors.username.message}</p>
                     )}
+
                     <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
                       Email
                     </label>
                     <input
                       type="text"
                       name="email"
+                      defaultValue={userData?.email || ""}
                       ref={register}
                       className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     />
-                    <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      name="password"
-                      ref={register({
-                        required: "Password is required",
-                      })}
-                      className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                    />
+                    {!updatingUser && (
+                      <>
+                        <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          name="password"
+                          ref={register({
+                            required: "Password is required",
+                          })}
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        />
+                      </>
+                    )}
                     {errors.password && (
                       <p className="text-red-500 font-medium text-sm text-left">{errors.password.message}</p>
                     )}
@@ -124,8 +153,10 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                     <select
                       name="groupId"
                       ref={register}
+                      defaultValue={userData?.groups?.[0]?.id || ""}
                       className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     >
+                      <option value={""}></option>
                       {data?.groups.map((group, key) => {
                         return (
                           <option key={key} value={group.id}>
@@ -148,6 +179,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
               <button
                 type="button"
                 onClick={() => {
+                  onClose();
                   setModalOpen(false);
                 }}
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-500 shadow-sm px-4 py-2 bg-gray-500 text-base font-medium text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-100 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
