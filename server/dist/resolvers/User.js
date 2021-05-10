@@ -48,6 +48,15 @@ let UserResolver = class UserResolver {
             return User_1.User.find({ relations: ["groups"] });
         });
     }
+    userById(id, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            return User_1.User.find({ relations: ["groups"], where: { id } });
+        });
+    }
     login(username, password, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne({ username });
@@ -95,6 +104,36 @@ let UserResolver = class UserResolver {
             }
         });
     }
+    updateUser(id, username, email, groupId, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (req.session.userId) {
+                try {
+                    const groups = yield Group_1.Group.find({
+                        where: {
+                            id: groupId,
+                        },
+                    });
+                    const user = yield User_1.User.findOne(id);
+                    if (user) {
+                        user.username = username;
+                        user.email = email;
+                        user.groups = groups;
+                        yield User_1.User.save(user);
+                        return user;
+                    }
+                }
+                catch (_a) {
+                    throw new apollo_client_1.ApolloError({
+                        errorMessage: "Failed to update user",
+                    });
+                }
+            }
+            else {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+            }
+        });
+    }
     deleteUser(id, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
@@ -132,6 +171,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "users", null);
 __decorate([
+    type_graphql_1.Query(() => [User_1.User]),
+    __param(0, type_graphql_1.Arg("id")), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "userById", null);
+__decorate([
     type_graphql_1.Query(() => User_1.User, { nullable: true }),
     __param(0, type_graphql_1.Arg("username")), __param(1, type_graphql_1.Arg("password")), __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
@@ -149,6 +195,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "createUser", null);
+__decorate([
+    type_graphql_1.Mutation(() => User_1.User),
+    __param(0, type_graphql_1.Arg("id")),
+    __param(1, type_graphql_1.Arg("username")),
+    __param(2, type_graphql_1.Arg("email")),
+    __param(3, type_graphql_1.Arg("groupId")),
+    __param(4, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "updateUser", null);
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
     __param(0, type_graphql_1.Arg("id")),
