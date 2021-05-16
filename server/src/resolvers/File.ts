@@ -132,6 +132,20 @@ export class FileResolver {
     });
     return true;
   }
+  @Mutation(() => Boolean)
+  async deleteFiles(@Arg("id", () => [String]) id: string[], @Ctx() { req, res }: MyContext) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+
+    try {
+      AppFile.delete(id);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
   //get the associate files for application
   @Query(() => [AppFile])

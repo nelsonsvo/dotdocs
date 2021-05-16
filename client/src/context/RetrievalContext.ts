@@ -8,6 +8,7 @@ export type RetrievalContextType = {
   currentTemplate: { id: string; name: string };
   setCurrentTemplate: Dispatch<SetStateAction<{ id: string; name: string }>>;
   setSearchResults: (results: GetFilesQuery["getFiles"] | []) => void;
+  setRemovedDocuments: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export const RetrievalContext = createContext<Partial<RetrievalContextType>>({});

@@ -25,8 +25,9 @@ export class User extends BaseEntity {
   @Field(() => [Group], { nullable: true })
   @ManyToMany(() => Group, (group) => group.users, {
     cascade: true,
+    nullable: true,
   })
-  groups: Group[];
+  groups: Group[] | null;
 
   @BeforeInsert()
   addId() {

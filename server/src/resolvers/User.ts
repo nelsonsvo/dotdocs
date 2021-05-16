@@ -24,6 +24,16 @@ export class UserResolver {
   async users() {
     return User.find({ relations: ["groups"] });
   }
+
+  @Query(() => [User])
+  async userById(@Arg("id") id: string, @Ctx() { req, res }: MyContext) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+    return User.find({ relations: ["groups"], where: { id } });
+  }
+
   @Query(() => User, { nullable: true })
   async login(@Arg("username") username: string, @Arg("password") password: string, @Ctx() { req, res }: MyContext) {
     const user = await User.findOne({ username });
@@ -70,6 +80,56 @@ export class UserResolver {
       } catch {
         throw new ApolloError({
           errorMessage: "Failed to create user",
+        });
+      }
+    } else {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT AUTHENTICATED");
+    }
+  }
+
+  @Mutation(() => User)
+  async updateUser(
+    @Arg("id") id: string,
+    @Arg("username") username: string,
+    @Arg("email") email: string,
+    @Arg("groupId") groupId: string,
+    @Ctx() { req, res }: MyContext
+  ) {
+    if (req.session.userId) {
+      try {
+        if (groupId) {
+          const groups = await Group.find({
+            where: {
+              id: groupId,
+            },
+          });
+
+          const user = await User.findOne(id);
+          if (user) {
+            user.username = username;
+            user.email = email;
+            user.groups = groups;
+
+            await User.save(user);
+
+            return user;
+          }
+        } else {
+          const user = await User.findOne(id);
+          if (user) {
+            user.username = username;
+            user.email = email;
+            user.groups = null;
+
+            await User.save(user);
+
+            return user;
+          }
+        }
+      } catch {
+        throw new ApolloError({
+          errorMessage: "Failed to update user",
         });
       }
     } else {

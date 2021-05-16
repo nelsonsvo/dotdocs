@@ -4,6 +4,18 @@ query GetUsers {
     username
     email
     groups {
+      id
+      name
+    }
+  }
+}
+
+query GetUserById($id: String!) {
+  userById(id: $id) {
+    username
+    email
+    groups {
+      id
       name
     }
   }

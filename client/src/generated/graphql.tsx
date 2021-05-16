@@ -92,9 +92,11 @@ export type Mutation = {
   deleteApplication: Scalars['Boolean'];
   singleUpload: AppFile;
   indexFile: Scalars['Boolean'];
+  deleteFiles: Scalars['Boolean'];
   createGroup: Group;
   deleteGroup: Scalars['Boolean'];
   createUser: User;
+  updateUser: User;
   deleteUser: Scalars['Boolean'];
 };
 
@@ -122,6 +124,11 @@ export type MutationIndexFileArgs = {
 };
 
 
+export type MutationDeleteFilesArgs = {
+  id: Array<Scalars['String']>;
+};
+
+
 export type MutationCreateGroupArgs = {
   permissions: Array<Scalars['String']>;
   name: Scalars['String'];
@@ -141,6 +148,14 @@ export type MutationCreateUserArgs = {
 };
 
 
+export type MutationUpdateUserArgs = {
+  groupId: Scalars['String'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+  id: Scalars['String'];
+};
+
+
 export type MutationDeleteUserArgs = {
   id: Scalars['String'];
 };
@@ -152,12 +167,18 @@ export type Query = {
   groups: Array<Group>;
   me?: Maybe<User>;
   users: Array<User>;
+  userById: Array<User>;
   login?: Maybe<User>;
 };
 
 
 export type QueryGetFilesArgs = {
   fields: Array<AppFieldSearchInput>;
+  id: Scalars['String'];
+};
+
+
+export type QueryUserByIdArgs = {
   id: Scalars['String'];
 };
 
@@ -176,6 +197,16 @@ export type User = {
   password: Scalars['String'];
   groups?: Maybe<Array<Group>>;
 };
+
+export type DeleteFilesMutationVariables = Exact<{
+  id: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type DeleteFilesMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteFiles'>
+);
 
 export type CreateApplicationMutationVariables = Exact<{
   name: Scalars['String'];
@@ -274,6 +305,22 @@ export type DeleteUserMutationVariables = Exact<{
 export type DeleteUserMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'deleteUser'>
+);
+
+export type UpdateUserMutationVariables = Exact<{
+  groupId: Scalars['String'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+  id: Scalars['String'];
+}>;
+
+
+export type UpdateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { updateUser: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
 );
 
 export type GetApplicationsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -385,12 +432,60 @@ export type GetUsersQuery = (
     & Pick<User, 'id' | 'username' | 'email'>
     & { groups?: Maybe<Array<(
       { __typename?: 'Group' }
-      & Pick<Group, 'name'>
+      & Pick<Group, 'id' | 'name'>
+    )>> }
+  )> }
+);
+
+export type GetUserByIdQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type GetUserByIdQuery = (
+  { __typename?: 'Query' }
+  & { userById: Array<(
+    { __typename?: 'User' }
+    & Pick<User, 'username' | 'email'>
+    & { groups?: Maybe<Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'id' | 'name'>
     )>> }
   )> }
 );
 
 
+export const DeleteFilesDocument = gql`
+    mutation DeleteFiles($id: [String!]!) {
+  deleteFiles(id: $id)
+}
+    `;
+export type DeleteFilesMutationFn = Apollo.MutationFunction<DeleteFilesMutation, DeleteFilesMutationVariables>;
+
+/**
+ * __useDeleteFilesMutation__
+ *
+ * To run a mutation, you first call `useDeleteFilesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFilesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFilesMutation, { data, loading, error }] = useDeleteFilesMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteFilesMutation(baseOptions?: Apollo.MutationHookOptions<DeleteFilesMutation, DeleteFilesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteFilesMutation, DeleteFilesMutationVariables>(DeleteFilesDocument, options);
+      }
+export type DeleteFilesMutationHookResult = ReturnType<typeof useDeleteFilesMutation>;
+export type DeleteFilesMutationResult = Apollo.MutationResult<DeleteFilesMutation>;
+export type DeleteFilesMutationOptions = Apollo.BaseMutationOptions<DeleteFilesMutation, DeleteFilesMutationVariables>;
 export const CreateApplicationDocument = gql`
     mutation CreateApplication($name: String!, $fields: [AppFieldCreateInput!]!) {
   createApplication(name: $name, fields: $fields) {
@@ -666,6 +761,43 @@ export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
 export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
 export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($groupId: String!, $email: String!, $username: String!, $id: String!) {
+  updateUser(id: $id, groupId: $groupId, email: $email, username: $username) {
+    id
+    username
+  }
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      groupId: // value for 'groupId'
+ *      email: // value for 'email'
+ *      username: // value for 'username'
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const GetApplicationsDocument = gql`
     query GetApplications {
   applications {
@@ -943,6 +1075,7 @@ export const GetUsersDocument = gql`
     username
     email
     groups {
+      id
       name
     }
   }
@@ -975,3 +1108,43 @@ export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
 export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
 export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
+export const GetUserByIdDocument = gql`
+    query GetUserById($id: String!) {
+  userById(id: $id) {
+    username
+    email
+    groups {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserByIdQuery__
+ *
+ * To run a query within a React component, call `useGetUserByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetUserByIdQuery(baseOptions: Apollo.QueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+      }
+export function useGetUserByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+        }
+export type GetUserByIdQueryHookResult = ReturnType<typeof useGetUserByIdQuery>;
+export type GetUserByIdLazyQueryHookResult = ReturnType<typeof useGetUserByIdLazyQuery>;
+export type GetUserByIdQueryResult = Apollo.QueryResult<GetUserByIdQuery, GetUserByIdQueryVariables>;

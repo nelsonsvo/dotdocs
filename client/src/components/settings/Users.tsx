@@ -1,13 +1,15 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Gravatar from "react-gravatar";
 import {
   GetGroupsDocument,
   GetUsersDocument,
+  GetUsersQuery,
   useDeleteGroupMutation,
   useDeleteUserMutation,
   useGetGroupsQuery,
   useGetUsersQuery,
 } from "../../generated/graphql";
+import { client } from "../../graphql/ApolloClient";
 import CreateGroupDialog from "../ui/CreateGroupDialog";
 import CreateUserDialog from "../ui/CreateUserDialog";
 import Modal from "../ui/Modal";
@@ -17,13 +19,14 @@ import ToastNotification from "../ui/ToastNotification";
 interface UsersProps {}
 
 const Users: React.FC<UsersProps> = () => {
-  let groupToEdit = useRef("");
-  let userToEdit = useRef("");
+  const [userToEdit, setUserToEdit] = useState<string | null>(null);
+  const [groupToEdit, setGroupToEdit] = useState<string | null>(null);
+  const [userData, setUserData] = useState<GetUsersQuery["users"][number] | null>(null);
 
-  const { loading, data, error } = useGetUsersQuery({
+  const { loading, data, error: fetchUserError } = useGetUsersQuery({
     fetchPolicy: "cache-and-network",
   });
-  const { loading: isLoading, data: groups, error: isError } = useGetGroupsQuery({
+  const { loading: isLoading, data: groups, error: fetchGroupError } = useGetGroupsQuery({
     fetchPolicy: "cache-and-network",
   });
 
@@ -57,46 +60,70 @@ const Users: React.FC<UsersProps> = () => {
   }, []);
 
   const onDeleteGroupClick = useCallback((id: string) => {
-    groupToEdit.current = id;
+    setGroupToEdit(id);
     setDeleteModalGroupOpen(true);
   }, []);
 
   const onUpdateUserClick = (id: string) => {
     //TODO:implement update for groups
     //need a modal and need to upsert the group
+    let users: GetUsersQuery | null = client.readQuery({
+      query: GetUsersDocument,
+    });
+    if (users) {
+      let user = users.users.filter((u) => u.id === id)[0];
+      console.log(user);
+      setUserData(user);
+    }
+
+    setCreateUserModalOpen(true);
   };
 
   const onDeleteUserClick = (id: string) => {
-    userToEdit.current = id;
+    setUserToEdit(id);
     setDeleteUserModalOpen(true);
   };
 
   const onModalDeleteGroup = () => {
     console.log(groupToEdit);
-    deleteGroup({
-      variables: {
-        id: groupToEdit.current,
-      },
-      update(cache) {
-        const normalizedId = cache.identify({ id: groupToEdit.current, __typename: "Group" });
-        cache.evict({ id: normalizedId });
-        cache.gc();
-      },
-    });
+    if (groupToEdit) {
+      deleteGroup({
+        variables: {
+          id: groupToEdit,
+        },
+        update(cache) {
+          const normalizedId = cache.identify({ id: groupToEdit, __typename: "Group" });
+          cache.evict({ id: normalizedId });
+          cache.gc();
+        },
+      });
 
-    setGroupDeletedToastOpen(true);
+      setGroupDeletedToastOpen(true);
+    }
   };
 
   const onModalDeleteUser = () => {
-    console.log(userToEdit);
-    deleteUser({
-      variables: {
-        id: userToEdit.current,
-      },
-    });
+    if (userToEdit) {
+      console.log(userToEdit);
+      deleteUser({
+        variables: {
+          id: userToEdit,
+        },
+      });
 
-    setUserDeletedToastOpen(true);
+      setUserDeletedToastOpen(true);
+    }
   };
+
+  useEffect(() => {
+    if (!groupModalOpen) {
+      setGroupToEdit(null);
+    }
+
+    if (!createUserModalOpen) {
+      setUserToEdit(null);
+    }
+  }, [groupModalOpen, createUserModalOpen]);
 
   return (
     <SettingSectionCard>
@@ -125,6 +152,8 @@ const Users: React.FC<UsersProps> = () => {
         open={createUserModalOpen}
         onSuccess={() => setUserCreatedToastOpen(true)}
         setModalOpen={setCreateUserModalOpen}
+        userData={userData}
+        onClose={() => setUserData(null)}
       />
 
       <ToastNotification
@@ -177,6 +206,11 @@ const Users: React.FC<UsersProps> = () => {
               Create New Group
             </button>
           </div>
+          {fetchGroupError && (
+            <p className="px-3 py-2 bg-red-100 border text-red-500 font-medium border-red-200 rounded-lg shadow-md">
+              There was an error fetching the groups
+            </p>
+          )}
           <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-200 ">
               <thead className="bg-gray-100">
@@ -266,7 +300,11 @@ const Users: React.FC<UsersProps> = () => {
               Create New User
             </button>
           </div>
-
+          {fetchUserError && (
+            <p className="px-3 py-2 bg-red-100 border text-red-500 font-medium border-red-200 rounded-lg shadow-md">
+              There was an error fetching the users
+            </p>
+          )}
           <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-200 ">
               <thead className="bg-gray-100 ">

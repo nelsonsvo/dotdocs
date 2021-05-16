@@ -10,9 +10,8 @@ interface RetrievalBarProps {
 }
 
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
-  const { data, currentTemplate, setCurrentTemplate, setSearchResults } = useContext(
-    RetrievalContext
-  );
+  const { data, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments } =
+    useContext(RetrievalContext);
 
   const { register, handleSubmit } = useForm();
 
@@ -50,7 +49,9 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
   );
 
   const onSubmit = handleSubmit((data) => {
+    setRemovedDocuments!([]);
     let fieldArr = [];
+
     for (const [key, value] of Object.entries(data)) {
       fieldArr.push({
         id: key,
@@ -114,10 +115,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                           console.log("its a picklist");
                           return (
                             <div key={f.id} className="px-2">
-                              <label
-                                htmlFor={f.name}
-                                className="block  text-sm font-medium text-gray-700"
-                              >
+                              <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                 {f.name}
                               </label>
                               <select
@@ -134,10 +132,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                         } else if (f.type === FieldType.Text) {
                           return (
                             <div key={f.id} className="px-2">
-                              <label
-                                htmlFor={f.name}
-                                className="block  text-sm font-medium text-gray-700"
-                              >
+                              <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                 {f.name}
                               </label>
                               <input
@@ -151,10 +146,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                         } else if (f.type === FieldType.Date) {
                           return (
                             <div className="px-2" key={f.id}>
-                              <label
-                                htmlFor={f.name}
-                                className="block  text-sm font-medium text-gray-700"
-                              >
+                              <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                 {f.name}
                               </label>
                               <input
@@ -169,10 +161,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                         } else if (f.type === FieldType.Number) {
                           return (
                             <div className="px-2" key={f.id}>
-                              <label
-                                htmlFor={f.name}
-                                className="block  text-sm font-medium text-gray-700"
-                              >
+                              <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                 {f.name}
                               </label>
                               <input
