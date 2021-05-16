@@ -1,13 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import {
-  BaseEntity,
-  BeforeInsert,
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-} from "typeorm";
+import { BaseEntity, BeforeInsert, Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
 import { Application } from "./Application";
 import { FileField } from "./FileField";
@@ -41,7 +33,10 @@ export class AppField extends BaseEntity {
   application: Application;
 
   @Field(() => [FileField], { nullable: true })
-  @OneToMany(() => FileField, (field) => field.field)
+  @OneToMany(() => FileField, (field) => field.field, {
+    onDelete: "CASCADE",
+    cascade: true,
+  })
   filefields: FileField[];
 
   @Field(() => [String], { nullable: true })
