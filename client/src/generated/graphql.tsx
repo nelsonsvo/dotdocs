@@ -92,6 +92,7 @@ export type Mutation = {
   deleteApplication: Scalars['Boolean'];
   singleUpload: AppFile;
   indexFile: Scalars['Boolean'];
+  deleteFiles: Scalars['Boolean'];
   createGroup: Group;
   deleteGroup: Scalars['Boolean'];
   createUser: User;
@@ -120,6 +121,11 @@ export type MutationSingleUploadArgs = {
 export type MutationIndexFileArgs = {
   id: Scalars['String'];
   fields: Array<AppFieldInput>;
+};
+
+
+export type MutationDeleteFilesArgs = {
+  id: Array<Scalars['String']>;
 };
 
 
@@ -191,6 +197,16 @@ export type User = {
   password: Scalars['String'];
   groups?: Maybe<Array<Group>>;
 };
+
+export type DeleteFilesMutationVariables = Exact<{
+  id: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type DeleteFilesMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteFiles'>
+);
 
 export type CreateApplicationMutationVariables = Exact<{
   name: Scalars['String'];
@@ -439,6 +455,37 @@ export type GetUserByIdQuery = (
 );
 
 
+export const DeleteFilesDocument = gql`
+    mutation DeleteFiles($id: [String!]!) {
+  deleteFiles(id: $id)
+}
+    `;
+export type DeleteFilesMutationFn = Apollo.MutationFunction<DeleteFilesMutation, DeleteFilesMutationVariables>;
+
+/**
+ * __useDeleteFilesMutation__
+ *
+ * To run a mutation, you first call `useDeleteFilesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFilesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFilesMutation, { data, loading, error }] = useDeleteFilesMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteFilesMutation(baseOptions?: Apollo.MutationHookOptions<DeleteFilesMutation, DeleteFilesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteFilesMutation, DeleteFilesMutationVariables>(DeleteFilesDocument, options);
+      }
+export type DeleteFilesMutationHookResult = ReturnType<typeof useDeleteFilesMutation>;
+export type DeleteFilesMutationResult = Apollo.MutationResult<DeleteFilesMutation>;
+export type DeleteFilesMutationOptions = Apollo.BaseMutationOptions<DeleteFilesMutation, DeleteFilesMutationVariables>;
 export const CreateApplicationDocument = gql`
     mutation CreateApplication($name: String!, $fields: [AppFieldCreateInput!]!) {
   createApplication(name: $name, fields: $fields) {
