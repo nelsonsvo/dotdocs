@@ -29,8 +29,6 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
 
   const { loading, data, error } = useGetGroupNamesQuery();
 
-  let groupId = "";
-
   const [createUser] = useCreateUserMutation({
     refetchQueries: [{ query: GetGroupsDocument }, { query: GetUsersDocument }],
   });
