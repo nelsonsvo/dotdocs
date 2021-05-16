@@ -1,12 +1,13 @@
+import JsFileDownloader from "js-file-downloader";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import DataGrid, { SelectColumn, TextEditor } from "react-data-grid";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import DataGrid, { SelectColumn, SortDirection, TextEditor } from "react-data-grid";
 import Iframe from "react-iframe";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
 import { FieldType } from "../components/settings/Applications";
 import { RetrievalContext } from "../context/RetrievalContext";
-import { GetFilesQuery, useGetRetrievalTemplatesQuery } from "../generated/graphql";
+import { GetFilesQuery, useDeleteFilesMutation, useGetRetrievalTemplatesQuery } from "../generated/graphql";
 
 interface RetrievalProps {}
 interface ParamTypes {
@@ -22,8 +23,10 @@ const Retrieval: React.FC<RetrievalProps> = () => {
 
   const FILE_SERVER_URL = process.env.REACT_APP_FILE_SERVER_URL;
 
+  const [[sortColumn, sortDirection], setSort] = useState<[string, SortDirection]>(["", "NONE"]);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [singleFileUrl, setSingleFileUrl] = useState<string | null>(null);
+  const [removedDocuments, setRemovedDocuments] = useState<string[]>([]);
 
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
   const [searchResults, setSearchResults] = useState<GetFilesQuery["getFiles"]>();
@@ -32,6 +35,8 @@ const Retrieval: React.FC<RetrievalProps> = () => {
       setCurrentTemplate({ id: data.applications[0].id, name: data.applications[0].name });
     },
   });
+
+  const [deleteFiles] = useDeleteFilesMutation();
 
   //table stuff
   const [selectedRows, setSelectedRows] = useState(() => new Set<React.Key>());
@@ -65,27 +70,32 @@ const Retrieval: React.FC<RetrievalProps> = () => {
       return cols;
     }
   };
-  const getRows = () => {
+
+  const getRows = useCallback(() => {
     if (searchResults) {
       let rows: any = [];
       searchResults.forEach((result) => {
-        console.log(result);
-        let fields = {};
-        result.fields.forEach((f) => {
-          let fieldValue = f.value;
-          if (f.field.type === FieldType.Date) {
-            moment.locale("gb");
-            fieldValue = moment(f.value).format("DD/MM/YYYY");
-          }
-          fields = { ...fields, id: result.id, [f.name!]: fieldValue };
-        });
-        rows = [...rows, fields];
+        if (!removedDocuments.includes(result.id)) {
+          console.log(result);
+          let fields = {};
+          result.fields.forEach((f) => {
+            console.log(removedDocuments);
+            console.log(f.id);
+            let fieldValue = f.value;
+            if (f.field.type === FieldType.Date) {
+              moment.locale("gb");
+              fieldValue = moment(f.value).format("DD/MM/YYYY");
+            }
+            fields = { ...fields, id: result.id, [f.name!]: fieldValue };
+          });
+          rows = [...rows, fields];
+        }
       });
 
       console.log("rows:", rows);
       return rows;
     }
-  };
+  }, [searchResults, removedDocuments]);
 
   const rowKeyGetter = (row: Row) => {
     return row.id;
@@ -96,6 +106,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     if (searchResults) {
       if (selectedRows.size === 1) {
         selectedRows.forEach((value) => {
+          console.log(value);
           const res = searchResults.find((f) => f.id === value);
           console.log(res!.location);
 
@@ -115,6 +126,69 @@ const Retrieval: React.FC<RetrievalProps> = () => {
       }
     }
   };
+  //for downloading a document or multiple documents
+  const downloadDocument = () => {
+    if (searchResults) {
+      if (selectedRows.size === 1) {
+        selectedRows.forEach((value) => {
+          console.log(value);
+          const res = searchResults.find((f) => f.id === value);
+          console.log(res!.location);
+
+          console.log("downloading", res!.location);
+          new JsFileDownloader({
+            url: res!.location,
+            autoStart: true,
+          });
+        });
+      } else if (selectedRows.size > 1) {
+        selectedRows.forEach((value) => {
+          const res = searchResults.find((f) => f.id === value);
+          console.log(res);
+          console.log("downloading", res!.location);
+          new JsFileDownloader({
+            url: res!.location,
+            autoStart: true,
+          });
+        });
+      }
+    }
+  };
+
+  const removeDocument = () => {
+    let arr: string[] = [];
+
+    selectedRows.forEach((val) => {
+      arr.push(val.toString());
+    });
+
+    setRemovedDocuments([...removedDocuments, ...arr]);
+  };
+
+  const deleteRow = () => {
+    let arr: string[] = [];
+
+    selectedRows.forEach((val) => {
+      arr.push(val.toString());
+    });
+    try {
+      deleteFiles({
+        variables: {
+          id: arr,
+        },
+        //remove from the cache manually
+        update(cache) {
+          arr.forEach((id) => {
+            const normalizedId = cache.identify({ id, __typename: "AppFile" });
+            cache.evict({ id: normalizedId });
+            cache.gc();
+          });
+        },
+      });
+    } catch {
+      console.log("error when deleting rows");
+    }
+  };
 
   const openSingleFile = () => {
     if (singleFileUrl) {
@@ -122,15 +196,36 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     }
   };
 
+  const handleSort = useCallback((columnKey: string, direction: SortDirection) => {
+    setSort([columnKey, direction]);
+  }, []);
+
+  const sortedRows = useMemo(() => {
+    console.log(sortDirection);
+    if (sortDirection === "NONE") return getRows();
+
+    let sortedRows = [...getRows()];
+
+    console.log(sortedRows);
+
+    sortedRows = sortedRows.sort((a: any, b: any) => {
+      if (Object.keys(a).length !== 0) {
+        return a[sortColumn].localeCompare(b[sortColumn]);
+      }
+    });
+
+    return sortDirection === "DESC" ? sortedRows.reverse() : sortedRows;
+  }, [getRows, sortDirection, sortColumn]);
+
   return (
     <RetrievalContext.Provider
-      value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults }}
+      value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
     >
       <RetrievalBody>
         {searchResults && searchResults.length > 0 ? (
           <div className="flex flex-col w-full">
             {selectedRows.size > 0 ? (
-              <div className="flex flex-row justify-between w-full px-3 py-3 transition duration-500 ease-linear bg-gray-50 border-b border-r gap-2 text-sm font-light text-gray-800">
+              <div className="flex flex-row justify-between w-full px-3 py-3 transition duration-500 ease-in-out bg-gray-50 border-b border-r gap-2 text-sm font-light text-gray-800">
                 {!fileUrl && (
                   <div className="justify-start space-x-2">
                     <button
@@ -142,16 +237,22 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                     <button className="py-2 px-2 border border-transparent   rounded-md bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                       Remarks
                     </button>
-                    <button className="py-2 px-2 border border-transparent   rounded-md   bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                      Keywords
-                    </button>
-                    <button className="py-2 px-2 border border-transparent   rounded-md  bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button
+                      onClick={downloadDocument}
+                      className="py-2 px-2 border border-transparent   rounded-md  bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
                       Download
                     </button>
-                    <button className="py-2 px-2 border border-transparent   rounded-md  bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button
+                      onClick={removeDocument}
+                      className="py-2 px-2 border border-transparent   rounded-md  bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
                       Remove
                     </button>
-                    <button className="py-2 px-2 border border-transparent   rounded-md   bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button
+                      onClick={deleteRow}
+                      className="py-2 px-2 border border-transparent   rounded-md   bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
                       Delete
                     </button>
                   </div>
@@ -175,10 +276,10 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                 )}
               </div>
             ) : (
-              <div className="flex justify-center flex-row px-3 py-3 transition duration-500 ease-linear bg-gray-50 border-b border-rgap-2 text-sm font-light text-gray-800 my-auto">
-                <h1 className="text-xl tracking-wider font-light font-antialiased my-auto">
-                  Documents
-                </h1>
+              <div
+                className={`flex justify-center flex-row px-3 py-3 bg-gray-100 border gap-2 text-sm font-light text-gray-800 my-auto`}
+              >
+                <h1 className="text-xl tracking-wider font-light font-antialiased my-auto ">Search Results</h1>
                 <svg
                   className="w-7 h-7 my-auto"
                   fill="none"
@@ -196,11 +297,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
               </div>
             )}
             {fileUrl ? (
-              <Iframe
-                url={fileUrl!}
-                className="min-h-screen w-full object-cover"
-                position="relative"
-              />
+              <Iframe url={fileUrl!} className="min-h-screen w-full object-cover" position="relative" />
             ) : (
               <DataGrid
                 className={"rdg-light fill-grid min-h-screen"}
@@ -208,7 +305,10 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                 columns={getColumns()}
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
-                rows={getRows()}
+                rows={sortedRows}
+                sortColumn={sortColumn}
+                sortDirection={sortDirection}
+                onSort={handleSort}
                 rowKeyGetter={rowKeyGetter}
               />
             )}
