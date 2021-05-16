@@ -47,7 +47,10 @@ __decorate([
 ], AppField.prototype, "application", void 0);
 __decorate([
     type_graphql_1.Field(() => [FileField_1.FileField], { nullable: true }),
-    typeorm_1.OneToMany(() => FileField_1.FileField, (field) => field.field),
+    typeorm_1.OneToMany(() => FileField_1.FileField, (field) => field.field, {
+        onDelete: "CASCADE",
+        cascade: true,
+    }),
     __metadata("design:type", Array)
 ], AppField.prototype, "filefields", void 0);
 __decorate([

@@ -36,7 +36,9 @@ __decorate([
 ], FileField.prototype, "value_id_string", void 0);
 __decorate([
     type_graphql_1.Field(() => AppFile_1.AppFile),
-    typeorm_1.ManyToOne(() => AppFile_1.AppFile, (file) => file.fields),
+    typeorm_1.ManyToOne(() => AppFile_1.AppFile, (file) => file.fields, {
+        onDelete: "CASCADE",
+    }),
     __metadata("design:type", AppFile_1.AppFile)
 ], FileField.prototype, "file", void 0);
 __decorate([

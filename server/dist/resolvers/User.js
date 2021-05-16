@@ -108,18 +108,30 @@ let UserResolver = class UserResolver {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
                 try {
-                    const groups = yield Group_1.Group.find({
-                        where: {
-                            id: groupId,
-                        },
-                    });
-                    const user = yield User_1.User.findOne(id);
-                    if (user) {
-                        user.username = username;
-                        user.email = email;
-                        user.groups = groups;
-                        yield User_1.User.save(user);
-                        return user;
+                    if (groupId) {
+                        const groups = yield Group_1.Group.find({
+                            where: {
+                                id: groupId,
+                            },
+                        });
+                        const user = yield User_1.User.findOne(id);
+                        if (user) {
+                            user.username = username;
+                            user.email = email;
+                            user.groups = groups;
+                            yield User_1.User.save(user);
+                            return user;
+                        }
+                    }
+                    else {
+                        const user = yield User_1.User.findOne(id);
+                        if (user) {
+                            user.username = username;
+                            user.email = email;
+                            user.groups = null;
+                            yield User_1.User.save(user);
+                            return user;
+                        }
                     }
                 }
                 catch (_a) {

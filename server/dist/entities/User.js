@@ -42,8 +42,9 @@ __decorate([
     type_graphql_1.Field(() => [Group_1.Group], { nullable: true }),
     typeorm_1.ManyToMany(() => Group_1.Group, (group) => group.users, {
         cascade: true,
+        nullable: true,
     }),
-    __metadata("design:type", Array)
+    __metadata("design:type", Object)
 ], User.prototype, "groups", void 0);
 __decorate([
     typeorm_1.BeforeInsert(),

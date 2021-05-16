@@ -154,6 +154,21 @@ let FileResolver = class FileResolver {
             return true;
         });
     }
+    deleteFiles(id, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            try {
+                AppFile_1.AppFile.delete(id);
+                return true;
+            }
+            catch (_a) {
+                return false;
+            }
+        });
+    }
     getFiles(id, fields, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.session.userId) {
@@ -238,6 +253,13 @@ __decorate([
     __metadata("design:paramtypes", [Array, String, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "indexFile", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg("id", () => [String])), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, Object]),
+    __metadata("design:returntype", Promise)
+], FileResolver.prototype, "deleteFiles", null);
 __decorate([
     type_graphql_1.Query(() => [AppFile_1.AppFile]),
     __param(0, type_graphql_1.Arg("id")),
