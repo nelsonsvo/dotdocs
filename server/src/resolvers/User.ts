@@ -98,21 +98,34 @@ export class UserResolver {
   ) {
     if (req.session.userId) {
       try {
-        const groups = await Group.find({
-          where: {
-            id: groupId,
-          },
-        });
+        if (groupId) {
+          const groups = await Group.find({
+            where: {
+              id: groupId,
+            },
+          });
 
-        const user = await User.findOne(id);
-        if (user) {
-          user.username = username;
-          user.email = email;
-          user.groups = groups;
+          const user = await User.findOne(id);
+          if (user) {
+            user.username = username;
+            user.email = email;
+            user.groups = groups;
 
-          await User.save(user);
+            await User.save(user);
 
-          return user;
+            return user;
+          }
+        } else {
+          const user = await User.findOne(id);
+          if (user) {
+            user.username = username;
+            user.email = email;
+            user.groups = null;
+
+            await User.save(user);
+
+            return user;
+          }
         }
       } catch {
         throw new ApolloError({
