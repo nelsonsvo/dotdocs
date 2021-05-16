@@ -27,7 +27,9 @@ export class FileField extends BaseEntity {
   value_id_string: string;
 
   @Field(() => AppFile)
-  @ManyToOne(() => AppFile, (file) => file.fields)
+  @ManyToOne(() => AppFile, (file) => file.fields, {
+    onDelete: "CASCADE",
+  })
   file: AppFile;
 
   @Field(() => AppField)
