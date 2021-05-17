@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const apollo_client_1 = require("apollo-client");
 const apollo_server_errors_1 = require("apollo-server-errors");
 const fs_1 = require("fs");
 const graphql_upload_1 = require("graphql-upload");
@@ -31,6 +32,7 @@ const AppField_1 = require("../entities/AppField");
 const AppFile_1 = require("../entities/AppFile");
 const FileField_1 = require("../entities/FileField");
 const Application_1 = require("./../entities/Application");
+const Remark_1 = require("./../entities/Remark");
 let fs = require("fs");
 let AppFieldInput = class AppFieldInput {
 };
@@ -234,6 +236,47 @@ let FileResolver = class FileResolver {
             }
         });
     }
+    addRemark(id, message, author, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            try {
+                const file = yield AppFile_1.AppFile.findOne(id);
+                const remark = Remark_1.Remark.create({
+                    file,
+                    message: message,
+                    author: author,
+                });
+                yield Remark_1.Remark.save(remark);
+                return remark;
+            }
+            catch (_a) {
+                return false;
+            }
+        });
+    }
+    getRemarks(id, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            try {
+                const remarks = yield Remark_1.Remark.find({
+                    where: {
+                        file: id,
+                    },
+                });
+                console.log(remarks);
+                return remarks;
+            }
+            catch (_a) {
+                throw new apollo_client_1.ApolloError({ errorMessage: "there was an error fetching remarks" });
+            }
+        });
+    }
 };
 __decorate([
     type_graphql_1.Mutation(() => AppFile_1.AppFile),
@@ -269,6 +312,24 @@ __decorate([
     __metadata("design:paramtypes", [String, Array, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "getFiles", null);
+__decorate([
+    type_graphql_1.Mutation(() => Remark_1.Remark || Boolean),
+    __param(0, type_graphql_1.Arg("id")),
+    __param(1, type_graphql_1.Arg("message")),
+    __param(2, type_graphql_1.Arg("author")),
+    __param(3, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], FileResolver.prototype, "addRemark", null);
+__decorate([
+    type_graphql_1.Query(() => [Remark_1.Remark]),
+    __param(0, type_graphql_1.Arg("id")),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], FileResolver.prototype, "getRemarks", null);
 FileResolver = __decorate([
     type_graphql_1.Resolver()
 ], FileResolver);

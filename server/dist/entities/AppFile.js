@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const uuid_1 = require("uuid");
 const Application_1 = require("./Application");
 const FileField_1 = require("./FileField");
+const Remark_1 = require("./Remark");
 let AppFile = class AppFile extends typeorm_1.BaseEntity {
     addId() {
         this.id = uuid_1.v4();
@@ -58,6 +59,15 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], AppFile.prototype, "fields", void 0);
+__decorate([
+    type_graphql_1.Field(() => [Remark_1.Remark]),
+    typeorm_1.OneToMany(() => Remark_1.Remark, (remark) => remark.file, {
+        onDelete: "CASCADE",
+        eager: true,
+        cascade: true,
+    }),
+    __metadata("design:type", Array)
+], AppFile.prototype, "remarks", void 0);
 __decorate([
     type_graphql_1.Field(() => Date),
     typeorm_1.CreateDateColumn(),
