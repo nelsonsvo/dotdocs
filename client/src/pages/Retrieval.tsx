@@ -6,6 +6,7 @@ import Iframe from "react-iframe";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
 import { FieldType } from "../components/settings/Applications";
+import RemarksDialog from "../components/ui/RemarksDialog";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GetFilesQuery, useDeleteFilesMutation, useGetRetrievalTemplatesQuery } from "../generated/graphql";
 
@@ -27,6 +28,10 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [singleFileUrl, setSingleFileUrl] = useState<string | null>(null);
   const [removedDocuments, setRemovedDocuments] = useState<string[]>([]);
+
+  //modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [fileId, setFileId] = useState("");
 
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
   const [searchResults, setSearchResults] = useState<GetFilesQuery["getFiles"]>();
@@ -65,8 +70,16 @@ const Retrieval: React.FC<RetrievalProps> = () => {
         };
       });
 
+      const indicators = {
+        key: "indicators",
+        name: "Indicators",
+        width: 200,
+        resizable: true,
+        frozen: true,
+      };
+
       console.log("columns:", cols);
-      cols = [SelectColumn, ...cols];
+      cols = [SelectColumn, { ...indicators }, ...cols];
       return cols;
     }
   };
@@ -86,7 +99,27 @@ const Retrieval: React.FC<RetrievalProps> = () => {
               moment.locale("gb");
               fieldValue = moment(f.value).format("DD/MM/YYYY");
             }
-            fields = { ...fields, id: result.id, [f.name!]: fieldValue };
+            fields = {
+              ...fields,
+              id: result.id,
+              [f.name!]: fieldValue,
+              indicators: result.remarks.length > 0 && (
+                <svg
+                  className="w-6 h-6 text-gray-500 mt-3 mx-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                  />
+                </svg>
+              ),
+            };
           });
           rows = [...rows, fields];
         }
@@ -217,11 +250,19 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     return sortDirection === "DESC" ? sortedRows.reverse() : sortedRows;
   }, [getRows, sortDirection, sortColumn]);
 
+  const viewRemarks = () => {
+    selectedRows.forEach((val) => {
+      setFileId(val.toString());
+    });
+    setModalOpen(true);
+  };
+
   return (
     <RetrievalContext.Provider
       value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
     >
       <RetrievalBody>
+        <RemarksDialog isOpen={modalOpen} setModalOpen={setModalOpen} fileId={fileId} />
         {searchResults && searchResults.length > 0 ? (
           <div className="flex flex-col w-full">
             {selectedRows.size > 0 ? (
@@ -234,9 +275,14 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                     >
                       View
                     </button>
-                    <button className="py-2 px-2 border border-transparent   rounded-md bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                      Remarks
-                    </button>
+                    {selectedRows.size === 1 && (
+                      <button
+                        onClick={viewRemarks}
+                        className="py-2 px-2 border border-transparent   rounded-md bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Remarks
+                      </button>
+                    )}
                     <button
                       onClick={downloadDocument}
                       className="py-2 px-2 border border-transparent   rounded-md  bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
