@@ -13,6 +13,7 @@ import {
 import { v4 } from "uuid";
 import { Application } from "./Application";
 import { FileField } from "./FileField";
+import { Remark } from "./Remark";
 
 /*
 This entity stores the Files in the application
@@ -53,6 +54,14 @@ export class AppFile extends BaseEntity {
     cascade: true,
   })
   fields: FileField[];
+
+  @Field(() => [Remark])
+  @OneToMany(() => Remark, (remark) => remark.file, {
+    onDelete: "CASCADE",
+    eager: true,
+    cascade: true,
+  })
+  remarks: Remark[];
 
   @Field(() => Date)
   @CreateDateColumn()
