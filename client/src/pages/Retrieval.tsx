@@ -60,15 +60,18 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     if (data) {
       const row = data.applications.filter((x) => x.id === currentTemplate.id)[0];
 
-      let cols: any = row.fields.map((f) => {
-        return {
-          key: f.name,
-          name: f.name,
-          resizable: true,
-          sortable: true,
-          editor: TextEditor,
-        };
-      });
+      let cols: any = row.fields
+        .map((f) => {
+          return {
+            key: f.name,
+            name: f.name,
+            resizable: true,
+            sortable: true,
+            editor: TextEditor,
+          };
+        })
+        .filter((f) => f.name !== "KEYWORDS");
+      //remove keywords
 
       const indicators = {
         key: "indicators",
