@@ -54,6 +54,7 @@ export type AppFile = {
   location: Scalars['String'];
   application: Application;
   fields: Array<FileField>;
+  remarks: Array<Remark>;
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
 };
@@ -93,6 +94,7 @@ export type Mutation = {
   singleUpload: AppFile;
   indexFile: Scalars['Boolean'];
   deleteFiles: Scalars['Boolean'];
+  addRemark: Remark;
   createGroup: Group;
   deleteGroup: Scalars['Boolean'];
   createUser: User;
@@ -126,6 +128,13 @@ export type MutationIndexFileArgs = {
 
 export type MutationDeleteFilesArgs = {
   id: Array<Scalars['String']>;
+};
+
+
+export type MutationAddRemarkArgs = {
+  author: Scalars['String'];
+  message: Scalars['String'];
+  id: Scalars['String'];
 };
 
 
@@ -164,6 +173,7 @@ export type Query = {
   __typename?: 'Query';
   applications: Array<Application>;
   getFiles: Array<AppFile>;
+  getRemarks: Array<Remark>;
   groups: Array<Group>;
   me?: Maybe<User>;
   users: Array<User>;
@@ -178,6 +188,11 @@ export type QueryGetFilesArgs = {
 };
 
 
+export type QueryGetRemarksArgs = {
+  id: Scalars['String'];
+};
+
+
 export type QueryUserByIdArgs = {
   id: Scalars['String'];
 };
@@ -186,6 +201,15 @@ export type QueryUserByIdArgs = {
 export type QueryLoginArgs = {
   password: Scalars['String'];
   username: Scalars['String'];
+};
+
+export type Remark = {
+  __typename?: 'Remark';
+  id: Scalars['String'];
+  message: Scalars['String'];
+  author: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  file: AppFile;
 };
 
 
@@ -281,6 +305,21 @@ export type DeleteGroupMutation = (
   & Pick<Mutation, 'deleteGroup'>
 );
 
+export type AddRemarkMutationVariables = Exact<{
+  id: Scalars['String'];
+  message: Scalars['String'];
+  author: Scalars['String'];
+}>;
+
+
+export type AddRemarkMutation = (
+  { __typename?: 'Mutation' }
+  & { addRemark: (
+    { __typename?: 'Remark' }
+    & Pick<Remark, 'id' | 'message' | 'author' | 'createdAt'>
+  ) }
+);
+
 export type CreateUserMutationVariables = Exact<{
   groupId: Scalars['String'];
   email: Scalars['String'];
@@ -367,6 +406,9 @@ export type GetFilesQuery = (
         { __typename?: 'AppField' }
         & Pick<AppField, 'type'>
       ) }
+    )>, remarks: Array<(
+      { __typename?: 'Remark' }
+      & Pick<Remark, 'id' | 'message' | 'author' | 'createdAt'>
     )> }
   )> }
 );
@@ -419,6 +461,19 @@ export type MeQuery = (
   & { me?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'username' | 'password'>
+  )> }
+);
+
+export type GetRemarksQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type GetRemarksQuery = (
+  { __typename?: 'Query' }
+  & { getRemarks: Array<(
+    { __typename?: 'Remark' }
+    & Pick<Remark, 'id' | 'message' | 'author' | 'createdAt'>
   )> }
 );
 
@@ -688,6 +743,44 @@ export function useDeleteGroupMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteGroupMutationHookResult = ReturnType<typeof useDeleteGroupMutation>;
 export type DeleteGroupMutationResult = Apollo.MutationResult<DeleteGroupMutation>;
 export type DeleteGroupMutationOptions = Apollo.BaseMutationOptions<DeleteGroupMutation, DeleteGroupMutationVariables>;
+export const AddRemarkDocument = gql`
+    mutation AddRemark($id: String!, $message: String!, $author: String!) {
+  addRemark(id: $id, message: $message, author: $author) {
+    id
+    message
+    author
+    createdAt
+  }
+}
+    `;
+export type AddRemarkMutationFn = Apollo.MutationFunction<AddRemarkMutation, AddRemarkMutationVariables>;
+
+/**
+ * __useAddRemarkMutation__
+ *
+ * To run a mutation, you first call `useAddRemarkMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddRemarkMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addRemarkMutation, { data, loading, error }] = useAddRemarkMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      message: // value for 'message'
+ *      author: // value for 'author'
+ *   },
+ * });
+ */
+export function useAddRemarkMutation(baseOptions?: Apollo.MutationHookOptions<AddRemarkMutation, AddRemarkMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddRemarkMutation, AddRemarkMutationVariables>(AddRemarkDocument, options);
+      }
+export type AddRemarkMutationHookResult = ReturnType<typeof useAddRemarkMutation>;
+export type AddRemarkMutationResult = Apollo.MutationResult<AddRemarkMutation>;
+export type AddRemarkMutationOptions = Apollo.BaseMutationOptions<AddRemarkMutation, AddRemarkMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($groupId: String!, $email: String!, $password: String!, $username: String!) {
   createUser(
@@ -890,6 +983,12 @@ export const GetFilesDocument = gql`
         type
       }
     }
+    remarks {
+      id
+      message
+      author
+      createdAt
+    }
   }
 }
     `;
@@ -1068,6 +1167,44 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const GetRemarksDocument = gql`
+    query GetRemarks($id: String!) {
+  getRemarks(id: $id) {
+    id
+    message
+    author
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetRemarksQuery__
+ *
+ * To run a query within a React component, call `useGetRemarksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRemarksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRemarksQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetRemarksQuery(baseOptions: Apollo.QueryHookOptions<GetRemarksQuery, GetRemarksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRemarksQuery, GetRemarksQueryVariables>(GetRemarksDocument, options);
+      }
+export function useGetRemarksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRemarksQuery, GetRemarksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRemarksQuery, GetRemarksQueryVariables>(GetRemarksDocument, options);
+        }
+export type GetRemarksQueryHookResult = ReturnType<typeof useGetRemarksQuery>;
+export type GetRemarksLazyQueryHookResult = ReturnType<typeof useGetRemarksLazyQuery>;
+export type GetRemarksQueryResult = Apollo.QueryResult<GetRemarksQuery, GetRemarksQueryVariables>;
 export const GetUsersDocument = gql`
     query GetUsers {
   users {
