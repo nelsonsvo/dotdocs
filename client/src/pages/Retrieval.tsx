@@ -33,6 +33,8 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [fileId, setFileId] = useState("");
 
+  const [keywordModalOpen, setKeywordModalOpen] = useState(false);
+
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
   const [searchResults, setSearchResults] = useState<GetFilesQuery["getFiles"]>();
   const { error, data } = useGetRetrievalTemplatesQuery({
@@ -94,9 +96,15 @@ const Retrieval: React.FC<RetrievalProps> = () => {
         if (!removedDocuments.includes(result.id)) {
           console.log(result);
           let fields = {};
+          let keywords = false;
           result.fields.forEach((f) => {
             console.log(removedDocuments);
             console.log(f.id);
+
+            if (f.name === "KEYWORDS") {
+              keywords = true;
+            }
+
             let fieldValue = f.value;
             if (f.field.type === FieldType.Date) {
               moment.locale("gb");
@@ -106,22 +114,39 @@ const Retrieval: React.FC<RetrievalProps> = () => {
               ...fields,
               id: result.id,
               [f.name!]: fieldValue,
-              indicators: result.remarks.length > 0 && (
-                <svg
-                  className="w-6 h-6 text-gray-500 mt-3 mx-auto"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                  />
-                </svg>
-              ),
+              indicators:
+                (result.remarks.length > 0 && (
+                  <svg
+                    className="w-6 h-6 text-gray-500 mt-3 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                    />
+                  </svg>
+                )) ||
+                (keywords && (
+                  <svg
+                    className="w-6 h-6 text-gray-500 mt-3 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    />
+                  </svg>
+                )),
             };
           });
           rows = [...rows, fields];
@@ -260,6 +285,13 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     setModalOpen(true);
   };
 
+  const viewKeywords = () => {
+    selectedRows.forEach((val) => {
+      setFileId(val.toString());
+    });
+    setKeywordModalOpen(true);
+  };
+
   return (
     <RetrievalContext.Provider
       value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
@@ -279,12 +311,20 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                       View
                     </button>
                     {selectedRows.size === 1 && (
-                      <button
-                        onClick={viewRemarks}
-                        className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        Remarks
-                      </button>
+                      <>
+                        <button
+                          onClick={viewRemarks}
+                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          Remarks
+                        </button>
+                        <button
+                          onClick={viewKeywords}
+                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          Keywords
+                        </button>
+                      </>
                     )}
                     <button
                       onClick={downloadDocument}
