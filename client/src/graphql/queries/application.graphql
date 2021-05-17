@@ -33,5 +33,11 @@ query GetFiles($id: String!, $fields: [AppFieldSearchInput!]!) {
         type
       }
     }
+    remarks {
+      id
+      message
+      author
+      createdAt
+    }
   }
 }

@@ -1,0 +1,8 @@
+query GetRemarks($id: String!) {
+  getRemarks(id: $id) {
+    id
+    message
+    author
+    createdAt
+  }
+}

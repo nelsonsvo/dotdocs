@@ -1,0 +1,8 @@
+mutation AddRemark($id: String!, $message: String!, $author: String!) {
+  addRemark(id: $id, message: $message, author: $author) {
+    id
+    message
+    author
+    createdAt
+  }
+}

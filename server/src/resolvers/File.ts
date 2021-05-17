@@ -1,3 +1,4 @@
+import { ApolloError } from "apollo-client";
 import { AuthenticationError } from "apollo-server-errors";
 import { createWriteStream } from "fs";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
@@ -10,6 +11,7 @@ import { AppField } from "../entities/AppField";
 import { AppFile } from "../entities/AppFile";
 import { FileField } from "../entities/FileField";
 import { Application } from "./../entities/Application";
+import { Remark } from "./../entities/Remark";
 let fs = require("fs");
 
 @InputType("AppFieldInput")
@@ -230,6 +232,60 @@ export class FileResolver {
         },
       });
       return res;
+    }
+  }
+  @Mutation(() => Remark || Boolean)
+  async addRemark(
+    @Arg("id") id: string,
+    @Arg("message") message: string,
+    @Arg("author") author: string,
+    @Ctx() { req, res }: MyContext
+  ) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+
+    try {
+      const file = await AppFile.findOne(id);
+
+      const remark = Remark.create({
+        file,
+        message: message,
+        author: author,
+      });
+
+      await Remark.save(remark);
+
+      return remark;
+    } catch {
+      return false;
+    }
+  }
+
+  @Query(() => [Remark])
+  async getRemarks(
+    @Arg("id") id: string,
+
+    @Ctx() { req, res }: MyContext
+  ) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+
+    try {
+      const remarks = await Remark.find({
+        where: {
+          file: id,
+        },
+      });
+
+      console.log(remarks);
+
+      return remarks;
+    } catch {
+      throw new ApolloError({ errorMessage: "there was an error fetching remarks" });
     }
   }
 }
