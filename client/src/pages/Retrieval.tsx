@@ -60,15 +60,18 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     if (data) {
       const row = data.applications.filter((x) => x.id === currentTemplate.id)[0];
 
-      let cols: any = row.fields.map((f) => {
-        return {
-          key: f.name,
-          name: f.name,
-          resizable: true,
-          sortable: true,
-          editor: TextEditor,
-        };
-      });
+      let cols: any = row.fields
+        .map((f) => {
+          return {
+            key: f.name,
+            name: f.name,
+            resizable: true,
+            sortable: true,
+            editor: TextEditor,
+          };
+        })
+        .filter((f) => f.name !== "KEYWORDS");
+      //remove keywords
 
       const indicators = {
         key: "indicators",
@@ -266,38 +269,38 @@ const Retrieval: React.FC<RetrievalProps> = () => {
         {searchResults && searchResults.length > 0 ? (
           <div className="flex flex-col w-full">
             {selectedRows.size > 0 ? (
-              <div className="flex flex-row justify-between w-full px-3 py-3 transition duration-500 ease-in-out bg-gray-50 border-b border-r gap-2 text-sm font-light text-gray-800">
+              <div className="flex flex-row justify-between w-full px-3 py-3 transition duration-1000 ease-in-out bg-gray-300 border-b border-r gap-2 text-sm font-light text-gray-800">
                 {!fileUrl && (
                   <div className="justify-start space-x-2">
                     <button
                       onClick={() => viewDocument()}
-                      className=" py-2 px-2 border border-transparent  rounded-md   bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className=" py-2 px-2 border border-transparent  rounded-md   bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       View
                     </button>
                     {selectedRows.size === 1 && (
                       <button
                         onClick={viewRemarks}
-                        className="py-2 px-2 border border-transparent   rounded-md bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
                         Remarks
                       </button>
                     )}
                     <button
                       onClick={downloadDocument}
-                      className="py-2 px-2 border border-transparent   rounded-md  bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="py-2 px-2 border border-transparent   rounded-md  bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       Download
                     </button>
                     <button
                       onClick={removeDocument}
-                      className="py-2 px-2 border border-transparent   rounded-md  bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="py-2 px-2 border border-transparent   rounded-md  bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       Remove
                     </button>
                     <button
                       onClick={deleteRow}
-                      className="py-2 px-2 border border-transparent   rounded-md   bg-gray-200  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="py-2 px-2 border border-transparent   rounded-md   bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       Delete
                     </button>
@@ -346,7 +349,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
               <Iframe url={fileUrl!} className="min-h-screen w-full object-cover" position="relative" />
             ) : (
               <DataGrid
-                className={"rdg-light fill-grid min-h-screen"}
+                className={"rdg-light fill-grid min-h-screen "}
                 rowHeight={50}
                 columns={getColumns()}
                 selectedRows={selectedRows}

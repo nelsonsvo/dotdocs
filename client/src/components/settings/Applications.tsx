@@ -17,6 +17,7 @@ export enum FieldType {
   Date = "Date",
   Text = "Text",
   Number = "Number",
+  Keywords = "Keywords",
 }
 
 type FormInputs = {
@@ -41,7 +42,9 @@ const Applications: React.FC<ApplicationsProps> = () => {
     errorPolicy: "all",
   });
 
-  const { loading, data } = useGetApplicationsQuery();
+  const { loading, data } = useGetApplicationsQuery({
+    fetchPolicy: "cache-and-network",
+  });
 
   const { register, handleSubmit, reset } = useForm<FormInputs>();
 
@@ -245,7 +248,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                   <div className="col-span-6">
                     <h1 className="text-lg text-gray-700">Add Fields</h1>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-2" hidden={fieldType === FieldType.Keywords ? true : false}>
                     <label htmlFor="last_name" className="block  text-sm font-medium text-gray-700">
                       Name
                     </label>
@@ -253,6 +256,7 @@ const Applications: React.FC<ApplicationsProps> = () => {
                       type="text"
                       name="name"
                       id="name"
+                      defaultValue={fieldType === FieldType.Keywords ? "KEYWORDS" : ""}
                       ref={register}
                       className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     />
@@ -272,9 +276,10 @@ const Applications: React.FC<ApplicationsProps> = () => {
                       <option>Number</option>
                       <option>Date</option>
                       <option>Pick List</option>
+                      <option>Keywords</option>
                     </select>
                   </div>
-                  {fieldType !== "Date" && (
+                  {fieldType !== FieldType.Date && fieldType !== FieldType.Keywords && (
                     <div className="col-span-1">
                       <label htmlFor="last_name" className="block  text-sm font-medium text-gray-700">
                         Max Length

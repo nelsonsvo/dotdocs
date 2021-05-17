@@ -12,6 +12,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     fetchPolicy: "network-only",
     onError: () => {
       setUserAuth(false);
+      return <Redirect to="/" />;
     },
   });
 
@@ -24,10 +25,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
-  return auth.loggedIn === true || localStorage.getItem("isAuth") === "true" ? (
-    <>{children}</>
-  ) : (
-    <Redirect to="/" />
-  );
+  return auth.loggedIn === true || localStorage.getItem("isAuth") === "true" ? <>{children}</> : <Redirect to="/" />;
 };
 export default ProtectedRoute;

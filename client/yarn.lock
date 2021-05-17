@@ -2561,6 +2561,18 @@
   dependencies:
     "@types/node" "*"
 
+"@types/lodash.includes@^4.3.6":
+  "integrity" "sha512-YzujoN0s409VTzdsQc7JYa7jHGV9YuYhGWIhzuEaZNSCKFuJD636tghbjq7R9xdjjbTnmiDeV/DnCurVSxVVxQ=="
+  "resolved" "https://registry.npmjs.org/@types/lodash.includes/-/lodash.includes-4.3.6.tgz"
+  "version" "4.3.6"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  "integrity" "sha512-DvmZHoHTFJ8zhVYwCLWbQ7uAbYQEk52Ev2/ZiQ7Y7gQGeV9pjBqjnQpECMHfKS1rCYAhMI7LHVxwyZLZinJgdw=="
+  "resolved" "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.169.tgz"
+  "version" "4.14.169"
+
 "@types/minimatch@*":
   "integrity" "sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA=="
   "resolved" "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz"

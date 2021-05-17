@@ -124,13 +124,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   return (
     <div>
-      <Modal
-        open={open}
-        setModalOpen={setModalOpen}
-        success={true}
-        btnLabel="Ok"
-        title="Indexing Complete"
-      >
+      <Modal open={open} setModalOpen={setModalOpen} success={true} btnLabel="Ok" title="Indexing Complete">
         All files in the indexing queue have been indexed.
       </Modal>
       <div className="min-h-screen w-100 h-screen flex-shrink-0 antialiased bg-white text-gray-700 border-r">
@@ -183,10 +177,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                             console.log("its a picklist");
                             return (
                               <li className="px-2" key={f.id}>
-                                <label
-                                  htmlFor={f.name}
-                                  className="block  text-sm font-medium text-gray-700"
-                                >
+                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                   {f.name}
                                 </label>
                                 <select
@@ -204,10 +195,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                           } else if (f.type === FieldType.Text) {
                             return (
                               <li className="px-2" key={f.id}>
-                                <label
-                                  htmlFor={f.name}
-                                  className="block  text-sm font-medium text-gray-700"
-                                >
+                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                   {f.name}
                                 </label>
                                 <input
@@ -219,13 +207,24 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                 />
                               </li>
                             );
+                          } else if (f.type === FieldType.Keywords) {
+                            return (
+                              <li className="px-2 order-last" key={f.id}>
+                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                                  {f.name}
+                                </label>
+                                <input
+                                  type={"text"}
+                                  name={f.id}
+                                  ref={register}
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                />
+                              </li>
+                            );
                           } else if (f.type === FieldType.Date) {
                             return (
                               <li className="px-2" key={f.id}>
-                                <label
-                                  htmlFor={f.name}
-                                  className="block  text-sm font-medium text-gray-700"
-                                >
+                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                   {f.name}
                                 </label>
                                 <input
@@ -240,10 +239,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                           } else if (f.type === FieldType.Number) {
                             return (
                               <li className="px-2" key={f.id}>
-                                <label
-                                  htmlFor={f.name}
-                                  className="block  text-sm font-medium text-gray-700"
-                                >
+                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
                                   {f.name}
                                 </label>
                                 <input
