@@ -40,7 +40,7 @@ function App() {
   useEffect(() => {
     if (!auth.loggedIn === null && auth.timeLoggedIn === null) {
       setAuth({
-        loggedIn: Boolean(localStorage.getItem("isAuth")),
+        loggedIn: localStorage.getItem("isAuth") === "true",
         timeLoggedIn: Number(localStorage.getItem("timeLoggedIn")),
       });
     }
