@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
+import _ from "lodash";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
@@ -13,13 +14,34 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
   const { data, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments } =
     useContext(RetrievalContext);
 
+  const keywordRef = useRef<any>();
+  const [keywords, setKeywords] = useState<any>();
+
   const { register, handleSubmit } = useForm();
 
   const [getFiles] = useGetFilesLazyQuery({
     fetchPolicy: "network-only",
     onCompleted: (data) => {
-      console.log("search results:", data.getFiles);
-      setSearchResults!(data.getFiles);
+      if (keywords !== undefined) {
+        const res = _.filter(data.getFiles, function (element) {
+          var isMatch = false;
+          _.forEach(element.fields, function (field) {
+            console.log(field.value?.split(","));
+            console.log(keywords.split(","));
+            if (_.difference(keywords.split(","), field.value!.split(",")).length === 0) {
+              isMatch = true;
+              return false;
+            }
+          });
+          return isMatch;
+        });
+
+        console.log(res);
+        setSearchResults!(res);
+      } else {
+        console.log("search results:", data.getFiles);
+        setSearchResults!(data.getFiles);
+      }
     },
   });
 
@@ -49,6 +71,12 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
   );
 
   const onSubmit = handleSubmit((data) => {
+    if (keywordRef.current) {
+      setKeywords(keywordRef.current.value);
+    } else {
+      setKeywords(undefined);
+    }
+
     setRemovedDocuments!([]);
     let fieldArr = [];
 
@@ -131,14 +159,28 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                           );
                         } else if (f.type === FieldType.Text) {
                           return (
-                            <div key={f.id} className="px-2">
-                              <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                            <div key={f.id} className="px-2 ">
+                              <label htmlFor={f.name} className="block text-sm font-medium text-gray-700">
                                 {f.name}
                               </label>
                               <input
                                 type={f.type.toLowerCase()}
                                 name={f.id}
                                 ref={register}
+                                className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                              />
+                            </div>
+                          );
+                        } else if (f.type === FieldType.Keywords) {
+                          return (
+                            <div key={f.id} className="px-2 order-last">
+                              <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                                {f.name}
+                              </label>
+                              <input
+                                type={"text"}
+                                name={f.name}
+                                ref={keywordRef}
                                 className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
                               />
                             </div>
