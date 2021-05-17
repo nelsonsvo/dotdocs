@@ -189,7 +189,7 @@ let FileResolver = class FileResolver {
                 return yield AppFile_1.AppFile.find({ where: { application: id } });
             }
             else {
-                console.log(concatValues);
+                console.log("concatValues", concatValues);
                 const entityManager = typeorm_1.getManager();
                 let PARAMS = "";
                 let param_arr = [];
@@ -199,6 +199,7 @@ let FileResolver = class FileResolver {
                     param_arr.push(val);
                 });
                 param_arr.push(concatValues.length);
+                console.log("params", PARAMS);
                 const lastParam = concatValues.length + 1;
                 const fieldResults = yield entityManager.query(`SELECT
       "file"."id" AS "file_id",
