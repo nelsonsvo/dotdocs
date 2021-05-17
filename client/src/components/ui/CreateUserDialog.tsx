@@ -75,7 +75,6 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
-
         <div className="inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8  max-w-lg w-full">
           <form onSubmit={onSubmit} className="mb-3">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
