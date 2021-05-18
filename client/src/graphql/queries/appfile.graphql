@@ -1,0 +1,14 @@
+query GetRemarks($id: String!) {
+  getRemarks(id: $id) {
+    id
+    message
+    author
+    createdAt
+  }
+}
+
+query GetKeywords($id: String!) {
+  getKeywords(id: $id) {
+    keywords
+  }
+}
