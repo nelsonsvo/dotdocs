@@ -76,6 +76,16 @@ ApplicationFile = __decorate([
     type_graphql_1.ObjectType()
 ], ApplicationFile);
 exports.ApplicationFile = ApplicationFile;
+let KeywordsResponse = class KeywordsResponse {
+};
+__decorate([
+    type_graphql_1.Field(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], KeywordsResponse.prototype, "keywords", void 0);
+KeywordsResponse = __decorate([
+    type_graphql_1.ObjectType()
+], KeywordsResponse);
+exports.KeywordsResponse = KeywordsResponse;
 let FileResolver = class FileResolver {
     singleUpload({ createReadStream, filename, mimetype }, id, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -278,6 +288,57 @@ let FileResolver = class FileResolver {
             }
         });
     }
+    getKeywords(id, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            const field = yield FileField_1.FileField.findOne({
+                where: {
+                    file: id,
+                    name: "KEYWORDS",
+                },
+            });
+            if (field) {
+                return {
+                    keywords: field.value,
+                };
+            }
+            else {
+                return {
+                    keywords: null,
+                };
+            }
+        });
+    }
+    changeKeywords(id, keywords, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
+            }
+            const field = yield FileField_1.FileField.findOne({
+                where: {
+                    file: id,
+                    name: "KEYWORDS",
+                },
+            });
+            console.log(field);
+            try {
+                if (field) {
+                    field.value = keywords;
+                    field.value_id_string = field.id + "_" + keywords;
+                    FileField_1.FileField.save(field);
+                    return field;
+                }
+                return null;
+            }
+            catch (_a) {
+                throw new apollo_client_1.ApolloError({ errorMessage: "there was an error changing keywords" });
+            }
+        });
+    }
 };
 __decorate([
     type_graphql_1.Mutation(() => AppFile_1.AppFile),
@@ -331,6 +392,20 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "getRemarks", null);
+__decorate([
+    type_graphql_1.Query(() => KeywordsResponse),
+    __param(0, type_graphql_1.Arg("id")), __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], FileResolver.prototype, "getKeywords", null);
+__decorate([
+    type_graphql_1.Mutation(() => FileField_1.FileField || null),
+    __param(0, type_graphql_1.Arg("id")), __param(1, type_graphql_1.Arg("keywords")), __param(2, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], FileResolver.prototype, "changeKeywords", null);
 FileResolver = __decorate([
     type_graphql_1.Resolver()
 ], FileResolver);

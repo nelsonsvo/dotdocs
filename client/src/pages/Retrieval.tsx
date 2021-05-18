@@ -6,6 +6,7 @@ import Iframe from "react-iframe";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
 import { FieldType } from "../components/settings/Applications";
+import KeywordsDialog from "../components/ui/KeywordsDialog";
 import RemarksDialog from "../components/ui/RemarksDialog";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GetFilesQuery, useDeleteFilesMutation, useGetRetrievalTemplatesQuery } from "../generated/graphql";
@@ -32,6 +33,8 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   //modal
   const [modalOpen, setModalOpen] = useState(false);
   const [fileId, setFileId] = useState("");
+
+  const [keywordModalOpen, setKeywordModalOpen] = useState(false);
 
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
   const [searchResults, setSearchResults] = useState<GetFilesQuery["getFiles"]>();
@@ -94,34 +97,49 @@ const Retrieval: React.FC<RetrievalProps> = () => {
         if (!removedDocuments.includes(result.id)) {
           console.log(result);
           let fields = {};
+          let keywords = false;
           result.fields.forEach((f) => {
             console.log(removedDocuments);
             console.log(f.id);
+
+            if (f.name === "KEYWORDS") {
+              keywords = true;
+            }
+
             let fieldValue = f.value;
             if (f.field.type === FieldType.Date) {
               moment.locale("gb");
               fieldValue = moment(f.value).format("DD/MM/YYYY");
             }
+
+            const indicators = (
+              <div className="flex mx-auto space-x-1 justify-center text-gray-700 mt-3">
+                {result.remarks.length > 0 && (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+                {keywords && (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
+            );
+
             fields = {
               ...fields,
               id: result.id,
               [f.name!]: fieldValue,
-              indicators: result.remarks.length > 0 && (
-                <svg
-                  className="w-6 h-6 text-gray-500 mt-3 mx-auto"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                  />
-                </svg>
-              ),
+              indicators,
             };
           });
           rows = [...rows, fields];
@@ -260,12 +278,20 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     setModalOpen(true);
   };
 
+  const viewKeywords = () => {
+    selectedRows.forEach((val) => {
+      setFileId(val.toString());
+    });
+    setKeywordModalOpen(true);
+  };
+
   return (
     <RetrievalContext.Provider
       value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
     >
       <RetrievalBody>
         <RemarksDialog isOpen={modalOpen} setModalOpen={setModalOpen} fileId={fileId} />
+        <KeywordsDialog isOpen={keywordModalOpen} setModalOpen={setKeywordModalOpen} fileId={fileId} />
         {searchResults && searchResults.length > 0 ? (
           <div className="flex flex-col w-full">
             {selectedRows.size > 0 ? (
@@ -279,12 +305,26 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                       View
                     </button>
                     {selectedRows.size === 1 && (
-                      <button
-                        onClick={viewRemarks}
-                        className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        Remarks
-                      </button>
+                      <>
+                        <button
+                          onClick={viewRemarks}
+                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          Remarks
+                        </button>
+                        <button
+                          onClick={viewKeywords}
+                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          Keywords
+                        </button>
+                        <button
+                          // onClick={editIndexes}
+                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                          Edit
+                        </button>
+                      </>
                     )}
                     <button
                       onClick={downloadDocument}
@@ -349,7 +389,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
               <Iframe url={fileUrl!} className="min-h-screen w-full object-cover" position="relative" />
             ) : (
               <DataGrid
-                className={"rdg-light fill-grid min-h-screen "}
+                className={"rdg-light fill-grid min-h-screen"}
                 rowHeight={50}
                 columns={getColumns()}
                 selectedRows={selectedRows}

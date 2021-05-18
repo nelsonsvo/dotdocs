@@ -6,3 +6,9 @@ query GetRemarks($id: String!) {
     createdAt
   }
 }
+
+query GetKeywords($id: String!) {
+  getKeywords(id: $id) {
+    keywords
+  }
+}

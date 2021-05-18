@@ -22,7 +22,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
   const [getFiles] = useGetFilesLazyQuery({
     fetchPolicy: "network-only",
     onCompleted: (data) => {
-      if (keywords !== undefined) {
+      if (keywords) {
         const res = _.filter(data.getFiles, function (element) {
           var isMatch = false;
           _.forEach(element.fields, function (field) {
@@ -42,6 +42,8 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
         console.log("search results:", data.getFiles);
         setSearchResults!(data.getFiles);
       }
+      // console.log("search results:", data.getFiles);
+      // setSearchResults!(data.getFiles);
     },
   });
 
