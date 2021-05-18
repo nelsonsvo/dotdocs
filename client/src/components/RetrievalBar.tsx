@@ -17,7 +17,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
   const keywordRef = useRef<any>();
   const [keywords, setKeywords] = useState<any>();
 
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
 
   const [getFiles] = useGetFilesLazyQuery({
     fetchPolicy: "network-only",
@@ -28,7 +28,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
           _.forEach(element.fields, function (field) {
             console.log(field.value?.split(","));
             console.log(keywords.split(","));
-            if (_.difference(keywords.split(","), field.value!.split(",")).length === 0) {
+            if (_.isEqual(_.intersection(field.value!.split(","), keywords.split(",")), keywords.split(","))) {
               isMatch = true;
               return false;
             }
@@ -42,8 +42,6 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
         console.log("search results:", data.getFiles);
         setSearchResults!(data.getFiles);
       }
-      // console.log("search results:", data.getFiles);
-      // setSearchResults!(data.getFiles);
     },
   });
 
@@ -232,7 +230,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                   Search
                 </button>
                 <button
-                  onClick={() => console.log("hello world")}
+                  onClick={() => reset()}
                   type="button"
                   className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
