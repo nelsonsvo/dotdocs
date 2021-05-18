@@ -1,3 +1,9 @@
 mutation DeleteFiles($id: [String!]!) {
   deleteFiles(id: $id)
 }
+
+mutation ChangeKeywords($id: String!, $keywords: String!) {
+  changeKeywords(id: $id, keywords: $keywords) {
+    value
+  }
+}
