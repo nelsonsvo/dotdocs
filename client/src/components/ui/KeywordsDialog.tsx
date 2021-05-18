@@ -32,7 +32,7 @@ const KeywordsDialog: React.FC<KeywordsDialogProps> = ({ isOpen, setModalOpen, f
       changeKeywords({
         variables: {
           id: fileId,
-          keywords: data.keywords,
+          keywords: data.keywords.replaceAll("\n", "").replaceAll("\r", ""),
         },
       });
     } catch {}
