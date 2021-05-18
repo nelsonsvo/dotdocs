@@ -87,6 +87,11 @@ export type Group = {
   users?: Maybe<Array<User>>;
 };
 
+export type KeywordsResponse = {
+  __typename?: 'KeywordsResponse';
+  keywords?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createApplication: Application;
@@ -95,6 +100,7 @@ export type Mutation = {
   indexFile: Scalars['Boolean'];
   deleteFiles: Scalars['Boolean'];
   addRemark: Remark;
+  changeKeywords: FileField;
   createGroup: Group;
   deleteGroup: Scalars['Boolean'];
   createUser: User;
@@ -138,6 +144,12 @@ export type MutationAddRemarkArgs = {
 };
 
 
+export type MutationChangeKeywordsArgs = {
+  keywords: Scalars['String'];
+  id: Scalars['String'];
+};
+
+
 export type MutationCreateGroupArgs = {
   permissions: Array<Scalars['String']>;
   name: Scalars['String'];
@@ -174,6 +186,7 @@ export type Query = {
   applications: Array<Application>;
   getFiles: Array<AppFile>;
   getRemarks: Array<Remark>;
+  getKeywords: KeywordsResponse;
   groups: Array<Group>;
   me?: Maybe<User>;
   users: Array<User>;
@@ -189,6 +202,11 @@ export type QueryGetFilesArgs = {
 
 
 export type QueryGetRemarksArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryGetKeywordsArgs = {
   id: Scalars['String'];
 };
 
@@ -230,6 +248,20 @@ export type DeleteFilesMutationVariables = Exact<{
 export type DeleteFilesMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'deleteFiles'>
+);
+
+export type ChangeKeywordsMutationVariables = Exact<{
+  id: Scalars['String'];
+  keywords: Scalars['String'];
+}>;
+
+
+export type ChangeKeywordsMutation = (
+  { __typename?: 'Mutation' }
+  & { changeKeywords: (
+    { __typename?: 'FileField' }
+    & Pick<FileField, 'value'>
+  ) }
 );
 
 export type CreateApplicationMutationVariables = Exact<{
@@ -362,6 +394,32 @@ export type UpdateUserMutation = (
   ) }
 );
 
+export type GetRemarksQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type GetRemarksQuery = (
+  { __typename?: 'Query' }
+  & { getRemarks: Array<(
+    { __typename?: 'Remark' }
+    & Pick<Remark, 'id' | 'message' | 'author' | 'createdAt'>
+  )> }
+);
+
+export type GetKeywordsQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type GetKeywordsQuery = (
+  { __typename?: 'Query' }
+  & { getKeywords: (
+    { __typename?: 'KeywordsResponse' }
+    & Pick<KeywordsResponse, 'keywords'>
+  ) }
+);
+
 export type GetApplicationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -464,19 +522,6 @@ export type MeQuery = (
   )> }
 );
 
-export type GetRemarksQueryVariables = Exact<{
-  id: Scalars['String'];
-}>;
-
-
-export type GetRemarksQuery = (
-  { __typename?: 'Query' }
-  & { getRemarks: Array<(
-    { __typename?: 'Remark' }
-    & Pick<Remark, 'id' | 'message' | 'author' | 'createdAt'>
-  )> }
-);
-
 export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -541,6 +586,40 @@ export function useDeleteFilesMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteFilesMutationHookResult = ReturnType<typeof useDeleteFilesMutation>;
 export type DeleteFilesMutationResult = Apollo.MutationResult<DeleteFilesMutation>;
 export type DeleteFilesMutationOptions = Apollo.BaseMutationOptions<DeleteFilesMutation, DeleteFilesMutationVariables>;
+export const ChangeKeywordsDocument = gql`
+    mutation ChangeKeywords($id: String!, $keywords: String!) {
+  changeKeywords(id: $id, keywords: $keywords) {
+    value
+  }
+}
+    `;
+export type ChangeKeywordsMutationFn = Apollo.MutationFunction<ChangeKeywordsMutation, ChangeKeywordsMutationVariables>;
+
+/**
+ * __useChangeKeywordsMutation__
+ *
+ * To run a mutation, you first call `useChangeKeywordsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeKeywordsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeKeywordsMutation, { data, loading, error }] = useChangeKeywordsMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      keywords: // value for 'keywords'
+ *   },
+ * });
+ */
+export function useChangeKeywordsMutation(baseOptions?: Apollo.MutationHookOptions<ChangeKeywordsMutation, ChangeKeywordsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangeKeywordsMutation, ChangeKeywordsMutationVariables>(ChangeKeywordsDocument, options);
+      }
+export type ChangeKeywordsMutationHookResult = ReturnType<typeof useChangeKeywordsMutation>;
+export type ChangeKeywordsMutationResult = Apollo.MutationResult<ChangeKeywordsMutation>;
+export type ChangeKeywordsMutationOptions = Apollo.BaseMutationOptions<ChangeKeywordsMutation, ChangeKeywordsMutationVariables>;
 export const CreateApplicationDocument = gql`
     mutation CreateApplication($name: String!, $fields: [AppFieldCreateInput!]!) {
   createApplication(name: $name, fields: $fields) {
@@ -891,6 +970,79 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const GetRemarksDocument = gql`
+    query GetRemarks($id: String!) {
+  getRemarks(id: $id) {
+    id
+    message
+    author
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetRemarksQuery__
+ *
+ * To run a query within a React component, call `useGetRemarksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRemarksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRemarksQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetRemarksQuery(baseOptions: Apollo.QueryHookOptions<GetRemarksQuery, GetRemarksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRemarksQuery, GetRemarksQueryVariables>(GetRemarksDocument, options);
+      }
+export function useGetRemarksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRemarksQuery, GetRemarksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRemarksQuery, GetRemarksQueryVariables>(GetRemarksDocument, options);
+        }
+export type GetRemarksQueryHookResult = ReturnType<typeof useGetRemarksQuery>;
+export type GetRemarksLazyQueryHookResult = ReturnType<typeof useGetRemarksLazyQuery>;
+export type GetRemarksQueryResult = Apollo.QueryResult<GetRemarksQuery, GetRemarksQueryVariables>;
+export const GetKeywordsDocument = gql`
+    query GetKeywords($id: String!) {
+  getKeywords(id: $id) {
+    keywords
+  }
+}
+    `;
+
+/**
+ * __useGetKeywordsQuery__
+ *
+ * To run a query within a React component, call `useGetKeywordsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetKeywordsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetKeywordsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetKeywordsQuery(baseOptions: Apollo.QueryHookOptions<GetKeywordsQuery, GetKeywordsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetKeywordsQuery, GetKeywordsQueryVariables>(GetKeywordsDocument, options);
+      }
+export function useGetKeywordsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetKeywordsQuery, GetKeywordsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetKeywordsQuery, GetKeywordsQueryVariables>(GetKeywordsDocument, options);
+        }
+export type GetKeywordsQueryHookResult = ReturnType<typeof useGetKeywordsQuery>;
+export type GetKeywordsLazyQueryHookResult = ReturnType<typeof useGetKeywordsLazyQuery>;
+export type GetKeywordsQueryResult = Apollo.QueryResult<GetKeywordsQuery, GetKeywordsQueryVariables>;
 export const GetApplicationsDocument = gql`
     query GetApplications {
   applications {
@@ -1167,44 +1319,6 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
-export const GetRemarksDocument = gql`
-    query GetRemarks($id: String!) {
-  getRemarks(id: $id) {
-    id
-    message
-    author
-    createdAt
-  }
-}
-    `;
-
-/**
- * __useGetRemarksQuery__
- *
- * To run a query within a React component, call `useGetRemarksQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetRemarksQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetRemarksQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetRemarksQuery(baseOptions: Apollo.QueryHookOptions<GetRemarksQuery, GetRemarksQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetRemarksQuery, GetRemarksQueryVariables>(GetRemarksDocument, options);
-      }
-export function useGetRemarksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRemarksQuery, GetRemarksQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetRemarksQuery, GetRemarksQueryVariables>(GetRemarksDocument, options);
-        }
-export type GetRemarksQueryHookResult = ReturnType<typeof useGetRemarksQuery>;
-export type GetRemarksLazyQueryHookResult = ReturnType<typeof useGetRemarksLazyQuery>;
-export type GetRemarksQueryResult = Apollo.QueryResult<GetRemarksQuery, GetRemarksQueryVariables>;
 export const GetUsersDocument = gql`
     query GetUsers {
   users {
