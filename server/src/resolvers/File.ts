@@ -40,6 +40,12 @@ export class ApplicationFile {
   fields: FileField[];
 }
 
+@ObjectType()
+export class KeywordsResponse {
+  @Field(() => String, { nullable: true })
+  keywords: string;
+}
+
 @Resolver()
 export class FileResolver {
   @Mutation(() => AppFile)
@@ -120,6 +126,7 @@ export class FileResolver {
 
       const appField = await AppField.findOne({ id: field.id });
       const file = await AppFile.findOne({ id });
+
       if (file && appField) {
         const id = v4();
         newField.id = id;
@@ -288,6 +295,60 @@ export class FileResolver {
       return remarks;
     } catch {
       throw new ApolloError({ errorMessage: "there was an error fetching remarks" });
+    }
+  }
+
+  @Query(() => KeywordsResponse)
+  async getKeywords(@Arg("id") id: string, @Ctx() { req, res }: MyContext) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+
+    const field = await FileField.findOne({
+      where: {
+        file: id,
+        name: "KEYWORDS",
+      },
+    });
+
+    if (field) {
+      return {
+        keywords: field.value,
+      };
+    } else {
+      return {
+        keywords: null,
+      };
+    }
+  }
+
+  @Mutation(() => FileField || null)
+  async changeKeywords(@Arg("id") id: string, @Arg("keywords") keywords: string, @Ctx() { req, res }: MyContext) {
+    if (!req.session.userId) {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT LOGGED IN");
+    }
+
+    const field = await FileField.findOne({
+      where: {
+        file: id,
+        name: "KEYWORDS",
+      },
+    });
+
+    console.log(field);
+
+    try {
+      if (field) {
+        field.value = keywords;
+        field.value_id_string = field.id + "_" + keywords;
+        FileField.save(field);
+        return field;
+      }
+      return null;
+    } catch {
+      throw new ApolloError({ errorMessage: "there was an error changing keywords" });
     }
   }
 }
