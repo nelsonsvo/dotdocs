@@ -16,9 +16,7 @@ export default function Dashboard({}: Props): ReactElement {
             <div className="bg-white border-l-2 border-blue-500 w-100 py-8 px-10 mt-12 rounded-sm shadow-md">
               <div className="flex flex-col w-full h-full">
                 <div>
-                  <h1 className="text-gray-800 text-4xl text-left">
-                    Welcome, {sessionStorage.username}
-                  </h1>
+                  <h1 className="text-gray-800 text-4xl text-left">Welcome, {sessionStorage.username}</h1>
                 </div>
                 <NavLink
                   to="/retrieval"
@@ -44,10 +42,7 @@ export default function Dashboard({}: Props): ReactElement {
                     <p className="text-gray-700 text-lg ">Find a document</p>
                   </div>
                 </NavLink>
-                <NavLink
-                  to="/index"
-                  className="transition duration-500 ease-in-out transform hover:-translate-y-1 "
-                >
+                <NavLink to="/index" className="transition duration-500 ease-in-out transform hover:-translate-y-1 ">
                   <div className="flex flex-row mt-5">
                     <div>
                       <svg
@@ -81,12 +76,8 @@ export default function Dashboard({}: Props): ReactElement {
                   data &&
                   data.applications.map((app, index: number) => {
                     return (
-                      <div className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
-                        <NavLink
-                          key={index}
-                          to={"/retrieval/" + app.id}
-                          className="text-gray-700 text-lg "
-                        >
+                      <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
+                        <NavLink to={"/retrieval/" + app.id} className="text-gray-700 text-lg ">
                           {app.name}
                         </NavLink>
                       </div>
@@ -105,12 +96,8 @@ export default function Dashboard({}: Props): ReactElement {
                   data &&
                   data.applications.map((app, index: number) => {
                     return (
-                      <div className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
-                        <NavLink
-                          key={index}
-                          to={"/index/" + app.id}
-                          className="text-gray-700 text-lg"
-                        >
+                      <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
+                        <NavLink to={"/index/" + app.id} className="text-gray-700 text-lg">
                           {app.name}
                         </NavLink>
                       </div>
