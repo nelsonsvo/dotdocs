@@ -8,6 +8,7 @@ import RetrievalBody from "../components/layouts/RetrievalBody";
 import { FieldType } from "../components/settings/Applications";
 import KeywordsDialog from "../components/ui/KeywordsDialog";
 import RemarksDialog from "../components/ui/RemarksDialog";
+import ToastNotification from "../components/ui/ToastNotification";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GetFilesQuery, useDeleteFilesMutation, useGetRetrievalTemplatesQuery } from "../generated/graphql";
 
@@ -32,9 +33,12 @@ const Retrieval: React.FC<RetrievalProps> = () => {
 
   //modal
   const [modalOpen, setModalOpen] = useState(false);
+  const [keywordModalOpen, setKeywordModalOpen] = useState(false);
   const [fileId, setFileId] = useState("");
 
-  const [keywordModalOpen, setKeywordModalOpen] = useState(false);
+  //toasts
+  const [keywordToastOpen, setKeywordToastOpen] = useState(false);
+  const [remarksToastOpen, setRemarksToastOpen] = useState(false);
 
   const [currentTemplate, setCurrentTemplate] = useState({ id: "", name: "" });
   const [searchResults, setSearchResults] = useState<GetFilesQuery["getFiles"]>();
@@ -290,8 +294,35 @@ const Retrieval: React.FC<RetrievalProps> = () => {
       value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
     >
       <RetrievalBody>
-        <RemarksDialog isOpen={modalOpen} setModalOpen={setModalOpen} fileId={fileId} />
-        <KeywordsDialog isOpen={keywordModalOpen} setModalOpen={setKeywordModalOpen} fileId={fileId} />
+        <RemarksDialog
+          isOpen={modalOpen}
+          onSuccess={() => setRemarksToastOpen(true)}
+          setModalOpen={setModalOpen}
+          fileId={fileId}
+        />
+        <KeywordsDialog
+          isOpen={keywordModalOpen}
+          onSuccess={() => setKeywordToastOpen(true)}
+          setModalOpen={setKeywordModalOpen}
+          fileId={fileId}
+        />
+
+        <ToastNotification
+          open={keywordToastOpen}
+          success
+          setToastOpen={setKeywordToastOpen}
+          title={"Keywords Saved"}
+          body={"New keywords saved succesfully"}
+        />
+
+        <ToastNotification
+          open={remarksToastOpen}
+          success
+          setToastOpen={setRemarksToastOpen}
+          title={"Remarks Saved"}
+          body={"New remarks saved succesfully"}
+        />
+
         {searchResults && searchResults.length > 0 ? (
           <div className="flex flex-col w-full">
             {selectedRows.size > 0 ? (
