@@ -7,13 +7,14 @@ interface KeywordsDialogProps {
   isOpen: boolean;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   fileId: string;
+  onSuccess: () => void;
 }
 
 interface KeywordsForm {
   keywords: string;
 }
 
-const KeywordsDialog: React.FC<KeywordsDialogProps> = ({ isOpen, setModalOpen, fileId }) => {
+const KeywordsDialog: React.FC<KeywordsDialogProps> = ({ isOpen, setModalOpen, fileId, onSuccess }) => {
   const { register, handleSubmit } = useForm<KeywordsForm>();
 
   const { loading, data, error } = useGetKeywordsQuery({
@@ -37,6 +38,7 @@ const KeywordsDialog: React.FC<KeywordsDialogProps> = ({ isOpen, setModalOpen, f
       });
     } catch {}
 
+    onSuccess();
     setModalOpen(false);
   });
 

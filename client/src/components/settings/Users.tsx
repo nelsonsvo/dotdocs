@@ -23,10 +23,18 @@ const Users: React.FC<UsersProps> = () => {
   const [groupToEdit, setGroupToEdit] = useState<string | null>(null);
   const [userData, setUserData] = useState<GetUsersQuery["users"][number] | null>(null);
 
-  const { loading, data, error: fetchUserError } = useGetUsersQuery({
+  const {
+    loading,
+    data,
+    error: fetchUserError,
+  } = useGetUsersQuery({
     fetchPolicy: "cache-and-network",
   });
-  const { loading: isLoading, data: groups, error: fetchGroupError } = useGetGroupsQuery({
+  const {
+    loading: isLoading,
+    data: groups,
+    error: fetchGroupError,
+  } = useGetGroupsQuery({
     fetchPolicy: "cache-and-network",
   });
 
@@ -239,13 +247,16 @@ const Users: React.FC<UsersProps> = () => {
                   groups &&
                   groups.groups.map((group) => {
                     return (
-                      <tr>
+                      <tr key={group.id}>
                         <td className="px-6 py-4 text-sm  text-gray-900">{group.name}</td>
                         <td className="px-6 py-2 whitespace-pre-line ">
                           {group.users &&
-                            group.users.map((user) => {
+                            group.users.map((user, key) => {
                               return (
-                                <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                <span
+                                  key={key}
+                                  className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                >
                                   {user.username}
                                 </span>
                               );
@@ -334,7 +345,7 @@ const Users: React.FC<UsersProps> = () => {
                   data &&
                   data.users.map((user, index) => {
                     return (
-                      <tr>
+                      <tr key={user.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10">
@@ -350,7 +361,10 @@ const Users: React.FC<UsersProps> = () => {
                           {user.groups &&
                             user.groups.map((group) => {
                               return (
-                                <span className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                <span
+                                  key={group.id}
+                                  className="px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                >
                                   {group.name}
                                 </span>
                               );

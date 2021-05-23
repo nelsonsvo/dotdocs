@@ -8,13 +8,14 @@ interface RemarksDialogProps {
   isOpen: boolean;
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   fileId: string;
+  onSuccess: () => void;
 }
 
 interface RemarksForm {
   message: string;
 }
 
-const RemarksDialog: React.FC<RemarksDialogProps> = ({ isOpen, setModalOpen, fileId }) => {
+const RemarksDialog: React.FC<RemarksDialogProps> = ({ isOpen, setModalOpen, fileId, onSuccess }) => {
   const { register, handleSubmit } = useForm<RemarksForm>();
 
   const { loading, data, error } = useGetRemarksQuery({
@@ -42,7 +43,8 @@ const RemarksDialog: React.FC<RemarksDialogProps> = ({ isOpen, setModalOpen, fil
     } catch {
       setAddRemarkError(true);
     }
-    // setModalOpen(false);
+    onSuccess();
+    setModalOpen(false);
   });
 
   return isOpen ? (
@@ -107,7 +109,7 @@ const RemarksDialog: React.FC<RemarksDialogProps> = ({ isOpen, setModalOpen, fil
                           .reverse()
                           .map((remark) => {
                             return (
-                              <div className="bg-gray-100 px-6 py-4 rounded-md border border-gray-200">
+                              <div key={remark.id} className="bg-gray-100 px-6 py-4 rounded-md border border-gray-200">
                                 <p className="text-sm font-sans">{remark.message}</p>
                                 <p className="text-xs font-sans mt-3">
                                   Date:
