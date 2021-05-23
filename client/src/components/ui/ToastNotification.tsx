@@ -21,7 +21,7 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({ title, open, succ
   }, [open]);
 
   return open ? (
-    <div className="fixed top-0 right-0 m-8 w-5/6 md:w-full max-w-sm shadow-xl">
+    <div className="fixed z-10 top-0 right-0 m-8 w-5/6 md:w-full max-w-sm shadow-xl">
       <div className="flex flex-col  px-5 py-3 bg-white border border-gray-300 rounded-lg shadow-lg text-gray-800 text-md font-medium">
         <div className=" flex w-full">
           <div className={`flex-shrink-0 text-${success ? "green" : "red"}-500`}>
