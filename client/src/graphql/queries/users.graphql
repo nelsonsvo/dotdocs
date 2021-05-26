@@ -7,6 +7,7 @@ query GetUsers {
       id
       name
     }
+    isAdministrator
   }
 }
 
@@ -18,5 +19,6 @@ query GetUserById($id: String!) {
       id
       name
     }
+    isAdministrator
   }
 }
