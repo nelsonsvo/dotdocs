@@ -2,6 +2,7 @@ import { ApolloError } from "apollo-client";
 import { AuthenticationError } from "apollo-server-errors";
 import * as argon2 from "argon2";
 import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { COOKIE_NAME } from "../constants";
 import { Group } from "../entities/Group";
 import { User } from "../entities/User";
 import { MyContext } from "./../types/ContextType";
@@ -48,6 +49,22 @@ export class UserResolver {
     throw new ApolloError({
       errorMessage: "Incorrect username or password",
     });
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) =>
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+
+        resolve(true);
+      })
+    );
   }
 
   @Mutation(() => User)
