@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext, IAuthContext } from "../context/AuthContext";
+import { useLogoutMutation } from "../generated/graphql";
 
 interface SideBarProps {
   className?: string;
@@ -9,6 +10,13 @@ interface SideBarProps {
 const SideBar: React.FC<SideBarProps> = ({ className }) => {
   const [page, setPage] = useState("");
   const { setUserAuth } = useContext<IAuthContext>(AuthContext);
+
+  const [logout] = useLogoutMutation();
+
+  const onLogout = () => {
+    setUserAuth(false);
+    logout();
+  };
 
   return (
     <div className={className}>
@@ -143,7 +151,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
           </div>
           <div className="object-bottom cursor-pointer">
             <div
-              onClick={() => setUserAuth(false)}
+              onClick={onLogout}
               className="cursor-pointer flex flex-row items-center h-11 focus:outline-none bg-gray-100 hover:bg-gray-200 text-gray-800 border-l-4 border-transparent  pr-6"
             >
               <span className="inline-flex justify-center items-center ml-4">
