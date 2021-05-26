@@ -22,7 +22,7 @@ export class User extends BaseEntity {
   @Column("text")
   password!: string;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   @Column({ type: Boolean, nullable: true })
   isAdministrator: boolean;
 
