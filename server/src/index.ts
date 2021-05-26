@@ -10,6 +10,7 @@ import redis from "redis";
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
+import { COOKIE_NAME } from "./constants";
 import { ApplicationResolver } from "./resolvers/Application";
 import { FileResolver } from "./resolvers/File";
 import { GroupResolver } from "./resolvers/Group";
@@ -30,8 +31,6 @@ const redisClient = redis.createClient();
 const main = async () => {
   const app = express();
 
-  console.log(process.env.SECRET!);
-
   app.use(
     cors({
       origin: process.env.DOT_DOCS_CLIENT_URL,
@@ -40,16 +39,16 @@ const main = async () => {
   );
   app.use(
     session({
-      name: "uid",
-      store: new RedisStore({ client: redisClient, disableTouch: true }),
+      name: COOKIE_NAME,
+      store: new RedisStore({ client: redisClient, disableTouch: false }),
       cookie: {
-        maxAge: 1000 * 60 * 60 * 30, // 30mins
+        maxAge: 1000 * 60 * 30, // 30mins
         httpOnly: true, //accessible in frontend client?
         secure: false, //only works in https?
         sameSite: "lax", //protect against csrf
       },
       saveUninitialized: false,
-
+      rolling: true, //keeps the session alive when a request is made.
       secret: process.env.SECRET!,
       resave: false,
     })
