@@ -333,6 +333,12 @@ const Users: React.FC<UsersProps> = () => {
                   >
                     Groups
                   </th>
+                  <th
+                    scope="col"
+                    className=" px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Admin
+                  </th>
 
                   <th
                     scope="col"
@@ -369,6 +375,15 @@ const Users: React.FC<UsersProps> = () => {
                                 </span>
                               );
                             })}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`px-2 mr-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-${
+                              user.isAdministrator ? "green" : "red"
+                            }-100 text-${user.isAdministrator ? "green" : "red"}-800`}
+                          >
+                            {user.isAdministrator ? "YES" : "NO"}
+                          </span>
                         </td>
                         <td className="text-gray-400 flex justify-end space-x-5 py-6 px-4 ">
                           <svg
