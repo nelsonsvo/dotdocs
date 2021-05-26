@@ -39,6 +39,11 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
+    type_graphql_1.Field(() => Boolean, { nullable: true }),
+    typeorm_1.Column({ type: Boolean, nullable: true }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isAdministrator", void 0);
+__decorate([
     type_graphql_1.Field(() => [Group_1.Group], { nullable: true }),
     typeorm_1.ManyToMany(() => Group_1.Group, (group) => group.users, {
         cascade: true,

@@ -22,6 +22,7 @@ interface UserFormFields {
   email: string;
   password: string;
   groupId: string;
+  isAdministrator: boolean;
 }
 
 const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen, onSuccess, onClose, userData }) => {
@@ -39,7 +40,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
 
   const { register, errors, handleSubmit } = useForm();
 
-  const onSubmit = handleSubmit(({ username, email, password, groupId }: UserFormFields) => {
+  const onSubmit = handleSubmit(({ username, email, password, groupId, isAdministrator }: UserFormFields) => {
     if (!updatingUser) {
       try {
         createUser({
@@ -48,6 +49,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
             email,
             password,
             groupId,
+            isAdministrator,
           },
         });
 
@@ -62,6 +64,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
           username,
           email,
           groupId,
+          isAdministrator,
         },
       });
     }
@@ -99,7 +102,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                   <h3 className="text-3xl leading-6 font-medium text-gray-800" id="modal-title">
                     {updatingUser ? "Update" : "Create"} User
                   </h3>
-                  <div className="mt-8 space-y-3">
+                  <div className="mt-10 space-y-3 p-3">
                     <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
                       Username
                     </label>
@@ -162,6 +165,15 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                         );
                       })}
                     </select>
+                    <div>
+                      <input
+                        type="checkbox"
+                        name="isAdministrator"
+                        ref={register}
+                        className="form-checkbox rounded-sm"
+                      />
+                      <span className="text-gray-800 text-sm font-medium ml-3">Administrator</span>
+                    </div>
                   </div>
                 </div>
               </div>

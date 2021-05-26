@@ -73,24 +73,40 @@ let UserResolver = class UserResolver {
             });
         });
     }
-    createUser(username, password, email, groupId, { req, res }) {
+    createUser(username, password, email, groupId, isAdministrator, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
                 try {
                     const hash = yield argon2.hash(password);
-                    const groups = yield Group_1.Group.find({
-                        where: {
-                            id: groupId,
-                        },
-                    });
-                    const user = User_1.User.create({
-                        username,
-                        email: email === "" ? null : email,
-                        password: hash,
-                        groups,
-                    });
-                    yield User_1.User.save(user);
-                    return user;
+                    let groups = [];
+                    if (groupId !== "") {
+                        groups = yield Group_1.Group.find({
+                            where: {
+                                id: groupId,
+                            },
+                        });
+                    }
+                    if (groups.length > 0) {
+                        const user = User_1.User.create({
+                            username,
+                            email: email === "" ? null : email,
+                            password: hash,
+                            groups,
+                            isAdministrator,
+                        });
+                        yield User_1.User.save(user);
+                        return user;
+                    }
+                    else {
+                        const user = User_1.User.create({
+                            username,
+                            email: email === "" ? null : email,
+                            password: hash,
+                            isAdministrator,
+                        });
+                        yield User_1.User.save(user);
+                        return user;
+                    }
                 }
                 catch (_a) {
                     throw new apollo_client_1.ApolloError({
@@ -104,7 +120,7 @@ let UserResolver = class UserResolver {
             }
         });
     }
-    updateUser(id, username, email, groupId, { req, res }) {
+    updateUser(id, username, email, groupId, isAdministrator, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
                 try {
@@ -119,6 +135,7 @@ let UserResolver = class UserResolver {
                             user.username = username;
                             user.email = email;
                             user.groups = groups;
+                            user.isAdministrator = isAdministrator;
                             yield User_1.User.save(user);
                             return user;
                         }
@@ -129,6 +146,7 @@ let UserResolver = class UserResolver {
                             user.username = username;
                             user.email = email;
                             user.groups = null;
+                            user.isAdministrator = isAdministrator;
                             yield User_1.User.save(user);
                             return user;
                         }
@@ -202,9 +220,10 @@ __decorate([
     __param(1, type_graphql_1.Arg("password")),
     __param(2, type_graphql_1.Arg("email")),
     __param(3, type_graphql_1.Arg("groupId")),
-    __param(4, type_graphql_1.Ctx()),
+    __param(4, type_graphql_1.Arg("isAdministrator")),
+    __param(5, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, String, Boolean, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "createUser", null);
 __decorate([
@@ -213,9 +232,10 @@ __decorate([
     __param(1, type_graphql_1.Arg("username")),
     __param(2, type_graphql_1.Arg("email")),
     __param(3, type_graphql_1.Arg("groupId")),
-    __param(4, type_graphql_1.Ctx()),
+    __param(4, type_graphql_1.Arg("isAdministrator")),
+    __param(5, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, String, Boolean, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "updateUser", null);
 __decorate([

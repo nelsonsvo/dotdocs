@@ -93,7 +93,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                   </div>
                   <div className="mt-5">
                     <h3 className="font-medium text-lg text-gray-700">Permissions</h3>
-                    <div className="bg-gray-100 rounded-md shadow-lg px-5 py-4 mt-2 border border-gray-200">
+                    <div className="bg-gray-100 rounded-md shadow-lg px-5 py-4 mt-2 border border-gray-200 overflow-y-auto h-80">
                       <div className="space-y-4">
                         <div>
                           <h4 className="text-xl text-gray-800 font-semibold">Global</h4>
@@ -101,29 +101,51 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                             <li>
                               <input
                                 type="checkbox"
-                                name="GLOBAL_RETRIEVAL"
+                                name="GLOBAL_CHANGE_PASSWORD"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
-                              <span className="text-gray-700 text-sm ml-2">Retrieval</span>
+                              <span className="text-gray-700 text-sm ml-2">Change Password</span>
                             </li>
                             <li>
                               <input
                                 type="checkbox"
-                                name="GLOBAL_INDEXING"
+                                name="REPORTS_VIEWING"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
-                              <span className="text-gray-700 text-sm ml-2">Indexing</span>
+                              <span className="text-gray-700 text-sm ml-2">Reports Viewing</span>
                             </li>
+                          </ul>
+                          <hr className="my-3" />
+                          <h4 className="text-xl text-gray-800 font-semibold">Admin Functions</h4>
+                          <ul className="ml-4 mt-2 mx-auto">
                             <li>
                               <input
                                 type="checkbox"
-                                name="GLOBAL_SETTINGS"
+                                name="ADMIN_CHANGE_SETTINGS"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
                               <span className="text-gray-700 text-sm ml-2">Settings</span>
+                            </li>
+                            <li>
+                              <input
+                                type="checkbox"
+                                name="ADMIN_APPLICATIONS"
+                                ref={register}
+                                className="form-checkbox rounded-sm"
+                              />
+                              <span className="text-gray-700 text-sm ml-2">Applications</span>
+                            </li>
+                            <li>
+                              <input
+                                type="checkbox"
+                                name="ADMIN_USERS_AND_GROUPS"
+                                ref={register}
+                                className="form-checkbox rounded-sm"
+                              />
+                              <span className="text-gray-700 text-sm ml-2">Users & Groups</span>
                             </li>
                           </ul>
                         </div>
@@ -155,6 +177,70 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                                   </li>
 
                                   <li key={key + 3}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_KEYWORDS`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Keywords</span>
+                                  </li>
+                                  <li key={key + 4}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_REMARKS`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Remarks</span>
+                                  </li>
+                                  <li key={key + 5}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_DELETE_APPLICATION`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Delete</span>
+                                  </li>
+                                  <li key={key + 6}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_EDIT_APPLICATION`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Edit</span>
+                                  </li>
+                                  <h3 className="text-sm font-medium mt-2">Document</h3>
+                                  <li key={key + 7}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_DELETE_DOCUMENT`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Delete</span>
+                                  </li>
+                                  <li key={key + 8}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_VERSION_MANAGEMENT`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Version Management</span>
+                                  </li>
+                                  <li key={key + 9}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_EDIT_INDEXES`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Edit Index Values</span>
+                                  </li>
+                                  <li key={key + 10}>
                                     <input
                                       type="checkbox"
                                       name={`${app.name.toUpperCase()}_FILE_VIEWING`}
