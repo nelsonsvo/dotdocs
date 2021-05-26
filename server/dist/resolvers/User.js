@@ -31,6 +31,7 @@ const apollo_client_1 = require("apollo-client");
 const apollo_server_errors_1 = require("apollo-server-errors");
 const argon2 = __importStar(require("argon2"));
 const type_graphql_1 = require("type-graphql");
+const constants_1 = require("../constants");
 const Group_1 = require("../entities/Group");
 const User_1 = require("../entities/User");
 let UserResolver = class UserResolver {
@@ -72,6 +73,17 @@ let UserResolver = class UserResolver {
                 errorMessage: "Incorrect username or password",
             });
         });
+    }
+    logout({ req, res }) {
+        return new Promise((resolve) => req.session.destroy((err) => {
+            res.clearCookie(constants_1.COOKIE_NAME);
+            if (err) {
+                console.log(err);
+                resolve(false);
+                return;
+            }
+            resolve(true);
+        }));
     }
     createUser(username, password, email, groupId, isAdministrator, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -214,6 +226,13 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "logout", null);
 __decorate([
     type_graphql_1.Mutation(() => User_1.User),
     __param(0, type_graphql_1.Arg("username")),
