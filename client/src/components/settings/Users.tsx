@@ -73,8 +73,6 @@ const Users: React.FC<UsersProps> = () => {
   }, []);
 
   const onUpdateUserClick = (id: string) => {
-    //TODO:implement update for groups
-    //need a modal and need to upsert the group
     let users: GetUsersQuery | null = client.readQuery({
       query: GetUsersDocument,
     });
