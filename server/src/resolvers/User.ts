@@ -56,27 +56,43 @@ export class UserResolver {
     @Arg("password") password: string,
     @Arg("email") email: string,
     @Arg("groupId") groupId: string,
+    @Arg("isAdministrator") isAdministrator: boolean,
     @Ctx() { req, res }: MyContext
   ) {
     if (req.session.userId) {
       try {
         const hash = await argon2.hash(password);
 
-        const groups = await Group.find({
-          where: {
-            id: groupId,
-          },
-        });
+        let groups: Group[] = [];
 
-        const user = User.create({
-          username,
-          email: email === "" ? null : email,
-          password: hash,
-          groups,
-        });
-        await User.save(user);
+        if (groupId !== "") {
+          groups = await Group.find({
+            where: {
+              id: groupId,
+            },
+          });
+        }
 
-        return user;
+        if (groups.length > 0) {
+          const user = User.create({
+            username,
+            email: email === "" ? null : email,
+            password: hash,
+            groups,
+            isAdministrator,
+          });
+          await User.save(user);
+          return user;
+        } else {
+          const user = User.create({
+            username,
+            email: email === "" ? null : email,
+            password: hash,
+            isAdministrator,
+          });
+          await User.save(user);
+          return user;
+        }
       } catch {
         throw new ApolloError({
           errorMessage: "Failed to create user",
@@ -94,6 +110,7 @@ export class UserResolver {
     @Arg("username") username: string,
     @Arg("email") email: string,
     @Arg("groupId") groupId: string,
+    @Arg("isAdministrator") isAdministrator: boolean,
     @Ctx() { req, res }: MyContext
   ) {
     if (req.session.userId) {
@@ -110,6 +127,7 @@ export class UserResolver {
             user.username = username;
             user.email = email;
             user.groups = groups;
+            user.isAdministrator = isAdministrator;
 
             await User.save(user);
 
@@ -121,6 +139,7 @@ export class UserResolver {
             user.username = username;
             user.email = email;
             user.groups = null;
+            user.isAdministrator = isAdministrator;
 
             await User.save(user);
 
