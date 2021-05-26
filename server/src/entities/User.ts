@@ -22,6 +22,10 @@ export class User extends BaseEntity {
   @Column("text")
   password!: string;
 
+  @Field(() => Boolean)
+  @Column({ type: Boolean, nullable: true })
+  isAdministrator: boolean;
+
   @Field(() => [Group], { nullable: true })
   @ManyToMany(() => Group, (group) => group.users, {
     cascade: true,
