@@ -534,7 +534,7 @@ export type GetUsersQuery = (
   { __typename?: 'Query' }
   & { users: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email'>
+    & Pick<User, 'id' | 'username' | 'email' | 'isAdministrator'>
     & { groups?: Maybe<Array<(
       { __typename?: 'Group' }
       & Pick<Group, 'id' | 'name'>
@@ -551,7 +551,7 @@ export type GetUserByIdQuery = (
   { __typename?: 'Query' }
   & { userById: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'email'>
+    & Pick<User, 'username' | 'email' | 'isAdministrator'>
     & { groups?: Maybe<Array<(
       { __typename?: 'Group' }
       & Pick<Group, 'id' | 'name'>
@@ -1343,6 +1343,7 @@ export const GetUsersDocument = gql`
       id
       name
     }
+    isAdministrator
   }
 }
     `;
@@ -1382,6 +1383,7 @@ export const GetUserByIdDocument = gql`
       id
       name
     }
+    isAdministrator
   }
 }
     `;
