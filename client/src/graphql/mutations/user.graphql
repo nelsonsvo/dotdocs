@@ -1,5 +1,17 @@
-mutation CreateUser($groupId: String!, $email: String!, $password: String!, $username: String!) {
-  createUser(groupId: $groupId, email: $email, password: $password, username: $username) {
+mutation CreateUser(
+  $groupId: String!
+  $email: String!
+  $password: String!
+  $username: String!
+  $isAdministrator: Boolean!
+) {
+  createUser(
+    groupId: $groupId
+    email: $email
+    password: $password
+    username: $username
+    isAdministrator: $isAdministrator
+  ) {
     id
     username
   }
@@ -9,8 +21,8 @@ mutation DeleteUser($id: String!) {
   deleteUser(id: $id)
 }
 
-mutation UpdateUser($groupId: String!, $email: String!, $username: String!, $id: String!) {
-  updateUser(id: $id, groupId: $groupId, email: $email, username: $username) {
+mutation UpdateUser($groupId: String!, $email: String!, $username: String!, $id: String!, $isAdministrator: Boolean!) {
+  updateUser(id: $id, groupId: $groupId, email: $email, username: $username, isAdministrator: $isAdministrator) {
     id
     username
   }
