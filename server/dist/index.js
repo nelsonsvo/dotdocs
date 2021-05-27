@@ -23,6 +23,7 @@ const redis_1 = __importDefault(require("redis"));
 require("reflect-metadata");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const constants_1 = require("./constants");
 const Application_1 = require("./resolvers/Application");
 const File_1 = require("./resolvers/File");
 const Group_1 = require("./resolvers/Group");
@@ -32,21 +33,21 @@ const RedisStore = connect_redis_1.default(express_session_1.default);
 const redisClient = redis_1.default.createClient();
 const main = () => __awaiter(this, void 0, void 0, function* () {
     const app = express_1.default();
-    console.log(process.env.SECRET);
     app.use(cors_1.default({
         origin: process.env.DOT_DOCS_CLIENT_URL,
         credentials: true,
     }));
     app.use(express_session_1.default({
-        name: "uid",
-        store: new RedisStore({ client: redisClient, disableTouch: true }),
+        name: constants_1.COOKIE_NAME,
+        store: new RedisStore({ client: redisClient, disableTouch: false }),
         cookie: {
-            maxAge: 1000 * 60 * 60 * 30,
+            maxAge: 1000 * 60 * 30,
             httpOnly: true,
             secure: false,
             sameSite: "lax",
         },
         saveUninitialized: false,
+        rolling: true,
         secret: process.env.SECRET,
         resave: false,
     }));

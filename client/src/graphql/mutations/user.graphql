@@ -27,3 +27,7 @@ mutation UpdateUser($groupId: String!, $email: String!, $username: String!, $id:
     username
   }
 }
+
+mutation Logout {
+  logout
+}
