@@ -18,7 +18,7 @@ export class UserResolver {
       throw new AuthenticationError("USER NOT LOGGED IN");
     }
 
-    return await User.findOne({ id: req.session.userId });
+    return await User.findOne({ id: req.session.userId }, { relations: ["groups"] });
   }
 
   @Query(() => [User])
@@ -37,7 +37,7 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   async login(@Arg("username") username: string, @Arg("password") password: string, @Ctx() { req, res }: MyContext) {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }, { relations: ["groups"] });
     if (user) {
       const valid = await argon2.verify(user.password, password);
       if (valid) {
