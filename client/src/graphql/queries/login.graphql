@@ -2,6 +2,10 @@ query Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
     username
     password
+    groups {
+      name
+      permissions
+    }
   }
 }
 
@@ -9,5 +13,9 @@ query Me {
   me {
     username
     password
+    groups {
+      name
+      permissions
+    }
   }
 }
