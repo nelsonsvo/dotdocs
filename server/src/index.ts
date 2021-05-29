@@ -21,7 +21,6 @@ dotenv.config();
 declare module "express-session" {
   interface Session {
     userId: string;
-    userType: string;
   }
 }
 

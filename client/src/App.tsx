@@ -16,35 +16,46 @@ function App() {
   const [auth, setAuth] = useState<IAuth>({
     loggedIn: false,
     timeLoggedIn: null,
+    permissions: [],
   });
 
-  const setUserAuth = (isAuth: boolean, userType?: string) => {
-    if (isAuth && userType) {
+  const clearAuthState = () => {
+    setAuth({
+      loggedIn: false,
+      timeLoggedIn: null,
+      permissions: [],
+    });
+  };
+
+  const setUserAuth = (isAuth: boolean, permissions?: string[] | null | undefined) => {
+    if (isAuth) {
       const timeLogged = new Date().getTime();
       localStorage.setItem("isAuth", isAuth.toString());
       localStorage.setItem("timeLoggedIn", timeLogged.toString());
+      localStorage.setItem("permissions", JSON.stringify(permissions));
       setAuth({
         loggedIn: isAuth,
         timeLoggedIn: timeLogged,
+        permissions: permissions,
       });
     } else {
       localStorage.setItem("isAuth", isAuth.toString());
-      setAuth({
-        loggedIn: isAuth,
-        timeLoggedIn: null,
-      });
+      clearAuthState();
     }
   };
 
   //match state and localstorage after page refresh
   useEffect(() => {
-    if (!auth.loggedIn === null && auth.timeLoggedIn === null) {
+    if (auth.loggedIn === false) {
+      clearAuthState();
+    } else {
       setAuth({
         loggedIn: localStorage.getItem("isAuth") === "true",
         timeLoggedIn: Number(localStorage.getItem("timeLoggedIn")),
+        permissions: JSON.parse(localStorage.getItem("permissions")!),
       });
     }
-  }, [auth]);
+  }, [auth.loggedIn]);
 
   return (
     <ApolloProvider client={client}>

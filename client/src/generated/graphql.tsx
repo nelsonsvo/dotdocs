@@ -522,6 +522,10 @@ export type LoginQuery = (
   & { login?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'username' | 'password'>
+    & { groups?: Maybe<Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'name' | 'permissions'>
+    )>> }
   )> }
 );
 
@@ -533,6 +537,10 @@ export type MeQuery = (
   & { me?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'username' | 'password'>
+    & { groups?: Maybe<Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'name' | 'permissions'>
+    )>> }
   )> }
 );
 
@@ -1305,6 +1313,10 @@ export const LoginDocument = gql`
   login(username: $username, password: $password) {
     username
     password
+    groups {
+      name
+      permissions
+    }
   }
 }
     `;
@@ -1342,6 +1354,10 @@ export const MeDocument = gql`
   me {
     username
     password
+    groups {
+      name
+      permissions
+    }
   }
 }
     `;

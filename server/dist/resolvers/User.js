@@ -41,7 +41,7 @@ let UserResolver = class UserResolver {
                 res.statusCode = 401;
                 throw new apollo_server_errors_1.AuthenticationError("USER NOT LOGGED IN");
             }
-            return yield User_1.User.findOne({ id: req.session.userId });
+            return yield User_1.User.findOne({ id: req.session.userId }, { relations: ["groups"] });
         });
     }
     users() {
@@ -60,7 +60,7 @@ let UserResolver = class UserResolver {
     }
     login(username, password, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield User_1.User.findOne({ username });
+            const user = yield User_1.User.findOne({ username }, { relations: ["groups"] });
             if (user) {
                 const valid = yield argon2.verify(user.password, password);
                 if (valid) {

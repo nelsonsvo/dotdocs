@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { AuthContext, IAuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { useLogoutMutation } from "../generated/graphql";
 
 interface SideBarProps {
@@ -9,12 +9,12 @@ interface SideBarProps {
 
 const SideBar: React.FC<SideBarProps> = ({ className }) => {
   const [page, setPage] = useState("");
-  const { setUserAuth } = useContext<IAuthContext>(AuthContext);
+  const { setUserAuth } = useContext(AuthContext);
 
   const [logout] = useLogoutMutation();
 
   const onLogout = () => {
-    setUserAuth(false);
+    setUserAuth!(false);
     logout();
   };
 

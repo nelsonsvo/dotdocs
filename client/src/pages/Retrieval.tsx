@@ -184,7 +184,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
       }
     }
   };
-  //
+  //testing integration
   //for downloading a document or multiple documents
   const downloadDocument = () => {
     if (searchResults) {

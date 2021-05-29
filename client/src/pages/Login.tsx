@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link, Redirect } from "react-router-dom";
-import { AuthContext, IAuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { useLoginLazyQuery } from "../generated/graphql";
 
 type Inputs = {
@@ -13,10 +13,12 @@ interface LoginFormProps {}
 
 const Login: React.FC<LoginFormProps> = () => {
   const { register, handleSubmit, errors } = useForm<Inputs>();
-  const { setUserAuth } = useContext<IAuthContext>(AuthContext);
+  const { setUserAuth } = useContext(AuthContext);
   const [login, { loading, data, error }] = useLoginLazyQuery({
     fetchPolicy: "network-only",
-    onCompleted: (data) => setUserAuth(true),
+    onCompleted: (data) => {
+      setUserAuth!(true, data.login!.groups![0].permissions);
+    },
   });
 
   const onSubmit = (input: Inputs) => {
