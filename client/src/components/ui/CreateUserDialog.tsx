@@ -68,6 +68,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
           email,
           groupId,
           isAdministrator,
+          password: password ? password : "",
         },
       });
     }
@@ -139,11 +140,18 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                       ref={register}
                       className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     />
-
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Reset Password?
-                    </label>
-                    <Toggle defaultChecked={true} onChange={() => setResetPassword((prev) => !prev)} name="toggle" />
+                    {updatingUser && (
+                      <>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                          Reset Password?
+                        </label>
+                        <Toggle
+                          defaultChecked={true}
+                          onChange={() => setResetPassword((prev) => !prev)}
+                          name="toggle"
+                        />
+                      </>
+                    )}
                     {resetPassword && (
                       <>
                         <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
@@ -151,7 +159,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                         </label>
                         <input
                           type="text"
-                          name="group"
+                          name="password"
                           ref={register}
                           className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                         />
