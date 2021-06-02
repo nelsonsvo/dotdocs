@@ -21,8 +21,22 @@ mutation DeleteUser($id: String!) {
   deleteUser(id: $id)
 }
 
-mutation UpdateUser($groupId: String!, $email: String!, $username: String!, $id: String!, $isAdministrator: Boolean!) {
-  updateUser(id: $id, groupId: $groupId, email: $email, username: $username, isAdministrator: $isAdministrator) {
+mutation UpdateUser(
+  $groupId: String!
+  $email: String!
+  $username: String!
+  $id: String!
+  $isAdministrator: Boolean!
+  $password: String!
+) {
+  updateUser(
+    id: $id
+    groupId: $groupId
+    email: $email
+    username: $username
+    isAdministrator: $isAdministrator
+    password: $password
+  ) {
     id
     username
   }

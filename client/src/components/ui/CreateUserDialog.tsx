@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   GetGroupsDocument,
@@ -8,6 +8,7 @@ import {
   useGetGroupNamesQuery,
   useUpdateUserMutation,
 } from "../../generated/graphql";
+import Toggle from "./Toggle";
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -40,6 +41,8 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
 
   const { register, errors, handleSubmit } = useForm();
 
+  const [resetPassword, setResetPassword] = useState<boolean>(false);
+
   const onSubmit = handleSubmit(({ username, email, password, groupId, isAdministrator }: UserFormFields) => {
     if (!updatingUser) {
       try {
@@ -65,11 +68,19 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
           email,
           groupId,
           isAdministrator,
+          password: password ? password : "",
         },
       });
     }
     setModalOpen(false);
   });
+
+  useEffect(() => {
+    if (!open) {
+      setResetPassword(false);
+    }
+  }, [open]);
+
   return open ? (
     <div className="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -129,6 +140,31 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                       ref={register}
                       className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     />
+                    {updatingUser && (
+                      <>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                          Reset Password?
+                        </label>
+                        <Toggle
+                          defaultChecked={true}
+                          onChange={() => setResetPassword((prev) => !prev)}
+                          name="toggle"
+                        />
+                      </>
+                    )}
+                    {resetPassword && (
+                      <>
+                        <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
+                          Password
+                        </label>
+                        <input
+                          type="text"
+                          name="password"
+                          ref={register}
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        />
+                      </>
+                    )}
                     {!updatingUser && (
                       <>
                         <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
@@ -170,7 +206,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                         type="checkbox"
                         name="isAdministrator"
                         ref={register}
-                        className="form-checkbox rounded-sm"
+                        className="form-checkbox h-5 w-5 border-1 rounded-md shadow-sm"
                       />
                       <span className="text-gray-800 text-sm font-medium ml-3">Administrator</span>
                     </div>

@@ -173,6 +173,7 @@ export type MutationCreateUserArgs = {
 
 export type MutationUpdateUserArgs = {
   isAdministrator: Scalars['Boolean'];
+  password: Scalars['String'];
   groupId: Scalars['String'];
   email: Scalars['String'];
   username: Scalars['String'];
@@ -389,6 +390,7 @@ export type UpdateUserMutationVariables = Exact<{
   username: Scalars['String'];
   id: Scalars['String'];
   isAdministrator: Scalars['Boolean'];
+  password: Scalars['String'];
 }>;
 
 
@@ -958,13 +960,14 @@ export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutati
 export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
 export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
 export const UpdateUserDocument = gql`
-    mutation UpdateUser($groupId: String!, $email: String!, $username: String!, $id: String!, $isAdministrator: Boolean!) {
+    mutation UpdateUser($groupId: String!, $email: String!, $username: String!, $id: String!, $isAdministrator: Boolean!, $password: String!) {
   updateUser(
     id: $id
     groupId: $groupId
     email: $email
     username: $username
     isAdministrator: $isAdministrator
+    password: $password
   ) {
     id
     username
@@ -991,6 +994,7 @@ export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, U
  *      username: // value for 'username'
  *      id: // value for 'id'
  *      isAdministrator: // value for 'isAdministrator'
+ *      password: // value for 'password'
  *   },
  * });
  */

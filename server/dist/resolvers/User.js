@@ -132,39 +132,45 @@ let UserResolver = class UserResolver {
             }
         });
     }
-    updateUser(id, username, email, groupId, isAdministrator, { req, res }) {
+    updateUser(id, username, email, groupId, password, isAdministrator, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
                 try {
-                    if (groupId) {
-                        const groups = yield Group_1.Group.find({
-                            where: {
-                                id: groupId,
-                            },
-                        });
-                        const user = yield User_1.User.findOne(id);
-                        if (user) {
+                    const user = yield User_1.User.findOne(id);
+                    if (user) {
+                        if (groupId) {
+                            const groups = yield Group_1.Group.find({
+                                where: {
+                                    id: groupId,
+                                },
+                            });
                             user.username = username;
                             user.email = email;
                             user.groups = groups;
                             user.isAdministrator = isAdministrator;
-                            yield User_1.User.save(user);
-                            return user;
                         }
-                    }
-                    else {
-                        const user = yield User_1.User.findOne(id);
-                        if (user) {
+                        else {
                             user.username = username;
                             user.email = email;
                             user.groups = null;
                             user.isAdministrator = isAdministrator;
-                            yield User_1.User.save(user);
-                            return user;
                         }
+                        if (password !== "") {
+                            try {
+                                const pwd = yield argon2.hash(password);
+                                user.password = pwd;
+                            }
+                            catch (_a) {
+                                throw new apollo_client_1.ApolloError({
+                                    errorMessage: "Failed to hash password",
+                                });
+                            }
+                        }
+                        yield User_1.User.save(user);
                     }
+                    return user;
                 }
-                catch (_a) {
+                catch (_b) {
                     throw new apollo_client_1.ApolloError({
                         errorMessage: "Failed to update user",
                     });
@@ -251,10 +257,11 @@ __decorate([
     __param(1, type_graphql_1.Arg("username")),
     __param(2, type_graphql_1.Arg("email")),
     __param(3, type_graphql_1.Arg("groupId")),
-    __param(4, type_graphql_1.Arg("isAdministrator")),
-    __param(5, type_graphql_1.Ctx()),
+    __param(4, type_graphql_1.Arg("password")),
+    __param(5, type_graphql_1.Arg("isAdministrator")),
+    __param(6, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, Boolean, Object]),
+    __metadata("design:paramtypes", [String, String, String, String, String, Boolean, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "updateUser", null);
 __decorate([
