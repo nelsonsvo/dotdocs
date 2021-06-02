@@ -127,42 +127,46 @@ export class UserResolver {
     @Arg("username") username: string,
     @Arg("email") email: string,
     @Arg("groupId") groupId: string,
+    @Arg("password") password: string,
     @Arg("isAdministrator") isAdministrator: boolean,
     @Ctx() { req, res }: MyContext
   ) {
     if (req.session.userId) {
       try {
-        if (groupId) {
-          const groups = await Group.find({
-            where: {
-              id: groupId,
-            },
-          });
+        const user = await User.findOne(id);
+        if (user) {
+          if (groupId) {
+            const groups = await Group.find({
+              where: {
+                id: groupId,
+              },
+            });
 
-          const user = await User.findOne(id);
-          if (user) {
             user.username = username;
             user.email = email;
             user.groups = groups;
             user.isAdministrator = isAdministrator;
-
-            await User.save(user);
-
-            return user;
-          }
-        } else {
-          const user = await User.findOne(id);
-          if (user) {
+          } else {
             user.username = username;
             user.email = email;
             user.groups = null;
             user.isAdministrator = isAdministrator;
-
-            await User.save(user);
-
-            return user;
           }
+
+          if (password !== "") {
+            try {
+              const pwd = await argon2.hash(password);
+              user.password = pwd;
+            } catch {
+              throw new ApolloError({
+                errorMessage: "Failed to hash password",
+              });
+            }
+          }
+
+          await User.save(user);
         }
+        return user;
       } catch {
         throw new ApolloError({
           errorMessage: "Failed to update user",
