@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   GetGroupsDocument,
@@ -8,6 +8,7 @@ import {
   useGetGroupNamesQuery,
   useUpdateUserMutation,
 } from "../../generated/graphql";
+import Toggle from "./Toggle";
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -39,6 +40,8 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
   });
 
   const { register, errors, handleSubmit } = useForm();
+
+  const [resetPassword, setResetPassword] = useState<boolean>(false);
 
   const onSubmit = handleSubmit(({ username, email, password, groupId, isAdministrator }: UserFormFields) => {
     if (!updatingUser) {
@@ -129,6 +132,24 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ open, setModalOpen,
                       ref={register}
                       className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                     />
+
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                      Reset Password?
+                    </label>
+                    <Toggle defaultChecked={true} onChange={() => setResetPassword((prev) => !prev)} name="toggle" />
+                    {resetPassword && (
+                      <>
+                        <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
+                          Password
+                        </label>
+                        <input
+                          type="text"
+                          name="group"
+                          ref={register}
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                        />
+                      </>
+                    )}
                     {!updatingUser && (
                       <>
                         <label htmlFor="name" className="block  text-sm font-medium text-gray-700">
