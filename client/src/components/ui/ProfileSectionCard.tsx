@@ -1,9 +1,9 @@
 import React from "react";
 import { NavLink, useRouteMatch } from "react-router-dom";
 
-interface UserSettingSectionCardProps {}
+interface ProfileSectionCardProps {}
 
-const UserSectionCard: React.FC<UserSettingSectionCardProps> = ({ children }) => {
+const ProfileSectionCard: React.FC<ProfileSectionCardProps> = ({ children }) => {
   const { url } = useRouteMatch();
 
   return (
@@ -35,4 +35,4 @@ const UserSectionCard: React.FC<UserSettingSectionCardProps> = ({ children }) =>
   );
 };
 
-export default UserSectionCard;
+export default ProfileSectionCard;
