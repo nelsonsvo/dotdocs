@@ -8,6 +8,7 @@ import { client } from "./graphql/ApolloClient";
 import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 import Retrieval from "./pages/Retrieval";
 import Settings from "./pages/Settings";
 import Viewer from "./pages/Viewer";
@@ -70,6 +71,7 @@ function App() {
                 <Route path="/retrieval/:id?" component={Retrieval} />
                 <Route path="/index/:id?" component={Index} />
                 <Route path="/viewer/:file" component={Viewer} />
+                <Route path="/profile" component={Profile} />
               </ProtectedRoute>
             </AuthContext.Provider>
           </Switch>
