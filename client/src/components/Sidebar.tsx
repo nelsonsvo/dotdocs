@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useLogoutMutation } from "../generated/graphql";
@@ -8,7 +8,6 @@ interface SideBarProps {
 }
 
 const SideBar: React.FC<SideBarProps> = ({ className }) => {
-  const [page, setPage] = useState("");
   const { setUserAuth } = useContext(AuthContext);
 
   const [logout] = useLogoutMutation();
@@ -31,10 +30,9 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
             <ul className="flex flex-col py-4 space-y-1">
               <li>
                 <NavLink
-                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6"
-                  onClick={() => setPage("dashboard")}
+                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/dashboard"
-                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                 >
                   <span className="inline-flex justify-center items-center ml-4">
                     <svg
@@ -52,17 +50,14 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                       ></path>
                     </svg>
                   </span>
-                  <span className="ml-2 text-sm tracking-wide truncate">Dashboard</span>
+                  <span className="ml-2 text-sm font-medium">Dashboard</span>
                 </NavLink>
               </li>
               <li>
                 <NavLink
-                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6"
-                  onClick={() => setPage("retrieval")}
+                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/retrieval"
-                  className={`relative flex flex-row items-center h-11 focus:outline-none ${
-                    page === "retrieval" ? "bg-gray-100 border-blue-500 " : ""
-                  } hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                 >
                   <span className="inline-flex justify-center items-center ml-4">
                     <svg
@@ -80,17 +75,14 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                       />
                     </svg>
                   </span>
-                  <span className="ml-2 text-sm tracking-wide truncate">Retrieval</span>
+                  <span className="ml-2 text-sm font-medium">Retrieval</span>
                 </NavLink>
               </li>
               <li>
                 <NavLink
-                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6"
-                  onClick={() => setPage("index")}
+                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/index"
-                  className={`relative flex flex-row items-center h-11 focus:outline-none ${
-                    page === "index" ? "bg-gray-100 border-blue-500 " : ""
-                  } hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                 >
                   <span className="inline-flex justify-center items-center ml-4">
                     <svg
@@ -108,18 +100,40 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                       />
                     </svg>
                   </span>
-                  <span className="ml-2 text-sm tracking-wide truncate">Index</span>
+                  <span className="ml-2 text-sm font-medium">Index</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
+                  to="/profile"
+                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                >
+                  <span className="inline-flex justify-center items-center ml-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </span>
+                  <span className="ml-2 text-sm font-medium">Profile</span>
                 </NavLink>
               </li>
               <div className="flex-end">
                 <li>
                   <NavLink
-                    activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6"
-                    onClick={() => setPage("settings")}
+                    activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                     to="/settings"
-                    className={`relative flex flex-row items-center h-11 focus:outline-none ${
-                      page === "settings" ? "bg-gray-100 border-blue-500 " : ""
-                    } hover:bg-gray-100 text-gray-700 hover:text-gray-600 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                    className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                   >
                     <span className="inline-flex justify-center items-center ml-4">
                       <svg
@@ -143,7 +157,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                         ></path>
                       </svg>
                     </span>
-                    <span className="ml-2 text-sm tracking-wide truncate">Settings</span>
+                    <span className="ml-2 text-sm font-medium">Settings</span>
                   </NavLink>
                 </li>
               </div>

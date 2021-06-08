@@ -184,7 +184,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                   id={f.id}
                                   name={f.id}
                                   ref={register}
-                                  className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
+                                  className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm rounded-md"
                                 >
                                   {f.picklist_values!.map((val: string, index: number) => {
                                     return <option key={index + 10000}>{val}</option>;
@@ -203,7 +203,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                   name={f.id}
                                   maxLength={f.max_length}
                                   ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 />
                               </li>
                             );
@@ -217,7 +217,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                   type={"text"}
                                   name={f.id}
                                   ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 />
                               </li>
                             );
@@ -232,7 +232,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                   name={f.id}
                                   maxLength={f.max_length}
                                   ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 />
                               </li>
                             );
@@ -247,7 +247,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                                   name={f.id}
                                   max={f.max_length}
                                   ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-sm"
+                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                 />
                               </li>
                             );
