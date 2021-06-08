@@ -30,9 +30,9 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
             <ul className="flex flex-col py-4 space-y-1">
               <li>
                 <NavLink
-                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
+                  activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/dashboard"
-                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                  className={`relative flex flex-row items-center h-10 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                 >
                   <span className="inline-flex justify-center items-center ml-4">
                     <svg
@@ -55,9 +55,9 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
               </li>
               <li>
                 <NavLink
-                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
+                  activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/retrieval"
-                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                  className={`relative flex flex-row items-center h-10 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                 >
                   <span className="inline-flex justify-center items-center ml-4">
                     <svg
@@ -80,9 +80,9 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
               </li>
               <li>
                 <NavLink
-                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
+                  activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/index"
-                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                  className={`relative flex flex-row items-center h-10 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                 >
                   <span className="inline-flex justify-center items-center ml-4">
                     <svg
@@ -105,9 +105,9 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
               </li>
               <li>
                 <NavLink
-                  activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
+                  activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/profile"
-                  className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                  className={`relative flex flex-row items-center h-10 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                 >
                   <span className="inline-flex justify-center items-center ml-4">
                     <svg
@@ -131,9 +131,9 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
               <div className="flex-end">
                 <li>
                   <NavLink
-                    activeClassName="relative flex flex-row items-center h-11 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
+                    activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                     to="/settings"
-                    className={`relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
+                    className={`relative flex flex-row items-center h-10 focus:outline-none hover:bg-gray-100 text-gray-700 border-l-4 border-transparent hover:border-blue-500 pr-6`}
                   >
                     <span className="inline-flex justify-center items-center ml-4">
                       <svg
@@ -166,7 +166,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
           <div className="object-bottom cursor-pointer">
             <div
               onClick={onLogout}
-              className="cursor-pointer flex flex-row items-center h-11 focus:outline-none bg-gray-100 hover:bg-gray-200 text-gray-800 border-l-4 border-transparent  pr-6"
+              className="cursor-pointer flex flex-row items-center h-10 focus:outline-none bg-gray-100 hover:bg-gray-200 text-gray-800 border-l-4 border-transparent  pr-6"
             >
               <span className="inline-flex justify-center items-center ml-4">
                 <svg
