@@ -5,7 +5,7 @@ import DataGrid, { SelectColumn, SortDirection, TextEditor } from "react-data-gr
 import Iframe from "react-iframe";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
-import { FieldType } from "../components/settings/Applications";
+import { FieldType } from "../components/sections/ApplicationsSection";
 import KeywordsDialog from "../components/ui/KeywordsDialog";
 import RemarksDialog from "../components/ui/RemarksDialog";
 import ToastNotification from "../components/ui/ToastNotification";
