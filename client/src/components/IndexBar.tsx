@@ -5,7 +5,7 @@ import { NavLink, useParams } from "react-router-dom";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext } from "../context/IndexFileContext";
 import { useIndexFileMutation, useSingleUploadMutation } from "../generated/graphql";
-import { FieldType } from "./settings/Applications";
+import { FieldType } from "./sections/ApplicationsSection";
 import Modal from "./ui/Modal";
 
 interface IndexBarProps {}
