@@ -2,8 +2,8 @@ import React from "react";
 import { useRouteMatch } from "react-router";
 import { Route } from "react-router-dom";
 import MainBody from "../components/layouts/MainBody";
-import Applications from "../components/settings/Applications";
-import Users from "../components/settings/Users";
+import ApplicationsSection from "../components/sections/ApplicationsSection";
+import Users from "../components/sections/UsersSection";
 import SettingMenuItem from "../components/ui/SettingMenuItem";
 interface SettingsProps {}
 
@@ -52,7 +52,7 @@ const Settings: React.FC<SettingsProps> = () => {
           </div>
         </div>
 
-        <Route exact path={`${url}/application`} component={Applications} />
+        <Route exact path={`${url}/application`} component={ApplicationsSection} />
         <Route exact path={`${url}/usergroups`} component={Users} />
       </div>
     </MainBody>
