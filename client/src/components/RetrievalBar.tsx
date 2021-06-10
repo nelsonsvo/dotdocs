@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { useGetFilesLazyQuery } from "../generated/graphql";
-import { FieldType } from "./settings/Applications";
+import { FieldType } from "./sections/ApplicationsSection";
 
 interface RetrievalBarProps {
   className?: string;
