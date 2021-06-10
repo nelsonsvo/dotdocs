@@ -10,7 +10,7 @@ import ApplicationCard from "../cards/ApplicationCard";
 import Modal from "../ui/Modal";
 import SettingSectionCard from "../ui/SettingSectionCard";
 
-interface ApplicationsProps {}
+interface ApplicationsSectionProps {}
 
 export enum FieldType {
   PickList = "Pick List",
@@ -33,7 +33,7 @@ interface ICurrentFields {
   max_length: number;
   picklist_values: string[];
 }
-const Applications: React.FC<ApplicationsProps> = () => {
+const ApplicationsSection: React.FC<ApplicationsSectionProps> = () => {
   const [createApplication] = useCreateApplicationMutation({
     refetchQueries: [{ query: GetApplicationsDocument }],
   });
@@ -359,4 +359,4 @@ const Applications: React.FC<ApplicationsProps> = () => {
   );
 };
 
-export default Applications;
+export default ApplicationsSection;

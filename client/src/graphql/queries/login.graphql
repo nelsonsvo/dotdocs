@@ -11,8 +11,10 @@ query Login($username: String!, $password: String!) {
 
 query Me {
   me {
+    id
     username
     password
+    email
     groups {
       name
       permissions

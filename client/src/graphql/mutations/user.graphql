@@ -42,6 +42,13 @@ mutation UpdateUser(
   }
 }
 
+mutation EditProfile($email: String!, $username: String!, $id: String!, $password: String!) {
+  editProfile(id: $id, email: $email, username: $username, password: $password) {
+    id
+    username
+  }
+}
+
 mutation Logout {
   logout
 }

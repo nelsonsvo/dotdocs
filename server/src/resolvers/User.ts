@@ -178,6 +178,46 @@ export class UserResolver {
     }
   }
 
+  @Mutation(() => User)
+  async editProfile(
+    @Arg("id") id: string,
+    @Arg("username") username: string,
+    @Arg("email") email: string,
+    @Arg("password") password: string,
+    @Ctx() { req, res }: MyContext
+  ) {
+    if (req.session.userId) {
+      try {
+        const user = await User.findOne(id);
+        if (user) {
+          user.username = username;
+          user.email = email;
+
+          if (password !== "") {
+            try {
+              const pwd = await argon2.hash(password);
+              user.password = pwd;
+            } catch {
+              throw new ApolloError({
+                errorMessage: "Failed to hash password",
+              });
+            }
+          }
+
+          await User.save(user);
+        }
+        return user;
+      } catch {
+        throw new ApolloError({
+          errorMessage: "Failed to update user",
+        });
+      }
+    } else {
+      res.statusCode = 401;
+      throw new AuthenticationError("USER NOT AUTHENTICATED");
+    }
+  }
+
   @Mutation(() => Boolean)
   async deleteUser(
     @Arg("id") id: string,

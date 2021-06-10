@@ -182,6 +182,41 @@ let UserResolver = class UserResolver {
             }
         });
     }
+    editProfile(id, username, email, password, { req, res }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (req.session.userId) {
+                try {
+                    const user = yield User_1.User.findOne(id);
+                    if (user) {
+                        user.username = username;
+                        user.email = email;
+                        if (password !== "") {
+                            try {
+                                const pwd = yield argon2.hash(password);
+                                user.password = pwd;
+                            }
+                            catch (_a) {
+                                throw new apollo_client_1.ApolloError({
+                                    errorMessage: "Failed to hash password",
+                                });
+                            }
+                        }
+                        yield User_1.User.save(user);
+                    }
+                    return user;
+                }
+                catch (_b) {
+                    throw new apollo_client_1.ApolloError({
+                        errorMessage: "Failed to update user",
+                    });
+                }
+            }
+            else {
+                res.statusCode = 401;
+                throw new apollo_server_errors_1.AuthenticationError("USER NOT AUTHENTICATED");
+            }
+        });
+    }
     deleteUser(id, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (req.session.userId) {
@@ -264,6 +299,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String, String, String, Boolean, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "updateUser", null);
+__decorate([
+    type_graphql_1.Mutation(() => User_1.User),
+    __param(0, type_graphql_1.Arg("id")),
+    __param(1, type_graphql_1.Arg("username")),
+    __param(2, type_graphql_1.Arg("email")),
+    __param(3, type_graphql_1.Arg("password")),
+    __param(4, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "editProfile", null);
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
     __param(0, type_graphql_1.Arg("id")),

@@ -106,6 +106,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   createUser: User;
   updateUser: User;
+  editProfile: User;
   deleteUser: Scalars['Boolean'];
 };
 
@@ -175,6 +176,14 @@ export type MutationUpdateUserArgs = {
   isAdministrator: Scalars['Boolean'];
   password: Scalars['String'];
   groupId: Scalars['String'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+  id: Scalars['String'];
+};
+
+
+export type MutationEditProfileArgs = {
+  password: Scalars['String'];
   email: Scalars['String'];
   username: Scalars['String'];
   id: Scalars['String'];
@@ -402,6 +411,22 @@ export type UpdateUserMutation = (
   ) }
 );
 
+export type EditProfileMutationVariables = Exact<{
+  email: Scalars['String'];
+  username: Scalars['String'];
+  id: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type EditProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { editProfile: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
+);
+
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -538,7 +563,7 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'password'>
+    & Pick<User, 'id' | 'username' | 'password' | 'email'>
     & { groups?: Maybe<Array<(
       { __typename?: 'Group' }
       & Pick<Group, 'name' | 'permissions'>
@@ -1005,6 +1030,43 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const EditProfileDocument = gql`
+    mutation EditProfile($email: String!, $username: String!, $id: String!, $password: String!) {
+  editProfile(id: $id, email: $email, username: $username, password: $password) {
+    id
+    username
+  }
+}
+    `;
+export type EditProfileMutationFn = Apollo.MutationFunction<EditProfileMutation, EditProfileMutationVariables>;
+
+/**
+ * __useEditProfileMutation__
+ *
+ * To run a mutation, you first call `useEditProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editProfileMutation, { data, loading, error }] = useEditProfileMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      username: // value for 'username'
+ *      id: // value for 'id'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useEditProfileMutation(baseOptions?: Apollo.MutationHookOptions<EditProfileMutation, EditProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditProfileMutation, EditProfileMutationVariables>(EditProfileDocument, options);
+      }
+export type EditProfileMutationHookResult = ReturnType<typeof useEditProfileMutation>;
+export type EditProfileMutationResult = Apollo.MutationResult<EditProfileMutation>;
+export type EditProfileMutationOptions = Apollo.BaseMutationOptions<EditProfileMutation, EditProfileMutationVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout
@@ -1356,8 +1418,10 @@ export type LoginQueryResult = Apollo.QueryResult<LoginQuery, LoginQueryVariable
 export const MeDocument = gql`
     query Me {
   me {
+    id
     username
     password
+    email
     groups {
       name
       permissions
