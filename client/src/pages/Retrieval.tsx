@@ -168,10 +168,12 @@ const Retrieval: React.FC<RetrievalProps> = () => {
           const res = searchResults.find((f) => f.id === value);
           console.log(res!.location);
 
-          setFileUrl(FILE_SERVER_URL + res!.location);
-          setSingleFileUrl(`/viewer/${res!.location.replaceAll("/", "_")}`);
-
-          // window.open(`/viewer/${res!.location.replaceAll("/", "_")}`, "_blank");
+          if (localStorage.getItem("viewer") === "newtab") {
+            window.open(`/viewer/${res!.location.replaceAll("/", "_")}`, "_blank");
+          } else {
+            setFileUrl(FILE_SERVER_URL + res!.location);
+            setSingleFileUrl(`/viewer/${res!.location.replaceAll("/", "_")}`);
+          }
         });
       } else if (selectedRows.size > 1) {
         selectedRows.forEach((value) => {
@@ -383,7 +385,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                   <div className="justify-end space-x-2">
                     <button
                       onClick={() => setFileUrl("")}
-                      className="py-2 px-2 border border-transparent   rounded-md  bg-gray-300  hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className="py-2 px-2 border border-transparent   rounded-md  bg-gray-100  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                       Back
                     </button>
