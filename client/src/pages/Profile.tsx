@@ -15,20 +15,27 @@ interface ProfileFormInputs {
   email: string;
 }
 
+interface AppSettingsFormInputs {
+  viewer: string;
+}
+
 const Profile: React.FC<ProfileProps> = () => {
   const { url } = useRouteMatch();
 
   const { loading, data, error } = useMeQuery();
+
   const { register, errors, handleSubmit, getValues } = useForm();
+  const { register: register2, errors: errors2, handleSubmit: handleSubmit2 } = useForm();
 
   const [profileToastOpen, setProfileToastOpen] = useState<boolean>(false);
+  const [appToastOpen, setAppToastOpen] = useState<boolean>(false);
 
   const [changePassword, setChangePassword] = useState<boolean>(false);
   const [editProfile] = useEditProfileMutation({
     refetchQueries: [{ query: MeDocument }],
   });
 
-  const onSubmit = handleSubmit(({ username, email, password }: ProfileFormInputs) => {
+  const profileFormSubmit = handleSubmit(({ username, email, password }: ProfileFormInputs) => {
     console.log({
       username,
       email,
@@ -49,6 +56,11 @@ const Profile: React.FC<ProfileProps> = () => {
     setProfileToastOpen(true);
   });
 
+  const appSettingFormSubmit = handleSubmit2(({ viewer }: AppSettingsFormInputs) => {
+    localStorage.setItem("viewer", viewer);
+    setAppToastOpen(true);
+  });
+
   return (
     <MainBody>
       <ToastNotification
@@ -57,6 +69,14 @@ const Profile: React.FC<ProfileProps> = () => {
         success
         open={profileToastOpen}
         setToastOpen={setProfileToastOpen}
+      />
+
+      <ToastNotification
+        title="Application Settings Saved "
+        body="Application Setting changes have succesfully saved."
+        success
+        open={appToastOpen}
+        setToastOpen={setAppToastOpen}
       />
 
       <div className="p-10 text-left">
@@ -69,7 +89,7 @@ const Profile: React.FC<ProfileProps> = () => {
               </div>
             </div>
             <div className="mt-5 md:mt-0 md:col-span-2">
-              <form onSubmit={onSubmit}>
+              <form onSubmit={profileFormSubmit}>
                 <div className="shadow sm:rounded-md sm:overflow-hidden">
                   <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                     <div className="grid grid-cols-3 gap-6">
@@ -193,104 +213,46 @@ const Profile: React.FC<ProfileProps> = () => {
               <div className="px-4 sm:px-0">
                 <h3 className="text-lg font-medium leading-6 text-gray-900">Application Settings</h3>
                 <p className="mt-1 text-sm text-gray-600">
-                  Customise your user experience by tweaking your application settings.
+                  Customise your user experience by configuring your application settings.
                 </p>
               </div>
             </div>
             <div className="mt-5 md:mt-0 md:col-span-2">
-              <form action="#" method="POST">
+              <form onSubmit={appSettingFormSubmit}>
                 <div className="shadow overflow-hidden sm:rounded-md">
                   <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                     <fieldset>
-                      <legend className="text-base font-medium text-gray-900">By Email</legend>
-                      <div className="mt-4 space-y-4">
-                        <div className="flex items-start">
-                          <div className="flex items-center h-5">
-                            <input
-                              id="comments"
-                              name="comments"
-                              type="checkbox"
-                              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                            />
-                          </div>
-                          <div className="ml-3 text-sm">
-                            <label htmlFor="comments" className="font-medium text-gray-700">
-                              Comments
-                            </label>
-                            <p className="text-gray-500">Get notified when someones posts a comment on a posting.</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start">
-                          <div className="flex items-center h-5">
-                            <input
-                              id="candidates"
-                              name="candidates"
-                              type="checkbox"
-                              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                            />
-                          </div>
-                          <div className="ml-3 text-sm">
-                            <label htmlFor="candidates" className="font-medium text-gray-700">
-                              Candidates
-                            </label>
-                            <p className="text-gray-500">Get notified when a candidate applies for a job.</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start">
-                          <div className="flex items-center h-5">
-                            <input
-                              id="offers"
-                              name="offers"
-                              type="checkbox"
-                              className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                            />
-                          </div>
-                          <div className="ml-3 text-sm">
-                            <label htmlFor="offers" className="font-medium text-gray-700">
-                              Offers
-                            </label>
-                            <p className="text-gray-500">Get notified when a candidate accepts or rejects an offer.</p>
-                          </div>
-                        </div>
-                      </div>
-                    </fieldset>
-                    <fieldset>
                       <div>
-                        <legend className="text-base font-medium text-gray-900">Push Notifications</legend>
-                        <p className="text-sm text-gray-500">These are delivered via SMS to your mobile phone.</p>
+                        <legend className="text-base font-medium text-gray-900">File Viewer</legend>
+                        <p className="text-sm text-gray-500">
+                          File viewer preferences, open file viewer in new tab or integrated.
+                        </p>
                       </div>
                       <div className="mt-4 space-y-4">
                         <div className="flex items-center">
                           <input
-                            id="push_everything"
-                            name="push_notifications"
+                            id="integrated"
+                            name="viewer"
+                            ref={register2}
+                            value="integrated"
                             type="radio"
                             className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
                           />
-                          <label htmlFor="push_everything" className="ml-3 block text-sm font-medium text-gray-700">
-                            Everything
+                          <label htmlFor="integrated" className="ml-3 block text-sm font-medium text-gray-700">
+                            Integrated
                           </label>
                         </div>
                         <div className="flex items-center">
                           <input
-                            id="push_email"
-                            name="push_notifications"
+                            id="newTab"
+                            name="viewer"
+                            ref={register2}
                             type="radio"
+                            value="newtab"
                             className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
                           />
-                          <label htmlFor="push_email" className="ml-3 block text-sm font-medium text-gray-700">
-                            Same as email
-                          </label>
-                        </div>
-                        <div className="flex items-center">
-                          <input
-                            id="push_nothing"
-                            name="push_notifications"
-                            type="radio"
-                            className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                          />
-                          <label htmlFor="push_nothing" className="ml-3 block text-sm font-medium text-gray-700">
-                            No push notifications
+                          <label htmlFor="newTab" className="ml-3 block text-sm font-medium text-gray-700">
+                            New tab
                           </label>
                         </div>
                       </div>
