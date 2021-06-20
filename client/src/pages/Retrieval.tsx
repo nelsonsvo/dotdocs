@@ -1,7 +1,7 @@
 import JsFileDownloader from "js-file-downloader";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import DataGrid, { SelectColumn, SortDirection, TextEditor } from "react-data-grid";
+import DataGrid, { CalculatedColumn, SelectColumn, SortDirection, TextEditor } from "react-data-grid";
 import Iframe from "react-iframe";
 import { useParams } from "react-router-dom";
 import RetrievalBody from "../components/layouts/RetrievalBody";
@@ -97,11 +97,13 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   const getRows = useCallback(() => {
     if (searchResults) {
       let rows: any = [];
+      console.log(searchResults);
       searchResults.forEach((result) => {
         if (!removedDocuments.includes(result.id)) {
           console.log(result);
           let fields = {};
           let keywords = false;
+
           result.fields.forEach((f) => {
             console.log(removedDocuments);
             console.log(f.id);
@@ -292,6 +294,23 @@ const Retrieval: React.FC<RetrievalProps> = () => {
     setKeywordModalOpen(true);
   };
 
+  const onRowClick = (rowIdx: number, row: any, column: CalculatedColumn<any, unknown>) => {
+    console.log(row);
+
+    if (column.key !== "select-row") {
+      //select the row
+      if (!selectedRows.has(row.id)) {
+        setSelectedRows((prev) => new Set(prev).add(row.id));
+      } else {
+        //deselect the row as it is already selected
+        const set = selectedRows;
+        set.delete(row.id);
+
+        setSelectedRows(new Set(set));
+      }
+    }
+  };
+
   return (
     <RetrievalContext.Provider
       value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
@@ -432,6 +451,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                 sortColumn={sortColumn}
                 sortDirection={sortDirection}
                 onSort={handleSort}
+                onRowClick={onRowClick}
                 rowKeyGetter={rowKeyGetter}
               />
             )}
