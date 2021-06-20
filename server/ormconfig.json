@@ -6,7 +6,7 @@
   "password": "postgres",
   "database": "postgres",
   "synchronize": true,
-  "logging": true,
+  "logging": false,
   "generationStrategy": "increment",
   "entities": ["dist/entities/**/*.js"],
   "migrations": ["dist/migration/**/*.js"],

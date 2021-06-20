@@ -196,7 +196,9 @@ let FileResolver = class FileResolver {
                 }
             });
             if (allNull) {
-                return yield AppFile_1.AppFile.find({ where: { application: id } });
+                let res = yield AppFile_1.AppFile.find({ where: { application: id } });
+                console.log(res);
+                return res;
             }
             else {
                 console.log("concatValues", concatValues);

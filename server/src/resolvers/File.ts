@@ -181,7 +181,9 @@ export class FileResolver {
 
     //if all search fields are null return all the files
     if (allNull) {
-      return await AppFile.find({ where: { application: id } });
+      let res = await AppFile.find({ where: { application: id } });
+      console.log(res);
+      return res;
     } else {
       console.log("concatValues", concatValues);
 
