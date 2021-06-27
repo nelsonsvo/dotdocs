@@ -235,6 +235,7 @@ const Profile: React.FC<ProfileProps> = () => {
                             name="viewer"
                             ref={register2}
                             value="integrated"
+                            checked={localStorage.getItem("viewer") === "integrated"}
                             type="radio"
                             className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
                           />
@@ -248,6 +249,7 @@ const Profile: React.FC<ProfileProps> = () => {
                             name="viewer"
                             ref={register2}
                             type="radio"
+                            checked={localStorage.getItem("viewer") === "newtab"}
                             value="newtab"
                             className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
                           />
