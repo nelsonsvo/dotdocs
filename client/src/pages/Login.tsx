@@ -17,10 +17,12 @@ const Login: React.FC<LoginFormProps> = () => {
   const [login, { loading, data, error }] = useLoginLazyQuery({
     fetchPolicy: "network-only",
     onCompleted: (data) => {
+      console.log(data.login?.groups);
       if (data.login!.groups!.length > 0) {
-        setUserAuth!(true, data.login!.groups?.[0].permissions);
+        setUserAuth!(true, data.login!.groups![0].permissions);
+      } else {
+        setUserAuth!(true, null);
       }
-      setUserAuth!(true, null);
     },
   });
 
