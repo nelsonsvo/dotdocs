@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import DataGrid, { CalculatedColumn, SelectColumn, SortDirection, TextEditor } from "react-data-grid";
 import Iframe from "react-iframe";
 import { useParams } from "react-router-dom";
+import PageAuth from "../components/layouts/PageAuth";
 import RetrievalBody from "../components/layouts/RetrievalBody";
 import { FieldType } from "../components/sections/ApplicationsSection";
 import KeywordsDialog from "../components/ui/KeywordsDialog";
@@ -11,6 +12,7 @@ import RemarksDialog from "../components/ui/RemarksDialog";
 import ToastNotification from "../components/ui/ToastNotification";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GetFilesQuery, useDeleteFilesMutation, useGetRetrievalTemplatesQuery } from "../generated/graphql";
+import { Pages } from "../util/Pages";
 
 interface RetrievalProps {}
 interface ParamTypes {
@@ -312,118 +314,156 @@ const Retrieval: React.FC<RetrievalProps> = () => {
   };
 
   return (
-    <RetrievalContext.Provider
-      value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
-    >
-      <RetrievalBody>
-        <RemarksDialog
-          isOpen={modalOpen}
-          onSuccess={() => setRemarksToastOpen(true)}
-          setModalOpen={setModalOpen}
-          fileId={fileId}
-        />
-        <KeywordsDialog
-          isOpen={keywordModalOpen}
-          onSuccess={() => setKeywordToastOpen(true)}
-          setModalOpen={setKeywordModalOpen}
-          fileId={fileId}
-        />
+    <PageAuth page={Pages.RETRIEVAL}>
+      <RetrievalContext.Provider
+        value={{ data, error, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments }}
+      >
+        <RetrievalBody>
+          <RemarksDialog
+            isOpen={modalOpen}
+            onSuccess={() => setRemarksToastOpen(true)}
+            setModalOpen={setModalOpen}
+            fileId={fileId}
+          />
+          <KeywordsDialog
+            isOpen={keywordModalOpen}
+            onSuccess={() => setKeywordToastOpen(true)}
+            setModalOpen={setKeywordModalOpen}
+            fileId={fileId}
+          />
 
-        <ToastNotification
-          open={keywordToastOpen}
-          success
-          setToastOpen={setKeywordToastOpen}
-          title={"Keywords Saved"}
-          body={"New keywords saved succesfully"}
-        />
+          <ToastNotification
+            open={keywordToastOpen}
+            success
+            setToastOpen={setKeywordToastOpen}
+            title={"Keywords Saved"}
+            body={"New keywords saved succesfully"}
+          />
 
-        <ToastNotification
-          open={remarksToastOpen}
-          success
-          setToastOpen={setRemarksToastOpen}
-          title={"Remarks Saved"}
-          body={"New remarks saved succesfully"}
-        />
+          <ToastNotification
+            open={remarksToastOpen}
+            success
+            setToastOpen={setRemarksToastOpen}
+            title={"Remarks Saved"}
+            body={"New remarks saved succesfully"}
+          />
 
-        {searchResults && searchResults.length > 0 ? (
-          <div className="flex flex-col w-full">
-            {selectedRows.size > 0 ? (
-              <div className="flex flex-row justify-between w-full px-3 py-3 transition duration-1000 ease-in-out bg-gray-300 border-b border-r gap-2 text-sm font-light text-gray-800">
-                {!fileUrl && (
-                  <div className="justify-start space-x-2">
-                    <button
-                      onClick={() => viewDocument()}
-                      className=" py-2 px-2 border border-transparent  rounded-md   bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      View
-                    </button>
-                    {selectedRows.size === 1 && (
-                      <>
-                        <button
-                          onClick={viewRemarks}
-                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                          Remarks
-                        </button>
-                        <button
-                          onClick={viewKeywords}
-                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                          Keywords
-                        </button>
-                        <button
-                          // onClick={editIndexes}
-                          className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                          Edit
-                        </button>
-                      </>
-                    )}
-                    <button
-                      onClick={downloadDocument}
-                      className="py-2 px-2 border border-transparent   rounded-md  bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Download
-                    </button>
-                    <button
-                      onClick={removeDocument}
-                      className="py-2 px-2 border border-transparent   rounded-md  bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Remove
-                    </button>
-                    <button
-                      onClick={deleteRow}
-                      className="py-2 px-2 border border-transparent   rounded-md   bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
+          {searchResults && searchResults.length > 0 ? (
+            <div className="flex flex-col w-full">
+              {selectedRows.size > 0 ? (
+                <div className="flex flex-row justify-between w-full px-3 py-3 transition duration-1000 ease-in-out bg-gray-300 border-b border-r gap-2 text-sm font-light text-gray-800">
+                  {!fileUrl && (
+                    <div className="justify-start space-x-2">
+                      <button
+                        onClick={() => viewDocument()}
+                        className=" py-2 px-2 border border-transparent  rounded-md   bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        View
+                      </button>
+                      {selectedRows.size === 1 && (
+                        <>
+                          <button
+                            onClick={viewRemarks}
+                            className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          >
+                            Remarks
+                          </button>
+                          <button
+                            onClick={viewKeywords}
+                            className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          >
+                            Keywords
+                          </button>
+                          <button
+                            // onClick={editIndexes}
+                            className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          >
+                            Edit
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={downloadDocument}
+                        className="py-2 px-2 border border-transparent   rounded-md  bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Download
+                      </button>
+                      <button
+                        onClick={removeDocument}
+                        className="py-2 px-2 border border-transparent   rounded-md  bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Remove
+                      </button>
+                      <button
+                        onClick={deleteRow}
+                        className="py-2 px-2 border border-transparent   rounded-md   bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
 
-                {fileUrl && (
-                  <div className="justify-end space-x-2">
-                    <button
-                      onClick={() => setFileUrl("")}
-                      className="py-2 px-2 border border-transparent   rounded-md  bg-gray-100  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Back
-                    </button>
-                    <button
-                      onClick={() => openSingleFile()}
-                      className="py-2 px-2 border border-transparent   rounded-md text-white  bg-blue-600  hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      Open in New Tab
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div
-                className={`flex justify-center flex-row px-3 py-3 bg-gray-100 border gap-2 text-sm font-light text-gray-800 my-auto`}
-              >
-                <h1 className="text-xl tracking-wider font-light font-antialiased my-auto ">Search Results</h1>
+                  {fileUrl && (
+                    <div className="justify-end space-x-2">
+                      <button
+                        onClick={() => setFileUrl("")}
+                        className="py-2 px-2 border border-transparent   rounded-md  bg-gray-100  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={() => openSingleFile()}
+                        className="py-2 px-2 border border-transparent   rounded-md text-white  bg-blue-600  hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Open in New Tab
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className={`flex justify-center flex-row px-3 py-3 bg-gray-100 border gap-2 text-sm font-light text-gray-800 my-auto`}
+                >
+                  <h1 className="text-xl tracking-wider font-light font-antialiased my-auto ">Search Results</h1>
+                  <svg
+                    className="w-7 h-7 my-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              )}
+              {fileUrl ? (
+                <Iframe url={fileUrl!} className="min-h-screen w-full object-cover" position="relative" />
+              ) : (
+                <DataGrid
+                  className={"rdg-light fill-grid min-h-screen"}
+                  rowHeight={50}
+                  columns={getColumns()}
+                  selectedRows={selectedRows}
+                  onSelectedRowsChange={setSelectedRows}
+                  rows={sortedRows}
+                  sortColumn={sortColumn}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                  onRowClick={onRowClick}
+                  rowKeyGetter={rowKeyGetter}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-row justify-center h-screen">
+              <div className="mt-5 text-2xl text-gray-600 opacity-10 flex flex-col justify-center h-screen">
                 <svg
-                  className="w-7 h-7 my-auto"
+                  className="w-80 h-80"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -432,52 +472,16 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={1}
-                    d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    strokeWidth="0.75"
+                    d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"
                   />
                 </svg>
               </div>
-            )}
-            {fileUrl ? (
-              <Iframe url={fileUrl!} className="min-h-screen w-full object-cover" position="relative" />
-            ) : (
-              <DataGrid
-                className={"rdg-light fill-grid min-h-screen"}
-                rowHeight={50}
-                columns={getColumns()}
-                selectedRows={selectedRows}
-                onSelectedRowsChange={setSelectedRows}
-                rows={sortedRows}
-                sortColumn={sortColumn}
-                sortDirection={sortDirection}
-                onSort={handleSort}
-                onRowClick={onRowClick}
-                rowKeyGetter={rowKeyGetter}
-              />
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-row justify-center h-screen">
-            <div className="mt-5 text-2xl text-gray-600 opacity-10 flex flex-col justify-center h-screen">
-              <svg
-                className="w-80 h-80"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="0.75"
-                  d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"
-                />
-              </svg>
             </div>
-          </div>
-        )}
-      </RetrievalBody>
-    </RetrievalContext.Provider>
+          )}
+        </RetrievalBody>
+      </RetrievalContext.Provider>
+    </PageAuth>
   );
 };
 
