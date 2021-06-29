@@ -101,20 +101,24 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                             <li>
                               <input
                                 type="checkbox"
-                                name="GLOBAL_CHANGE_PASSWORD"
+                                name="RETRIEVAL"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
-                              <span className="text-gray-700 text-sm ml-2">Change Password</span>
+                              <span className="text-gray-700 text-sm ml-2">Retrieval</span>
+                            </li>
+                            <li>
+                              <input type="checkbox" name="INDEX" ref={register} className="form-checkbox rounded-sm" />
+                              <span className="text-gray-700 text-sm ml-2">Reports Viewing</span>
                             </li>
                             <li>
                               <input
                                 type="checkbox"
-                                name="REPORTS_VIEWING"
+                                name="PROFILE"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
-                              <span className="text-gray-700 text-sm ml-2">Reports Viewing</span>
+                              <span className="text-gray-700 text-sm ml-2">Profile</span>
                             </li>
                           </ul>
                           <hr className="my-3" />
@@ -123,7 +127,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                             <li>
                               <input
                                 type="checkbox"
-                                name="ADMIN_CHANGE_SETTINGS"
+                                name="SETTINGS"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
@@ -132,7 +136,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                             <li>
                               <input
                                 type="checkbox"
-                                name="ADMIN_APPLICATIONS"
+                                name="APPLICATIONS"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
@@ -141,7 +145,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                             <li>
                               <input
                                 type="checkbox"
-                                name="ADMIN_USERS_AND_GROUPS"
+                                name="USERS_AND_GROUPS"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
