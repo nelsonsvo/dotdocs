@@ -1,6 +1,5 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Redirect } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
 import { Pages } from "../../util/Pages";
 
 interface PageAuthProps {
@@ -8,9 +7,9 @@ interface PageAuthProps {
 }
 
 const PageAuth: React.FC<PageAuthProps> = ({ children, page }) => {
-  const { auth } = useContext(AuthContext);
+  const permissions = JSON.parse(localStorage.getItem("permissions")!);
 
-  const isAuth = auth?.permissions?.includes(page + "_TRUE");
+  const isAuth = permissions.includes(page + "_TRUE");
 
   return isAuth ? <>{children}</> : <Redirect to="/"></Redirect>;
 };
