@@ -5,6 +5,7 @@ import { NavLink, useParams } from "react-router-dom";
 import { IndexContext } from "../context/IndexContext";
 import { IndexFileContext } from "../context/IndexFileContext";
 import { useIndexFileMutation, useSingleUploadMutation } from "../generated/graphql";
+import { checkIndexTemplateAuth } from "../util/AuthCheck";
 import { FieldType } from "./sections/ApplicationsSection";
 import Modal from "./ui/Modal";
 
@@ -29,6 +30,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   //state
   const [currentTemplate, setTemplate] = useState("");
   const [currentTempId, setCurrentTempId] = useState("");
+  const [isAuthorised, setIsAuthorised] = useState<boolean>(false);
 
   const [count, setCount] = useState(0);
   const [numberOfUploaded, setNumberUploaded] = useState(0);
@@ -52,16 +54,18 @@ const IndexBar: React.FC<IndexBarProps> = () => {
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
-      setNumberUploaded(acceptedFiles.length);
-      //uploaded each file one by one
-      //TODO: BATCH UPLOAD FOR THE FILES
-      acceptedFiles.forEach(async (f: any) => {
-        const file = f;
+      if (checkIndexTemplateAuth(currentTemplate)) {
+        setNumberUploaded(acceptedFiles.length);
+        //uploaded each file one by one
+        //TODO: BATCH UPLOAD FOR THE FILES
+        acceptedFiles.forEach(async (f: any) => {
+          const file = f;
 
-        await uploadFile({
-          variables: { file, id: currentTempId },
+          await uploadFile({
+            variables: { file, id: currentTempId },
+          });
         });
-      });
+      }
     },
     [uploadFile, currentTempId]
   );
@@ -94,33 +98,39 @@ const IndexBar: React.FC<IndexBarProps> = () => {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (uploadedFiles && uploadedFiles.length > 0) {
-      let fieldArr: any[] = [];
-      for (const [key, value] of Object.entries(data)) {
-        fieldArr.push({
-          id: key,
-          value: value,
+    if (checkIndexTemplateAuth(currentTemplate)) {
+      if (uploadedFiles && uploadedFiles.length > 0) {
+        let fieldArr: any[] = [];
+        for (const [key, value] of Object.entries(data)) {
+          fieldArr.push({
+            id: key,
+            value: value,
+          });
+        }
+        //using a queue system FIFO so get the first file that went in
+        const fileToUpload = uploadedFiles!.shift();
+
+        await indexFile({
+          variables: {
+            id: fileToUpload!.id,
+            fields: fieldArr,
+          },
         });
+
+        //remove the uploaded file from state
+        setUploadedFiles!(uploadedFiles.filter((f) => f.id !== fileToUpload!.id));
+        reset();
       }
-      //using a queue system FIFO so get the first file that went in
-      const fileToUpload = uploadedFiles!.shift();
-
-      await indexFile({
-        variables: {
-          id: fileToUpload!.id,
-          fields: fieldArr,
-        },
-      });
-
-      //remove the uploaded file from state
-      setUploadedFiles!(uploadedFiles.filter((f) => f.id !== fileToUpload!.id));
-      reset();
     }
   });
 
   useEffect(() => {
     if (count === numberOfUploaded && numberOfUploaded !== 0) setModalOpen(true);
   }, [count, numberOfUploaded]);
+
+  useEffect(() => {
+    setIsAuthorised(checkIndexTemplateAuth(currentTemplate));
+  }, [currentTemplate]);
 
   return (
     <div>
@@ -140,7 +150,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                 <h3 className="px-3 tracking-widest text-center">ADD A DOCUMENT</h3>
               </div>
               <div className="py-5 bg-gray-100 mb-5" {...getRootProps()}>
-                <input {...getInputProps()} accept=".pdf" />
+                <input disabled={true} {...getInputProps()} accept=".pdf" />
                 {isDragActive ? <p>Drop the files here ...</p> : <p>Drop files here</p>}
               </div>
               <div>
@@ -154,11 +164,14 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                   >
                     {data &&
                       data.applications.map((template) => {
-                        return (
-                          <option key={template.id} id={template.id}>
-                            {template.name}
-                          </option>
-                        );
+                        if (isAuthorised) {
+                          return (
+                            <option key={template.id} id={template.id}>
+                              {template.name}
+                            </option>
+                          );
+                        }
+                        return null;
                       })}
                   </select>
                 </div>
@@ -171,88 +184,88 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                     {data.applications
                       .filter((template) => template.name === currentTemplate)
                       .map((template) => {
-                        return template.fields.map((f) => {
-                          console.log(f);
-                          if (f.type === FieldType.PickList) {
-                            console.log("its a picklist");
-                            return (
-                              <li className="px-2" key={f.id}>
-                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
-                                  {f.name}
-                                </label>
-                                <select
-                                  id={f.id}
-                                  name={f.id}
-                                  ref={register}
-                                  className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm rounded-md"
-                                >
-                                  {f.picklist_values!.map((val: string, index: number) => {
-                                    return <option key={index + 10000}>{val}</option>;
-                                  })}
-                                </select>
-                              </li>
-                            );
-                          } else if (f.type === FieldType.Text) {
-                            return (
-                              <li className="px-2" key={f.id}>
-                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
-                                  {f.name}
-                                </label>
-                                <input
-                                  type={f.type.toLowerCase()}
-                                  name={f.id}
-                                  maxLength={f.max_length}
-                                  ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                />
-                              </li>
-                            );
-                          } else if (f.type === FieldType.Keywords) {
-                            return (
-                              <li className="px-2 order-last" key={f.id}>
-                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
-                                  {f.name}
-                                </label>
-                                <input
-                                  type={"text"}
-                                  name={f.id}
-                                  ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                />
-                              </li>
-                            );
-                          } else if (f.type === FieldType.Date) {
-                            return (
-                              <li className="px-2" key={f.id}>
-                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
-                                  {f.name}
-                                </label>
-                                <input
-                                  type="date"
-                                  name={f.id}
-                                  maxLength={f.max_length}
-                                  ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                />
-                              </li>
-                            );
-                          } else if (f.type === FieldType.Number) {
-                            return (
-                              <li className="px-2" key={f.id}>
-                                <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
-                                  {f.name}
-                                </label>
-                                <input
-                                  type={f.type}
-                                  name={f.id}
-                                  max={f.max_length}
-                                  ref={register}
-                                  className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                />
-                              </li>
-                            );
-                          }
-                        });
+                        if (isAuthorised)
+                          return template.fields.map((f) => {
+                            console.log(f);
+                            if (f.type === FieldType.PickList) {
+                              return (
+                                <li className="px-2" key={f.id}>
+                                  <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                                    {f.name}
+                                  </label>
+                                  <select
+                                    id={f.id}
+                                    name={f.id}
+                                    ref={register}
+                                    className=" block w-full py-2  border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm rounded-md"
+                                  >
+                                    {f.picklist_values!.map((val: string, index: number) => {
+                                      return <option key={index + 10000}>{val}</option>;
+                                    })}
+                                  </select>
+                                </li>
+                              );
+                            } else if (f.type === FieldType.Text) {
+                              return (
+                                <li className="px-2" key={f.id}>
+                                  <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                                    {f.name}
+                                  </label>
+                                  <input
+                                    type={f.type.toLowerCase()}
+                                    name={f.id}
+                                    maxLength={f.max_length}
+                                    ref={register}
+                                    className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                  />
+                                </li>
+                              );
+                            } else if (f.type === FieldType.Keywords) {
+                              return (
+                                <li className="px-2 order-last" key={f.id}>
+                                  <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                                    {f.name}
+                                  </label>
+                                  <input
+                                    type={"text"}
+                                    name={f.id}
+                                    ref={register}
+                                    className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                  />
+                                </li>
+                              );
+                            } else if (f.type === FieldType.Date) {
+                              return (
+                                <li className="px-2" key={f.id}>
+                                  <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                                    {f.name}
+                                  </label>
+                                  <input
+                                    type="date"
+                                    name={f.id}
+                                    maxLength={f.max_length}
+                                    ref={register}
+                                    className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                  />
+                                </li>
+                              );
+                            } else if (f.type === FieldType.Number) {
+                              return (
+                                <li className="px-2" key={f.id}>
+                                  <label htmlFor={f.name} className="block  text-sm font-medium text-gray-700">
+                                    {f.name}
+                                  </label>
+                                  <input
+                                    type={f.type}
+                                    name={f.id}
+                                    max={f.max_length}
+                                    ref={register}
+                                    className="mt-1 focus:ring-blue-500 focus:border-blue-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                  />
+                                </li>
+                              );
+                            }
+                          });
                       })}
                   </div>
                 )}
@@ -291,8 +304,9 @@ const IndexBar: React.FC<IndexBarProps> = () => {
               </div>
               <div className="grid grid-cols-2 px-5 gap-3 mt-5 mb-5">
                 <button
+                  disabled={!isAuthorised}
                   type="submit"
-                  className="w-full cursor-pointer justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="w-full cursor-pointer justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   Index
                 </button>
@@ -300,8 +314,9 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                 <input type="file" className="hidden" id="uploadFile" ref={inputRef} />
                 <button
                   onClick={() => reset()}
+                  disabled={!isAuthorised}
                   type="button"
-                  className="w-full cursor-pointer justify-center py-2 px-2 border border-transparent shadow-sm  text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="w-full cursor-pointer justify-center py-2 px-2 border border-transparent shadow-sm  text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   Clear
                 </button>
