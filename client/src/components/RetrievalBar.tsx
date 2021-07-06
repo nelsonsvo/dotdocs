@@ -2,7 +2,6 @@ import _ from "lodash";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { useGetFilesLazyQuery } from "../generated/graphql";
 import { checkRetrievalTemplateAuth } from "../util/AuthCheck";
@@ -13,12 +12,13 @@ interface RetrievalBarProps {
 }
 
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
-  const { auth } = useContext(AuthContext);
   const { data, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments } =
     useContext(RetrievalContext);
 
   const keywordRef = useRef<any>();
   const [keywords, setKeywords] = useState<any>();
+
+  const [isAuthorised, setIsAuthorised] = useState<boolean>(false);
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -63,12 +63,13 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
 
   const searchApplication = useCallback(
     async (fieldArr) => {
-      getFiles({
-        variables: {
-          id: currentTemplate!.id,
-          fields: fieldArr,
-        },
-      });
+      if (checkRetrievalTemplateAuth(currentTemplate!.name))
+        getFiles({
+          variables: {
+            id: currentTemplate!.id,
+            fields: fieldArr,
+          },
+        });
     },
     [currentTemplate, getFiles]
   );
@@ -100,6 +101,10 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
     }
   }, [currentTemplate]);
 
+  useEffect(() => {
+    setIsAuthorised(checkRetrievalTemplateAuth(currentTemplate!.name));
+  }, [currentTemplate]);
+
   return (
     <div className={className}>
       <div className="min-h-screen h-screen w-100 flex-shrink-0 antialiased bg-white text-gray-700 border-r">
@@ -125,7 +130,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                   >
                     {data &&
                       data.applications.map((template) => {
-                        if (checkRetrievalTemplateAuth(template.name, auth)) {
+                        if (checkRetrievalTemplateAuth(template.name)) {
                           return (
                             <option key={template.id} id={template.id}>
                               {template.name}
@@ -144,6 +149,7 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                   {data.applications
                     .filter((template) => template.name === currentTemplate!.name)
                     .map((template) => {
+                      if (!isAuthorised) return null;
                       return template.fields.map((f) => {
                         if (f.type === FieldType.PickList) {
                           console.log("its a picklist");
@@ -230,15 +236,17 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
             <div className="object-bottom mb-5 border-t">
               <div className="grid grid-cols-2 px-5 gap-3 mt-5 ">
                 <button
+                  disabled={!isAuthorised}
                   type="submit"
-                  className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   Search
                 </button>
                 <button
                   onClick={() => reset()}
+                  disabled={!isAuthorised}
                   type="button"
-                  className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="w-full justify-center py-2 px-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-800 bg-gray-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   Clear
                 </button>
