@@ -2,8 +2,10 @@ import _ from "lodash";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { useGetFilesLazyQuery } from "../generated/graphql";
+import { checkRetrievalTemplateAuth } from "../util/AuthCheck";
 import { FieldType } from "./sections/ApplicationsSection";
 
 interface RetrievalBarProps {
@@ -11,6 +13,7 @@ interface RetrievalBarProps {
 }
 
 const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
+  const { auth } = useContext(AuthContext);
   const { data, currentTemplate, setCurrentTemplate, setSearchResults, setRemovedDocuments } =
     useContext(RetrievalContext);
 
@@ -121,12 +124,15 @@ const RetrievalBar: React.FC<RetrievalBarProps> = ({ className }) => {
                     className=" block w-full py-2 px-3 border-t border-gray-200 bg-white  shadow-sm focus:outline-none focus:ring-gray-100 focus:border-gray-100 sm:text-sm"
                   >
                     {data &&
-                      data.applications.map((template: any) => {
-                        return (
-                          <option key={template.id} id={template.id}>
-                            {template.name}
-                          </option>
-                        );
+                      data.applications.map((template) => {
+                        if (checkRetrievalTemplateAuth(template.name, auth)) {
+                          return (
+                            <option key={template.id} id={template.id}>
+                              {template.name}
+                            </option>
+                          );
+                        }
+                        return null;
                       })}
                   </select>
                 </div>
