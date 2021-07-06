@@ -55,7 +55,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                   <span className="ml-2 text-sm font-medium">Dashboard</span>
                 </NavLink>
               </li>
-              <li hidden={!isPageAuthorised(Pages.RETRIEVAL, auth)}>
+              <li hidden={!isPageAuthorised(Pages.RETRIEVAL)}>
                 <NavLink
                   activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/retrieval"
@@ -80,7 +80,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                   <span className="ml-2 text-sm font-medium">Retrieval</span>
                 </NavLink>
               </li>
-              <li hidden={!isPageAuthorised(Pages.INDEX, auth)}>
+              <li hidden={!isPageAuthorised(Pages.INDEX)}>
                 <NavLink
                   activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/index"
@@ -105,7 +105,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                   <span className="ml-2 text-sm font-medium">Index</span>
                 </NavLink>
               </li>
-              <li hidden={!isPageAuthorised(Pages.PROFILE, auth)}>
+              <li hidden={!isPageAuthorised(Pages.PROFILE)}>
                 <NavLink
                   activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                   to="/profile"
@@ -131,7 +131,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
                 </NavLink>
               </li>
               <div className="flex-end">
-                <li hidden={!isPageAuthorised(Pages.SETTINGS, auth)}>
+                <li hidden={!isPageAuthorised(Pages.SETTINGS)}>
                   <NavLink
                     activeClassName="relative flex flex-row items-center h-10 focus:outline-none bg-gray-100 border-blue-500 text-blue-500  border-l-4 hover:border-blue-500 pr-6"
                     to="/settings"
