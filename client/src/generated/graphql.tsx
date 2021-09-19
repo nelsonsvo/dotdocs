@@ -548,7 +548,7 @@ export type LoginQuery = (
   { __typename?: 'Query' }
   & { login?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'password'>
+    & Pick<User, 'username' | 'password' | 'email' | 'isAdministrator'>
     & { groups?: Maybe<Array<(
       { __typename?: 'Group' }
       & Pick<Group, 'name' | 'permissions'>
@@ -1379,6 +1379,8 @@ export const LoginDocument = gql`
   login(username: $username, password: $password) {
     username
     password
+    email
+    isAdministrator
     groups {
       name
       permissions

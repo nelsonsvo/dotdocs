@@ -8,8 +8,9 @@ interface PageAuthProps {
 
 const PageAuth: React.FC<PageAuthProps> = ({ children, page }) => {
   const permissions = JSON.parse(localStorage.getItem("permissions")!);
+  const isAdministrator = JSON.parse(localStorage.getItem("isAdministrator")!);
 
-  const isAuth = permissions.includes(page + "_TRUE");
+  const isAuth = permissions?.includes(page + "_TRUE") || isAdministrator;
 
   return isAuth ? <>{children}</> : <Redirect to="/"></Redirect>;
 };

@@ -18,6 +18,7 @@ function App() {
     loggedIn: false,
     timeLoggedIn: null,
     permissions: [],
+    isAdministrator: false,
   });
 
   const clearAuthState = () => {
@@ -25,19 +26,22 @@ function App() {
       loggedIn: false,
       timeLoggedIn: null,
       permissions: [],
+      isAdministrator: false,
     });
   };
 
-  const setUserAuth = (isAuth: boolean, permissions?: string[] | null | undefined) => {
+  const setUserAuth = (isAuth: boolean, isAdministrator: boolean, permissions?: string[] | null | undefined) => {
     if (isAuth) {
       const timeLogged = new Date().getTime();
       localStorage.setItem("isAuth", isAuth.toString());
       localStorage.setItem("timeLoggedIn", timeLogged.toString());
       localStorage.setItem("permissions", JSON.stringify(permissions));
+      localStorage.setItem("isAdministrator", JSON.stringify(isAdministrator));
       setAuth({
         loggedIn: isAuth,
         timeLoggedIn: timeLogged,
         permissions: permissions,
+        isAdministrator: isAdministrator,
       });
     } else {
       localStorage.setItem("isAuth", isAuth.toString());
@@ -54,6 +58,7 @@ function App() {
         loggedIn: localStorage.getItem("isAuth") === "true",
         timeLoggedIn: Number(localStorage.getItem("timeLoggedIn")),
         permissions: JSON.parse(localStorage.getItem("permissions")!),
+        isAdministrator: JSON.parse(localStorage.getItem("isAdministrator")!),
       });
     }
   }, [auth.loggedIn]);
@@ -63,7 +68,7 @@ function App() {
       <BrowserRouter>
         <div className="App">
           <Switch>
-            <AuthContext.Provider value={{ auth, setUserAuth }}>
+            <AuthContext.Provider value={{ auth, setUserAuth, clearAuthState }}>
               <Route exact path="/" component={Login} />
               <ProtectedRoute>
                 <Route path="/dashboard" component={Dashboard} />

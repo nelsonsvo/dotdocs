@@ -38,6 +38,7 @@ export class UserResolver {
   @Query(() => User, { nullable: true })
   async login(@Arg("username") username: string, @Arg("password") password: string, @Ctx() { req, res }: MyContext) {
     const user = await User.findOne({ username }, { relations: ["groups"] });
+    console.log(user);
     if (user) {
       const valid = await argon2.verify(user.password, password);
       if (valid) {

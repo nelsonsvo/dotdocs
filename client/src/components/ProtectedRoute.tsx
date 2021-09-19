@@ -11,7 +11,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const [checkCookie] = useMeLazyQuery({
     fetchPolicy: "network-only",
     onError: () => {
-      setUserAuth!(false);
+      setUserAuth!(false, false, null);
       return <Redirect to="/" />;
     },
   });

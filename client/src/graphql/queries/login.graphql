@@ -2,6 +2,8 @@ query Login($username: String!, $password: String!) {
   login(username: $username, password: $password) {
     username
     password
+    email
+    isAdministrator
     groups {
       name
       permissions

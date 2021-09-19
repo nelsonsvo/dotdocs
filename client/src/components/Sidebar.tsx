@@ -15,7 +15,7 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
   const [logout] = useLogoutMutation();
 
   const onLogout = () => {
-    setUserAuth!(false);
+    setUserAuth!(false, false, null);
     logout();
   };
 
