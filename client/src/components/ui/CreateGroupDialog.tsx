@@ -14,7 +14,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
     refetchQueries: [{ query: GetGroupsDocument }],
   });
 
-  const { register, errors, handleSubmit } = useForm();
+  const { register, errors, handleSubmit, getValues, setValue } = useForm();
 
   const onSubmit = handleSubmit((data: any) => {
     try {
@@ -43,6 +43,24 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
 
     setModalOpen(false);
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.name;
+    console.log(name);
+    let values = getValues();
+    console.log(values);
+    for (var key in values) {
+      if (key.includes(name) && key !== name && !key.includes("PAGE")) {
+        console.log(key);
+        if (e.target.checked) {
+          setValue(key, true);
+        } else {
+          setValue(key, false);
+        }
+      }
+    }
+    console.log(getValues());
+  };
 
   return open ? (
     <div className="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -96,29 +114,77 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                     <div className="bg-gray-100 rounded-md shadow-lg px-5 py-4 mt-2 border border-gray-200 overflow-y-auto h-80">
                       <div className="space-y-4">
                         <div>
-                          <h4 className="text-xl text-gray-800 font-semibold">Global</h4>
-                          <ul className="ml-4 mt-2 mx-auto">
+                          <h4 className="text-xl text-gray-800 font-semibold">Pages</h4>
+                          <ul className="ml-4 mt-2 mb-2 mx-auto">
                             <li>
                               <input
                                 type="checkbox"
-                                name="RETRIEVAL"
+                                name="RETRIEVAL_PAGE"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
                               <span className="text-gray-700 text-sm ml-2">Retrieval</span>
                             </li>
                             <li>
-                              <input type="checkbox" name="INDEX" ref={register} className="form-checkbox rounded-sm" />
-                              <span className="text-gray-700 text-sm ml-2">Reports Viewing</span>
+                              <input
+                                type="checkbox"
+                                name="INDEX_PAGE"
+                                ref={register}
+                                className="form-checkbox rounded-sm"
+                              />
+                              <span className="text-gray-700 text-sm ml-2">Index</span>
                             </li>
                             <li>
                               <input
                                 type="checkbox"
-                                name="PROFILE"
+                                name="PROFILE_PAGE"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
                               <span className="text-gray-700 text-sm ml-2">Profile</span>
+                            </li>
+                          </ul>
+                          <h4 className="text-xl text-gray-800 font-semibold">Global Actions</h4>
+                          <ul className="ml-4 mt-2 mx-auto">
+                            <li>
+                              <input
+                                type="checkbox"
+                                name="RETRIEVAL"
+                                onChange={(e) => handleChange(e)}
+                                ref={register}
+                                className="form-checkbox rounded-sm"
+                              />
+                              <span className="text-gray-700 text-sm ml-2">Retrieval</span>
+                            </li>
+                            <li>
+                              <input
+                                type="checkbox"
+                                name="INDEXING"
+                                onChange={(e) => handleChange(e)}
+                                ref={register}
+                                className="form-checkbox rounded-sm"
+                              />
+                              <span className="text-gray-700 text-sm ml-2">Indexing</span>
+                            </li>
+                            <li>
+                              <input
+                                type="checkbox"
+                                name="EDIT_APPLICATION"
+                                onChange={(e) => handleChange(e)}
+                                ref={register}
+                                className="form-checkbox rounded-sm"
+                              />
+                              <span className="text-gray-700 text-sm ml-2">Edit Applications</span>
+                            </li>
+                            <li>
+                              <input
+                                type="checkbox"
+                                name="DELETE_APPLICATION"
+                                onChange={(e) => handleChange(e)}
+                                ref={register}
+                                className="form-checkbox rounded-sm"
+                              />
+                              <span className="text-gray-700 text-sm ml-2">Delete Applications</span>
                             </li>
                           </ul>
                           <hr className="my-3" />
@@ -127,7 +193,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                             <li>
                               <input
                                 type="checkbox"
-                                name="SETTINGS"
+                                name="SETTINGS_PAGE"
                                 ref={register}
                                 className="form-checkbox rounded-sm"
                               />
@@ -159,7 +225,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                           data.applications.map((app, key) => {
                             return (
                               <div className="bg-gray-200 px-3 py-2 rounded-md shadow-sm border border-gray-300">
-                                <h4 className="text-md text-gray-900 font-semibold">{app.name}</h4>
+                                <h4 className="text-md text-gray-900 font-semibold">{app.name} - actions</h4>
                                 <ul className="ml-4 mt-2 mx-auto">
                                   <li key={key + 1}>
                                     <input
@@ -180,6 +246,25 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                                     <span className="text-gray-800 text-sm ml-2">Indexing</span>
                                   </li>
 
+                                  <li key={key + 5}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_DELETE_APPLICATION`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Delete Application</span>
+                                  </li>
+                                  <li key={key + 6}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_EDIT_APPLICATION`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Edit Application</span>
+                                  </li>
+                                  <h3 className="text-sm font-medium mt-2">Document Actions</h3>
                                   <li key={key + 3}>
                                     <input
                                       type="checkbox"
@@ -198,25 +283,6 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                                     />
                                     <span className="text-gray-800 text-sm ml-2">Remarks</span>
                                   </li>
-                                  <li key={key + 5}>
-                                    <input
-                                      type="checkbox"
-                                      name={`${app.name.toUpperCase()}_DELETE_APPLICATION`}
-                                      ref={register}
-                                      className="form-checkbox rounded-sm"
-                                    />
-                                    <span className="text-gray-800 text-sm ml-2">Delete</span>
-                                  </li>
-                                  <li key={key + 6}>
-                                    <input
-                                      type="checkbox"
-                                      name={`${app.name.toUpperCase()}_EDIT_APPLICATION`}
-                                      ref={register}
-                                      className="form-checkbox rounded-sm"
-                                    />
-                                    <span className="text-gray-800 text-sm ml-2">Edit</span>
-                                  </li>
-                                  <h3 className="text-sm font-medium mt-2">Document</h3>
                                   <li key={key + 7}>
                                     <input
                                       type="checkbox"
@@ -226,6 +292,15 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                                     />
                                     <span className="text-gray-800 text-sm ml-2">Delete</span>
                                   </li>
+                                  <li key={key + 11}>
+                                    <input
+                                      type="checkbox"
+                                      name={`${app.name.toUpperCase()}_DOWNLOAD`}
+                                      ref={register}
+                                      className="form-checkbox rounded-sm"
+                                    />
+                                    <span className="text-gray-800 text-sm ml-2">Download</span>
+                                  </li>
                                   <li key={key + 8}>
                                     <input
                                       type="checkbox"
@@ -233,7 +308,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ open, setModalOpe
                                       ref={register}
                                       className="form-checkbox rounded-sm"
                                     />
-                                    <span className="text-gray-800 text-sm ml-2">Version Management</span>
+                                    <span className="text-gray-800 text-sm ml-2">Versioning</span>
                                   </li>
                                   <li key={key + 9}>
                                     <input

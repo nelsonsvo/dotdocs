@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { NavLink } from "react-router-dom";
 import MainBody from "../components/layouts/MainBody";
 import { useGetApplicationsQuery } from "../generated/graphql";
+import { checkIndexTemplateAuth, checkRetrievalTemplateAuth } from "../util/AuthCheck";
 
 interface Props {}
 
@@ -75,13 +76,16 @@ export default function Dashboard({}: Props): ReactElement {
                 {!loading &&
                   data &&
                   data.applications.map((app, index: number) => {
-                    return (
-                      <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
-                        <NavLink to={"/retrieval/" + app.id} className="text-gray-700 text-lg ">
-                          {app.name}
-                        </NavLink>
-                      </div>
-                    );
+                    if (checkRetrievalTemplateAuth(app.name)) {
+                      return (
+                        <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
+                          <NavLink to={"/retrieval/" + app.id} className="text-gray-700 text-lg ">
+                            {app.name}
+                          </NavLink>
+                        </div>
+                      );
+                    }
+                    return null;
                   })}
               </ul>
             </div>
@@ -95,13 +99,16 @@ export default function Dashboard({}: Props): ReactElement {
                 {!loading &&
                   data &&
                   data.applications.map((app, index: number) => {
-                    return (
-                      <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
-                        <NavLink to={"/index/" + app.id} className="text-gray-700 text-lg">
-                          {app.name}
-                        </NavLink>
-                      </div>
-                    );
+                    if (checkIndexTemplateAuth(app.name)) {
+                      return (
+                        <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
+                          <NavLink to={"/index/" + app.id} className="text-gray-700 text-lg">
+                            {app.name}
+                          </NavLink>
+                        </div>
+                      );
+                    }
+                    return null;
                   })}
               </ul>
             </div>

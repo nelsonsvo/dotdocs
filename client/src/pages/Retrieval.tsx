@@ -12,6 +12,7 @@ import RemarksDialog from "../components/ui/RemarksDialog";
 import ToastNotification from "../components/ui/ToastNotification";
 import { RetrievalContext } from "../context/RetrievalContext";
 import { GetFilesQuery, useDeleteFilesMutation, useGetRetrievalTemplatesQuery } from "../generated/graphql";
+import { DocumentActions, isActionAllowed } from "../util/AuthCheck";
 import { Pages } from "../util/Pages";
 
 interface RetrievalProps {}
@@ -364,17 +365,20 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                         <>
                           <button
                             onClick={viewRemarks}
+                            hidden={isActionAllowed(currentTemplate.name, DocumentActions.REMARKS)}
                             className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                           >
                             Remarks
                           </button>
                           <button
                             onClick={viewKeywords}
+                            hidden={isActionAllowed(currentTemplate.name, DocumentActions.KEYWORDS)}
                             className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                           >
                             Keywords
                           </button>
                           <button
+                            hidden={isActionAllowed(currentTemplate.name, DocumentActions.INDEXES)}
                             // onClick={editIndexes}
                             className="py-2 px-2 border border-transparent   rounded-md bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                           >
@@ -383,6 +387,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                         </>
                       )}
                       <button
+                        hidden={isActionAllowed(currentTemplate.name, DocumentActions.DOWNLOAD)}
                         onClick={downloadDocument}
                         className="py-2 px-2 border border-transparent   rounded-md  bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
@@ -395,6 +400,7 @@ const Retrieval: React.FC<RetrievalProps> = () => {
                         Remove
                       </button>
                       <button
+                        hidden={isActionAllowed(currentTemplate.name, DocumentActions.DELETE)}
                         onClick={deleteRow}
                         className="py-2 px-2 border border-transparent   rounded-md   bg-white  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
