@@ -9,7 +9,7 @@ interface SideBarProps {
   className?: string;
 }
 
-const SideBar: React.FC<SideBarProps> = ({ className }) => {
+const Sidebar: React.FC<SideBarProps> = ({ className }) => {
   const { auth, setUserAuth } = useContext(AuthContext);
 
   const [logout] = useLogoutMutation();
@@ -195,4 +195,4 @@ const SideBar: React.FC<SideBarProps> = ({ className }) => {
   );
 };
 
-export default SideBar;
+export default Sidebar;

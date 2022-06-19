@@ -1,5 +1,5 @@
 import React from "react";
-import SideBar from "../SideBar";
+import Sidebar from "../Sidebar";
 
 interface Props {}
 
@@ -7,7 +7,7 @@ const MainBody: React.FC<Props> = ({ children }) => {
   return (
     <div className="flex flex-row">
       <div className="w-64">
-        <SideBar />
+        <Sidebar />
       </div>
       <div className="flex-auto bg-gray-100">{children}</div>
     </div>
