@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var _a;
 const apollo_client_1 = require("apollo-client");
 const apollo_server_errors_1 = require("apollo-server-errors");
 const fs_1 = require("fs");
@@ -348,7 +349,7 @@ __decorate([
     __param(1, type_graphql_1.Arg("id", () => String)),
     __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:paramtypes", [typeof (_a = typeof graphql_upload_1.FileUpload !== "undefined" && graphql_upload_1.FileUpload) === "function" ? _a : Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], FileResolver.prototype, "singleUpload", null);
 __decorate([

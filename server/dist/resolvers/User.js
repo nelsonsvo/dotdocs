@@ -61,6 +61,7 @@ let UserResolver = class UserResolver {
     login(username, password, { req, res }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne({ username }, { relations: ["groups"] });
+            console.log(user);
             if (user) {
                 const valid = yield argon2.verify(user.password, password);
                 if (valid) {
