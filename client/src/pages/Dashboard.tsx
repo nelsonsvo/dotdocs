@@ -78,11 +78,11 @@ export default function Dashboard({}: Props): ReactElement {
                   data.applications.map((app, index: number) => {
                     if (checkRetrievalTemplateAuth(app.name)) {
                       return (
-                        <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
-                          <NavLink to={"/retrieval/" + app.id} className="text-gray-700 text-lg ">
+                        <NavLink to={"/retrieval/" + app.id} className="text-gray-700 text-lg ">
+                          <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
                             {app.name}
-                          </NavLink>
-                        </div>
+                          </div>
+                        </NavLink>
                       );
                     }
                     return null;
@@ -101,11 +101,11 @@ export default function Dashboard({}: Props): ReactElement {
                   data.applications.map((app, index: number) => {
                     if (checkIndexTemplateAuth(app.name)) {
                       return (
-                        <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
-                          <NavLink to={"/index/" + app.id} className="text-gray-700 text-lg">
-                            {app.name}
-                          </NavLink>
-                        </div>
+                        <NavLink to={"/index/" + app.id} className="text-gray-700 text-lg">
+                          <div key={index} className="flex items-center space-x-1 hover:bg-gray-100 py-2 px-2 rounded-md">
+                              {app.name}
+                          </div>
+                        </NavLink>
                       );
                     }
                     return null;

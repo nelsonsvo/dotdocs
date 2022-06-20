@@ -150,7 +150,7 @@ const IndexBar: React.FC<IndexBarProps> = () => {
                 <h3 className="px-3 tracking-widest text-center">ADD A DOCUMENT</h3>
               </div>
               <div className="py-5 bg-gray-100 mb-5" {...getRootProps()}>
-                <input disabled={true} {...getInputProps()} accept=".pdf" />
+                <input disabled={false} {...getInputProps()} accept=".pdf" />
                 {isDragActive ? <p>Drop the files here ...</p> : <p>Drop files here</p>}
               </div>
               <div>
